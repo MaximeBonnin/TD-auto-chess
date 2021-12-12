@@ -15,7 +15,6 @@ FPS = 30
 
 
 
-
 # Main Game Loop
 
 def main():
