@@ -24,7 +24,6 @@ COLORS = {
 
 # ------------------- Initiallize -------------------
 
-pygame.init
 pygame.display.set_caption("Tower Defence Game")
 
 
