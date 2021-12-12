@@ -1,6 +1,6 @@
 # Tower Defence Game
 
-lets see where this goes
+Mal gucken was das wird
 
 
 ## Plan
@@ -10,15 +10,15 @@ lets see where this goes
 4. Projectiles
 5. Balancing
 
-## Other
+## Sonstiges
 setting?
--> space / fantasy / other?
+-> space / fantasy / was anderes?
 
 multiplayer?
 -> pvp / pve? 
 
 type?
--> selber bauen / feste wände / untis schicken?
+-> selber bauen / feste wände / units schicken?
 
 economy
 -> einfach mehr / econ kaufen?
