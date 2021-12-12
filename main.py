@@ -1,16 +1,28 @@
-# imports
+# Import
 import pygame
 import math
 
 
-# gloabal variables
+# Global Variables
 HEIGHT = 500
 WIDTH = 500
 FPS = 30
 
+# Initiallize
+
+
+# Functions
 
 
 
 
+# Main Game Loop
 
-# if name == main?
+def main():
+    pass
+
+
+
+# Save for multiple files being executed
+if __name__ == "__main__":
+    main()
