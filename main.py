@@ -2,6 +2,7 @@
 import pygame
 import math
 import random
+import os
 
 
 # Global Variables
@@ -14,6 +15,7 @@ COLORS = {
 
 }
 
+
 # Initiallize
 pygame.init
 pygame.display.set_caption("Tower Defence Game")
@@ -24,6 +26,7 @@ pygame.display.set_caption("Tower Defence Game")
 def draw_window():
     WIN.fill(COLORS["white"])
     pygame.display.update()
+
 
 # Main Game Loop
 
@@ -39,7 +42,6 @@ def main():
 
         draw_window()
     pygame.quit()
-
 
 
 # Save for multiple files being executed
