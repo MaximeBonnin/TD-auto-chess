@@ -1,24 +1,44 @@
 # Import
 import pygame
 import math
+import random
 
 
 # Global Variables
-HEIGHT = 500
-WIDTH = 500
-FPS = 30
+WIDTH, HEIGHT = 500, 500
+WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+FPS = 60
+COLORS = {
+    "black" : (0, 0, 0),
+    "white" : (255, 255, 255)
+
+}
 
 # Initiallize
+pygame.init
+pygame.display.set_caption("Tower Defence Game")
 
 
 # Functions
 
-
+def draw_window():
+    WIN.fill(COLORS["white"])
+    pygame.display.update()
 
 # Main Game Loop
 
 def main():
-    pass
+    clock = pygame.time.Clock()
+    run = True
+    while run:
+        clock.tick(FPS)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+        
+
+        draw_window()
+    pygame.quit()
 
 
 
