@@ -37,6 +37,7 @@ Mal gucken was das wird
 - exp system?
 - kaufen?
 - kombinieren?
+- skill tree?
 
 ## Design
 
