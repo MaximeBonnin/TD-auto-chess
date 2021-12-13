@@ -12,27 +12,27 @@ Mal gucken was das wird
 
 ## Sonstiges
 ### Setting?
--> space
--> fantasy
--> was anderes?
+- space
+- fantasy
+- was anderes?
 
 ### Multiplayer?
--> pvp
--> pve? 
+- pvp
+- pve? 
 
 ### Type?
--> selber bauen
--> feste wände
--> units schicken?
+- selber bauen
+- feste wände
+- units schicken?
 
 ### Economy
--> einfach mehr
--> econ kaufen?
+- einfach mehr
+- econ kaufen?
 
 ### Upgrades
--> exp system 
--> kaufen
--> kombinieren
+- exp system 
+- kaufen
+- kombinieren
 
 ## Design
 
