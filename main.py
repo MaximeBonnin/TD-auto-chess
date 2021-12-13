@@ -58,13 +58,13 @@ pygame.display.set_caption("Tower Defence Game")
 
 class Tile:
     # Class that describes the map tiles
-    def __init__(self, type, position):
-        self.type = type
+    def __init__(self, tileType, position):
+        self.tileType = tileType
         self.position = position
 
-        if self.type == 0:
+        if self.tileType == 0:
             self.color = COLORS["black"]
-        elif self.type == 1:
+        elif self.tileType == 1:
             self.color = COLORS["green"]
         else:
             print("Tile Type Error")
@@ -75,26 +75,32 @@ class Tile:
 
         self.has_unit = False
     
-    def spawn_tower(self, type):
-        self.has_unit = True
-        self.color = COLORS["blue"]
-        self.surface.fill(self.color)
-        # TODO spawn units
+    def spawn_tower(self, unitType):
+        if self.tileType == 1:
+            print("This is a path, you cannot place towers here.")
+        elif self.has_unit:
+            print("This tile already has a tower on it.")
+        else:
+            self.has_unit = True
+            self.color = COLORS["blue"]
+            self.surface.fill(self.color)
+            Unit(unitType, self)
         
 
 class Tower:
     # Class that describes towers
-    def __init__(self, type, lvl, tile):
-        self.type = type
+    def __init__(self, towerType, lvl, tile):
+        self.towerType = towerType
         self.lvl = lvl 
         self.tile = tile
         self.kills = 0      # Zählen von kills für stats oder lvl system?
 
 class Unit:
     # Class that describes units
-    def __init__(self, type, lvl, tile):
-        self.type = type
-        self.lvl = lvl
+    def __init__(self, unitType, tile):
+        print(f"Unit of type {unitType} spawned!")
+        self.unitType = unitType
+        self.lvl = 1
         self.tile = tile
 
 
@@ -147,7 +153,7 @@ def main():
                 for c in mapTileList:
                     for i in c:
                         if i.rect.collidepoint(mouse.get_pos()[0], mouse.get_pos()[1]):
-                            i.spawn_tower(1)
+                            i.spawn_tower("basic")
 
         draw_window(mapTileList)    
     pygame.quit()
