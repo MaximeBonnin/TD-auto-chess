@@ -62,8 +62,10 @@ class Tile:
 
         if self.type == 0:
             self.color = COLORS["black"]
-        else:
+        elif self.type == 1:
             self.color = COLORS["green"]
+        elif self.type == 2:
+            self.color = COLORS["blue"]
 
         self.rect = pygame.Rect(self.position, TILE_SIZE)
         self.surface = pygame.Surface(TILE_SIZE)
@@ -89,12 +91,19 @@ class Unit:
 def make_map(tiles):
     colums, rows = tiles
     tile_list = []
+    i = 0
     for c in range(colums):
         c_list = []
         for r in range(rows):
-            t = Tile(random.randint(0, 1), (c*TILE_SIZE[0], r*TILE_SIZE[1]))
+            if i == NUM_TILES[0]//2:
+                t = Tile(1, (c*TILE_SIZE[0], r*TILE_SIZE[1]))
+            #elif i in [NUM_TILES[0]//2-1, NUM_TILES[0]//2+1]:
+                #t = Tile(2, (c*TILE_SIZE[0], r*TILE_SIZE[1]))
+            else:
+                t = Tile(0, (c*TILE_SIZE[0], r*TILE_SIZE[1]))
             c_list.append(t)
         tile_list.append(c_list)
+        i += 1
 
     return tile_list
 
