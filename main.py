@@ -1,5 +1,7 @@
 # ------------------- Import -------------------
 
+# https://www.pygame.org/docs/
+
 import pygame
 import math
 import random
@@ -8,9 +10,11 @@ import os
 
 # ------------------- Global Variables -------------------
 
-WIDTH, HEIGHT = 500, 500
+WIDTH, HEIGHT = 32*20, 32*20
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 FPS = 60
+TILE_SIZE = (32, 32)
+NUM_TILES = (WIDTH//TILE_SIZE[0], HEIGHT//TILE_SIZE[1]) # numbers of tiles as tuple (columns, rows)
 
 COLORS = {
     "black": (0, 0, 0),
@@ -50,6 +54,22 @@ pygame.display.set_caption("Tower Defence Game")
 
 # ------------------- CLASSES -------------------
 
+class Tile:
+    # Class that describes the map tiles
+    def __init__(self, type,position):
+        self.type = type
+        self.position = position
+
+        if self.type == 0:
+            self.color = COLORS["black"]
+        else:
+            self.color = COLORS["green"]
+
+        self.rect = pygame.Rect(self.position, TILE_SIZE)
+        self.surface = pygame.Surface(TILE_SIZE)
+        self.surface.fill(self.color)
+        
+
 class Tower:
     # Class that describes towers
     def __init__(self, type, lvl):
@@ -66,16 +86,35 @@ class Unit:
 
 # ------------------- FUNCTIONS -------------------
 
-def draw_window():
+def make_map(tiles):
+    colums, rows = tiles
+    tile_list = []
+    for c in range(colums):
+        c_list = []
+        for r in range(rows):
+            t = Tile(random.randint(0, 1), (c*TILE_SIZE[0], r*TILE_SIZE[1]))
+            c_list.append(t)
+        tile_list.append(c_list)
+
+    return tile_list
+
+
+def draw_window(tile_list):
     # Function that draws everything on screen (every frame)
 
     WIN.fill(COLORS["white"])
+
+    for c in tile_list:
+        for r in c:
+            WIN.blit(r.surface, r.rect)
+
     pygame.display.update()
 
 
 # ------------------- Main Game Loop -------------------
 
 def main():
+    mapTileList = make_map(NUM_TILES) 
     clock = pygame.time.Clock()
 
     run = True
@@ -86,7 +125,7 @@ def main():
             if event.type == pygame.QUIT:
                 run = False
 
-        draw_window()
+        draw_window(mapTileList)    
     pygame.quit()
 
 
