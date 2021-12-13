@@ -21,6 +21,27 @@ COLORS = {
     "blue": (0, 0, 255)
 }
 
+TOWER_TYPES = {
+    "basic": {
+        "atk_speed": 1,
+        "dmg": 1,
+        "hp": 10            # können Türme angegriffen werden?
+    },
+    "AoE": "info",
+    "SingleTarget": "info"
+}
+
+UNIT_TYPES = {
+    "basic": {
+        "move_speed": 1,
+        "hp": 10,
+        "size": 1,          # verschieden große units?
+        "special": False    # vlt für sowas wie Schilde oder andere abilities?
+    },
+    "fast": "info",
+    "tank": "info"
+}
+
 
 # ------------------- Initiallize -------------------
 
@@ -31,13 +52,16 @@ pygame.display.set_caption("Tower Defence Game")
 
 class Tower:
     # Class that describes towers
-    def __init__(self):
-        pass
+    def __init__(self, type, lvl):
+        self.type = type
+        self.lvl = lvl 
+        self.kills = 0      # Zählen von kills für stats oder lvl system?
 
 class Unit:
     # Class that describes units
-    def __init__(self):
-        pass
+    def __init__(self, type, lvl):
+        self.type = type
+        self.lvl = lvl
 
 
 # ------------------- FUNCTIONS -------------------
