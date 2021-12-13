@@ -15,7 +15,7 @@ FPS = 60
 COLORS = {
     "black": (0, 0, 0),
     "white": (255, 255, 255),
-    "red": (255, 255, 204),
+    "red": (255, 0, 0),
     "yellow": (255, 255, 0),
     "green": (0, 255, 0),
     "blue": (0, 0, 255)
@@ -81,10 +81,10 @@ def main():
     run = True
     while run:
         clock.tick(FPS)
+        # vlt ersttmal nen Menü? aber kann später kommen
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-        
 
         draw_window()
     pygame.quit()
