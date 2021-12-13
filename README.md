@@ -1,7 +1,6 @@
 # Tower Defence Game
 
 Mal gucken was das wird
-test nachricht
 
 
 ## Plan
