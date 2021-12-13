@@ -11,35 +11,39 @@ Mal gucken was das wird
 5. Balancing
 
 ## Sonstiges
+
 ### Setting?
-- space
-- fantasy
+- space?
+- fantasy?
 - was anderes?
+    - Piraten?
+    - Magic?
 
 ### Multiplayer?
-- pvp
+- pvp?
 - pve? 
+- solo?
 
 ### Type?
-- selber bauen
-- feste wände
+- selber bauen?
+- feste wände?
 - units schicken?
 
 ### Economy
-- einfach mehr
+- einfach mehr?
 - econ kaufen?
 
 ### Upgrades
-- exp system 
-- kaufen
-- kombinieren
+- exp system?
+- kaufen?
+- kombinieren?
 
 ## Design
 
 ### Tower
-Platform mit beweglichem turm?
-Verschiedene designs für andere Türme
-Abhängig von Setting
+- Platform mit beweglichem turm?
+- Verschiedene designs für andere Türme
+- Abhängig von Setting
 
 ### Units
 Grade linie oder nen offener weg? kein plan wie das geht :D
