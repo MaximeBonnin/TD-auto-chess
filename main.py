@@ -7,6 +7,8 @@ import math
 import random
 import os
 
+from pygame import mouse
+
 
 # ------------------- Global Variables -------------------
 
@@ -56,7 +58,7 @@ pygame.display.set_caption("Tower Defence Game")
 
 class Tile:
     # Class that describes the map tiles
-    def __init__(self, type,position):
+    def __init__(self, type, position):
         self.type = type
         self.position = position
 
@@ -64,26 +66,36 @@ class Tile:
             self.color = COLORS["black"]
         elif self.type == 1:
             self.color = COLORS["green"]
-        elif self.type == 2:
-            self.color = COLORS["blue"]
+        else:
+            print("Tile Type Error")
 
         self.rect = pygame.Rect(self.position, TILE_SIZE)
         self.surface = pygame.Surface(TILE_SIZE)
         self.surface.fill(self.color)
+
+        self.has_unit = False
+    
+    def spawn_tower(self, type):
+        self.has_unit = True
+        self.color = COLORS["blue"]
+        self.surface.fill(self.color)
+        # TODO spawn units
         
 
 class Tower:
     # Class that describes towers
-    def __init__(self, type, lvl):
+    def __init__(self, type, lvl, tile):
         self.type = type
         self.lvl = lvl 
+        self.tile = tile
         self.kills = 0      # Zählen von kills für stats oder lvl system?
 
 class Unit:
     # Class that describes units
-    def __init__(self, type, lvl):
+    def __init__(self, type, lvl, tile):
         self.type = type
         self.lvl = lvl
+        self.tile = tile
 
 
 # ------------------- FUNCTIONS -------------------
@@ -97,8 +109,6 @@ def make_map(tiles):
         for r in range(rows):
             if i == NUM_TILES[0]//2:
                 t = Tile(1, (c*TILE_SIZE[0], r*TILE_SIZE[1]))
-            #elif i in [NUM_TILES[0]//2-1, NUM_TILES[0]//2+1]:
-                #t = Tile(2, (c*TILE_SIZE[0], r*TILE_SIZE[1]))
             else:
                 t = Tile(0, (c*TILE_SIZE[0], r*TILE_SIZE[1]))
             c_list.append(t)
@@ -133,6 +143,11 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                for c in mapTileList:
+                    for i in c:
+                        if i.rect.collidepoint(mouse.get_pos()[0], mouse.get_pos()[1]):
+                            i.spawn_tower(1)
 
         draw_window(mapTileList)    
     pygame.quit()
