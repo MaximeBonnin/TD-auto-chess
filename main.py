@@ -10,6 +10,18 @@ import os
 
 from pygame import mouse
 
+# ------------------- Initiallize -------------------
+
+pygame.display.set_caption("Tower Defence Game")
+
+pygame.mixer.init()
+pew = pygame.mixer.Sound(os.path.join("Assets","Sound","pew.wav"))
+pew.set_volume(0.2)
+hit = pygame.mixer.Sound(os.path.join("Assets","Sound","hit.mp3"))
+hit.set_volume(0.2)
+explosion = pygame.mixer.Sound(os.path.join("Assets","Sound","explosion.wav"))
+explosion.set_volume(0.2)
+
 
 # ------------------- Global Variables -------------------
 
@@ -17,9 +29,11 @@ WIDTH, HEIGHT = 32*20, 32*20
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 FPS = 60
 TILE_SIZE = (32, 32)
+PROJ_SIZE = (4, 4)
 NUM_TILES = (WIDTH//TILE_SIZE[0], HEIGHT//TILE_SIZE[1]) # numbers of tiles as tuple (columns, rows)
 UNIT_LIST =[]
 TOWER_LIST = []
+PROJ_LIST = []
 
 
 COLORS = {
@@ -33,10 +47,11 @@ COLORS = {
 
 TOWER_TYPES = {
     "basic": {
-        "atk_speed": 3,     # alle 3 sekunden angreifen?
+        "atk_speed": 1.5,     # alle 3 sekunden angreifen?
         "dmg": 3,
         "hp": 10,           # können Türme angegriffen werden?
-        "range": 500
+        "range": 100,
+        "proj_type": "basic"
     },
     "AoE": "info",
     "SingleTarget": "info"
@@ -53,14 +68,52 @@ UNIT_TYPES = {
     "tank": "info"
 }
 
-
-# ------------------- Initiallize -------------------
-
-pygame.display.set_caption("Tower Defence Game")
+PROJ_TYPES = {
+    "basic": {
+        "speed": 2,
+        "spread": 1, # ???
+        "AoE": False,
+        "AoE_area": 0
+    }
+}
 
 
 # ------------------- CLASSES -------------------
-        
+
+
+class Projectile:
+    def __init__(self, projType, origin, target):
+        self.projType = projType
+        self.origin = origin
+        self.target = target
+        self.x, self.y = origin.tile.rect.center
+        self.color = COLORS["white"] # verschiedene Farben?
+        self.last_move = pygame.time.get_ticks()
+
+        self.rect = pygame.Rect(origin.tile.rect.center, PROJ_SIZE) #TODO spawn ist nicht mittig
+        self.surface = pygame.Surface(PROJ_SIZE)
+        self.surface.fill(self.color)
+
+        self.angle = math.atan2(self.target.tile.rect.centery - self.origin.tile.rect.centery, self.target.tile.rect.centerx - self.origin.tile.rect.centerx)
+        self.dx = math.cos(self.angle)*PROJ_TYPES[self.projType]["speed"]
+        self.dy = math.sin(self.angle)*PROJ_TYPES[self.projType]["speed"]
+        print(self.dx, self.dy)
+
+        global PROJ_LIST
+        PROJ_LIST.append(self)    
+
+    def move(self):
+        now = pygame.time.get_ticks()
+        if now - self.last_move >= 15: #15ms warten bis nächste bewegeung
+            #print("moving")
+            self.x = self.x + self.dx
+            self.y = self.y + self.dy
+
+            self.rect.x = int(self.x)
+            self.rect.y = int(self.y)
+            #self.rect.update((new_x, new_y), PROJ_SIZE)
+            self.last_move = pygame.time.get_ticks()
+
 
 class Tower:
     # Class that describes towers
@@ -78,31 +131,36 @@ class Tower:
     def aim(self, unitList):
         # kürzeste distanz von unit
         m = self.tile.rect.center
-        closest = 1000      # initialize var? vlt anderer wert
-        distance = 1000
         target = False
+        distance_list = []
+    
         for u in unitList:
             m_u = u.tile.rect.center
-            distance = ((m[0]-m_u[0])**2 + (m[1]-m_u[1]))**(1/2) # a^2+b^2 = c^2
-            if distance <= closest:
-                closest = distance
-                target = u
+            distance = ((m[0]-m_u[0])**2 + (m[1]-m_u[1])**2)**(1/2) # a^2+b^2 = c^2
+            distance_list.append(distance)
+
+        distance = min(distance_list)
+        target = UNIT_LIST[distance_list.index(min(distance_list))]
+
         return target, distance
 
 
+
     def shoot(self, unitList):
-        target, distance = self.aim(unitList)
-        cooldown = TOWER_TYPES[self.towerType]["atk_speed"]*1000
-        now = pygame.time.get_ticks()
-        # print(now-self.last_shot)
+        if unitList:
+            target, distance = self.aim(unitList)
+            cooldown = TOWER_TYPES[self.towerType]["atk_speed"]*1000
+            now = pygame.time.get_ticks()
+            # print(now-self.last_shot)
 
-        if distance <= TOWER_TYPES[self.towerType]["range"] and (now - self.last_shot) >= cooldown:
-            # TODO shoot them
-            print(f"shooting at {target.unitType}")
-            target.take_dmg(TOWER_TYPES[self.towerType]["dmg"])
-            self.last_shot = pygame.time.get_ticks()
+            if distance <= TOWER_TYPES[self.towerType]["range"] and (now - self.last_shot) >= cooldown:
+                # TODO shoot them
+                # print(f"shooting at {target.unitType} | Distance: {distance}")
+                pew.play()
+                # target.take_dmg(TOWER_TYPES[self.towerType]["dmg"])
+                Projectile(TOWER_TYPES[self.towerType]["proj_type"], self, target)
+                self.last_shot = pygame.time.get_ticks()
         
-
 
 class Unit:
     # Class that describes units
@@ -118,6 +176,7 @@ class Unit:
 
     def die(self):
         print(f"{self.unitType} unit died.")
+        explosion.play()
         UNIT_LIST.remove(self)
 
         self.tile.has_unit = False
@@ -128,8 +187,10 @@ class Unit:
     
     def take_dmg(self, amount):
         self.hp -= amount
+        hit.play()
         if self.hp <= 0:
             self.die()
+
 
 class Tile:
     # Class that describes the map tiles
@@ -172,6 +233,10 @@ class Tile:
             self.has_unit = Unit(unitType, self)
             self.color = COLORS["red"]
             self.surface.fill(self.color)
+
+
+
+
             
 
 
@@ -204,6 +269,10 @@ def draw_window(tile_list):
     for c in tile_list:
         for r in c:
             WIN.blit(r.surface, r.rect)
+    
+    for p in PROJ_LIST:
+        WIN.blit(p.surface, p.rect)
+        
 
     
 
@@ -239,6 +308,8 @@ def main():
         # Testing
         for t in TOWER_LIST:
             t.shoot(UNIT_LIST)
+        for p in PROJ_LIST:
+            p.move()
         # Testing end
 
         draw_window(mapTileList)    
