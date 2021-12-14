@@ -18,6 +18,9 @@ WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 FPS = 60
 TILE_SIZE = (32, 32)
 NUM_TILES = (WIDTH//TILE_SIZE[0], HEIGHT//TILE_SIZE[1]) # numbers of tiles as tuple (columns, rows)
+UNIT_LIST =[]
+TOWER_LIST = []
+
 
 COLORS = {
     "black": (0, 0, 0),
@@ -33,7 +36,7 @@ TOWER_TYPES = {
         "atk_speed": 3,     # alle 3 sekunden angreifen?
         "dmg": 3,
         "hp": 10,           # können Türme angegriffen werden?
-        "range": 5
+        "range": 500
     },
     "AoE": "info",
     "SingleTarget": "info"
@@ -62,17 +65,42 @@ pygame.display.set_caption("Tower Defence Game")
 class Tower:
     # Class that describes towers
     def __init__(self, towerType, tile):
+        print(f"Tower of type {towerType} spawned!")
         self.towerType = towerType
         self.tile = tile
         self.kills = 0      # Zählen von kills für stats oder lvl system?
 
+        global TOWER_LIST   # eig schlechte Lösung aber erstmal so: Globale variable mit allen Türmen
+        TOWER_LIST.append(self)
+
+
     def aim(self, unitList):
-        # kürzeste distanz von unit, dann gegen range checken?
-        pass
+        # kürzeste distanz von unit
+        m = self.tile.rect.center
+        closest = 1000      # initialize var? vlt anderer wert
+        distance = 1000
+        target = False
+        for u in unitList:
+            m_u = u.tile.rect.center
+            distance = ((m[0]-m_u[0])**2 + (m[1]-m_u[1]))**(1/2) # a^2+b^2 = c^2
+            if distance <= closest:
+                closest = distance
+                target = u
+        return target, distance
+
 
     def shoot(self, unitList):
-        self.aim(unitList)
-        pass
+        target, distance = self.aim(unitList)
+        last = 0
+        cooldown = TOWER_TYPES[self.towerType]["atk_speed"]*1000
+        now = pygame.time.get_ticks()
+        #print(now-last)
+
+        if distance <= TOWER_TYPES[self.towerType]["range"] and (now - last) >= cooldown:
+            # TODO shoot them
+            print(f"shooting at {target.unitType}")
+            last = pygame.time.get_ticks()
+        
 
 
 class Unit:
@@ -82,6 +110,9 @@ class Unit:
         self.unitType = unitType
         self.lvl = 1
         self.tile = tile
+
+        global TOWER_LIST   # eig schlechte Lösung aber erstmal so: Globale variable mit allen Units
+        UNIT_LIST.append(self)
 
 
 class Tile:
@@ -102,17 +133,19 @@ class Tile:
         self.surface.fill(self.color)
 
         self.has_unit = False
+        self.has_tower = False
     
+
     def spawn_tower(self, towerType):
         if self.tileType == 1:
             print("This is a path, you cannot place towers here.")
-        elif self.has_unit:
+        elif self.has_tower:
             print("This tile already has a tower on it.")
         else:
-            self.has_unit = True
+            self.has_tower = Tower(towerType, self)
             self.color = COLORS["blue"]
             self.surface.fill(self.color)
-            Tower(towerType, self)
+            
 
     def spawn_unit(self, unitType):
         if self.tileType == 0:
@@ -120,10 +153,10 @@ class Tile:
         elif self.has_unit:
             print("This tile already has a unit on it.")
         else:
-            self.has_unit = True
+            self.has_unit = Unit(unitType, self)
             self.color = COLORS["red"]
             self.surface.fill(self.color)
-            Tower(unitType, self)
+            
 
 
 # ------------------- FUNCTIONS -------------------
@@ -151,9 +184,12 @@ def draw_window(tile_list):
 
     WIN.fill(COLORS["white"])
 
+    # Draw all map tiles
     for c in tile_list:
         for r in c:
             WIN.blit(r.surface, r.rect)
+
+    
 
     pygame.display.update()
 
@@ -182,6 +218,12 @@ def main():
                         for i in c:
                             if i.rect.collidepoint(mouse.get_pos()[0], mouse.get_pos()[1]):
                                 i.spawn_unit("basic")
+
+
+        # Testing
+        for t in TOWER_LIST:
+            t.shoot(UNIT_LIST)
+        # Testing end
 
         draw_window(mapTileList)    
     pygame.quit()
