@@ -30,9 +30,10 @@ COLORS = {
 
 TOWER_TYPES = {
     "basic": {
-        "atk_speed": 1,
-        "dmg": 1,
-        "hp": 10            # können Türme angegriffen werden?
+        "atk_speed": 3,     # alle 3 sekunden angreifen?
+        "dmg": 3,
+        "hp": 10,           # können Türme angegriffen werden?
+        "range": 5
     },
     "AoE": "info",
     "SingleTarget": "info"
@@ -56,6 +57,32 @@ pygame.display.set_caption("Tower Defence Game")
 
 
 # ------------------- CLASSES -------------------
+        
+
+class Tower:
+    # Class that describes towers
+    def __init__(self, towerType, tile):
+        self.towerType = towerType
+        self.tile = tile
+        self.kills = 0      # Zählen von kills für stats oder lvl system?
+
+    def aim(self, unitList):
+        # kürzeste distanz von unit, dann gegen range checken?
+        pass
+
+    def shoot(self, unitList):
+        self.aim(unitList)
+        pass
+
+
+class Unit:
+    # Class that describes units
+    def __init__(self, unitType, tile):
+        print(f"Unit of type {unitType} spawned!")
+        self.unitType = unitType
+        self.lvl = 1
+        self.tile = tile
+
 
 class Tile:
     # Class that describes the map tiles
@@ -76,7 +103,7 @@ class Tile:
 
         self.has_unit = False
     
-    def spawn_tower(self, unitType):
+    def spawn_tower(self, towerType):
         if self.tileType == 1:
             print("This is a path, you cannot place towers here.")
         elif self.has_unit:
@@ -85,24 +112,18 @@ class Tile:
             self.has_unit = True
             self.color = COLORS["blue"]
             self.surface.fill(self.color)
-            Unit(unitType, self)
-        
+            Tower(towerType, self)
 
-class Tower:
-    # Class that describes towers
-    def __init__(self, towerType, lvl, tile):
-        self.towerType = towerType
-        self.lvl = lvl 
-        self.tile = tile
-        self.kills = 0      # Zählen von kills für stats oder lvl system?
-
-class Unit:
-    # Class that describes units
-    def __init__(self, unitType, tile):
-        print(f"Unit of type {unitType} spawned!")
-        self.unitType = unitType
-        self.lvl = 1
-        self.tile = tile
+    def spawn_unit(self, unitType):
+        if self.tileType == 0:
+            print("This is a wall, you cannot place units here.")
+        elif self.has_unit:
+            print("This tile already has a unit on it.")
+        else:
+            self.has_unit = True
+            self.color = COLORS["red"]
+            self.surface.fill(self.color)
+            Tower(unitType, self)
 
 
 # ------------------- FUNCTIONS -------------------
@@ -151,10 +172,16 @@ def main():
             if event.type == pygame.QUIT:
                 run = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                for c in mapTileList:
-                    for i in c:
-                        if i.rect.collidepoint(mouse.get_pos()[0], mouse.get_pos()[1]):
-                            i.spawn_tower("basic")
+                if event.button == 1:       # linksclick spawnt turm
+                    for c in mapTileList:
+                        for i in c:
+                            if i.rect.collidepoint(mouse.get_pos()[0], mouse.get_pos()[1]):
+                                i.spawn_tower("basic")
+                elif event.button == 3:     # rechtcklick spawn unit
+                    for c in mapTileList:
+                        for i in c:
+                            if i.rect.collidepoint(mouse.get_pos()[0], mouse.get_pos()[1]):
+                                i.spawn_unit("basic")
 
         draw_window(mapTileList)    
     pygame.quit()
