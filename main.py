@@ -99,6 +99,7 @@ class Tower:
         if distance <= TOWER_TYPES[self.towerType]["range"] and (now - self.last_shot) >= cooldown:
             # TODO shoot them
             print(f"shooting at {target.unitType}")
+            target.take_dmg(TOWER_TYPES[self.towerType]["dmg"])
             self.last_shot = pygame.time.get_ticks()
         
 
@@ -110,10 +111,25 @@ class Unit:
         self.unitType = unitType
         self.lvl = 1
         self.tile = tile
+        self.hp = UNIT_TYPES[self.unitType]["hp"]
 
         global TOWER_LIST   # eig schlechte Lösung aber erstmal so: Globale variable mit allen Units
         UNIT_LIST.append(self)
 
+    def die(self):
+        print(f"{self.unitType} unit died.")
+        UNIT_LIST.remove(self)
+
+        self.tile.has_unit = False
+        self.tile.color = COLORS["green"]
+        self.tile.surface.fill(self.tile.color)
+
+        #TODO animation / sound etc.
+    
+    def take_dmg(self, amount):
+        self.hp -= amount
+        if self.hp <= 0:
+            self.die()
 
 class Tile:
     # Class that describes the map tiles
