@@ -16,11 +16,11 @@ pygame.display.set_caption("Tower Defence Game")
 
 pygame.mixer.init()
 pew = pygame.mixer.Sound(os.path.join("Assets","Sound","pew.wav"))
-pew.set_volume(0.2)
+pew.set_volume(0.1)
 hit = pygame.mixer.Sound(os.path.join("Assets","Sound","hit.mp3"))
 hit.set_volume(0.2)
 explosion = pygame.mixer.Sound(os.path.join("Assets","Sound","explosion.wav"))
-explosion.set_volume(0.2)
+explosion.set_volume(0.4)
 
 
 # ------------------- Global Variables -------------------
@@ -50,7 +50,7 @@ TOWER_TYPES = {
         "atk_speed": 1.5,     # alle 3 sekunden angreifen?
         "dmg": 3,
         "hp": 10,           # können Türme angegriffen werden?
-        "range": 100,
+        "range": 300,
         "proj_type": "basic"
     },
     "AoE": "info",
@@ -59,7 +59,7 @@ TOWER_TYPES = {
 
 UNIT_TYPES = {
     "basic": {
-        "move_speed": 1,
+        "move_speed": 2,
         "hp": 10,
         "size": 1,          # verschieden große units?
         "special": False    # vlt für sowas wie Schilde oder andere abilities?
@@ -105,15 +105,20 @@ class Projectile:
     def move(self):
         now = pygame.time.get_ticks()
         if now - self.last_move >= 15: #15ms warten bis nächste bewegeung
-            #print("moving")
             self.x = self.x + self.dx
             self.y = self.y + self.dy
 
             self.rect.x = int(self.x)
             self.rect.y = int(self.y)
-            #self.rect.update((new_x, new_y), PROJ_SIZE)
+
             self.last_move = pygame.time.get_ticks()
 
+            for u in UNIT_LIST:
+                if u.tile.rect.colliderect(self.rect):
+                    u.take_dmg(3) #TODO make dynamic
+                    PROJ_LIST.remove(self)
+
+                
 
 class Tower:
     # Class that describes towers
@@ -126,7 +131,6 @@ class Tower:
 
         global TOWER_LIST   # eig schlechte Lösung aber erstmal so: Globale variable mit allen Türmen
         TOWER_LIST.append(self)
-
 
     def aim(self, unitList):
         # kürzeste distanz von unit
@@ -143,8 +147,6 @@ class Tower:
         target = UNIT_LIST[distance_list.index(min(distance_list))]
 
         return target, distance
-
-
 
     def shoot(self, unitList):
         if unitList:
@@ -190,6 +192,11 @@ class Unit:
         hit.play()
         if self.hp <= 0:
             self.die()
+    
+    def move(self):
+        pass
+        #self.rect.y = self.rect.y + UNIT_TYPES[self.unitType]["move_speed"]
+        # doesnt work cuz units dont have rect yet, need to add that
 
 
 class Tile:
@@ -235,11 +242,6 @@ class Tile:
             self.surface.fill(self.color)
 
 
-
-
-            
-
-
 # ------------------- FUNCTIONS -------------------
 
 def make_map(tiles):
@@ -272,9 +274,7 @@ def draw_window(tile_list):
     
     for p in PROJ_LIST:
         WIN.blit(p.surface, p.rect)
-        
 
-    
 
     pygame.display.update()
 
@@ -310,6 +310,8 @@ def main():
             t.shoot(UNIT_LIST)
         for p in PROJ_LIST:
             p.move()
+        for u in UNIT_LIST:
+            u.move()
         # Testing end
 
         draw_window(mapTileList)    
