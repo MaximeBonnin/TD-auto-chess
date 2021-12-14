@@ -68,6 +68,7 @@ class Tower:
         print(f"Tower of type {towerType} spawned!")
         self.towerType = towerType
         self.tile = tile
+        self.last_shot = pygame.time.get_ticks()
         self.kills = 0      # Zählen von kills für stats oder lvl system?
 
         global TOWER_LIST   # eig schlechte Lösung aber erstmal so: Globale variable mit allen Türmen
@@ -91,15 +92,14 @@ class Tower:
 
     def shoot(self, unitList):
         target, distance = self.aim(unitList)
-        last = 0
         cooldown = TOWER_TYPES[self.towerType]["atk_speed"]*1000
         now = pygame.time.get_ticks()
-        #print(now-last)
+        # print(now-self.last_shot)
 
-        if distance <= TOWER_TYPES[self.towerType]["range"] and (now - last) >= cooldown:
+        if distance <= TOWER_TYPES[self.towerType]["range"] and (now - self.last_shot) >= cooldown:
             # TODO shoot them
             print(f"shooting at {target.unitType}")
-            last = pygame.time.get_ticks()
+            self.last_shot = pygame.time.get_ticks()
         
 
 
