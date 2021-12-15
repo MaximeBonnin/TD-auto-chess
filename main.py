@@ -101,6 +101,20 @@ class Projectile:
         global PROJ_LIST
         PROJ_LIST.append(self)    
 
+    def check_hit(self):
+        for u in UNIT_LIST:
+            if u.rect.colliderect(self.rect):
+                u.take_dmg(3) #TODO make dynamic
+                print("HIT")
+                PROJ_LIST.remove(self)
+                return
+            elif self.x < 0 or self.x > WIDTH:
+                PROJ_LIST.remove(self)
+                return
+            elif self.y < 0 or self.y > HEIGHT:
+                PROJ_LIST.remove(self)
+                return
+
     def move(self):
         now = pygame.time.get_ticks()
         if now - self.last_move >= 15: #15ms warten bis nächste bewegeung
@@ -112,17 +126,8 @@ class Projectile:
 
             self.last_move = pygame.time.get_ticks()
 
-            for u in UNIT_LIST:
-                if u.tile.rect.colliderect(self.rect):
-                    u.take_dmg(3) #TODO make dynamic
-                    PROJ_LIST.remove(self)
-                    return
-                elif self.x < 0 or self.x > WIDTH:
-                    PROJ_LIST.remove(self)
-                    return
-                elif self.y < 0 or self.y > HEIGHT:
-                    PROJ_LIST.remove(self)
-                    return
+            self.check_hit()
+            
                 
 
 class Tower:
@@ -160,7 +165,6 @@ class Tower:
             now = pygame.time.get_ticks()
 
             if distance <= TOWER_TYPES[self.towerType]["range"] and (now - self.last_shot) >= cooldown:
-                # TODO shoot them
                 pew.play()
                 Projectile(TOWER_TYPES[self.towerType]["proj_type"], self, target)
                 self.last_shot = pygame.time.get_ticks()
@@ -192,9 +196,9 @@ class Unit:
 
         self.tile.has_unit = False
 
-        #TODO animation / sound etc.
+        #TODO animation
     
-    def take_dmg(self, amount): #TODO funktioniert nicht richtig? teilweise werden hits nicht richtig wahrgenommen
+    def take_dmg(self, amount):
         self.hp -= amount
         hit.play()
         if self.hp <= 0:
@@ -280,6 +284,16 @@ def draw_window(tile_list):
     pygame.display.update()
 
 
+def update_objects():
+    for t in TOWER_LIST:
+        t.shoot(UNIT_LIST)
+    for p in PROJ_LIST:
+        p.move()
+    for u in UNIT_LIST:
+        u.move()
+        
+
+
 # ------------------- Main Game Loop -------------------
 
 def main():
@@ -305,14 +319,7 @@ def main():
                             if tile.rect.collidepoint(mouse.get_pos()[0], mouse.get_pos()[1]):
                                 Unit("basic", tile)
 
-        # Testing
-        for t in TOWER_LIST:
-            t.shoot(UNIT_LIST)
-        for p in PROJ_LIST:
-            p.move()
-        for u in UNIT_LIST:
-            u.move()
-        # Testing end
+        update_objects()
 
         draw_window(mapTileList)    
     pygame.quit()
