@@ -97,7 +97,6 @@ class Projectile:
         self.angle = math.atan2(self.target.rect.centery - self.origin.tile.rect.centery, self.target.rect.centerx - self.origin.tile.rect.centerx)
         self.dx = math.cos(self.angle)*PROJ_TYPES[self.projType]["speed"]
         self.dy = math.sin(self.angle)*PROJ_TYPES[self.projType]["speed"]
-        #print(self.dx, self.dy)
 
         global PROJ_LIST
         PROJ_LIST.append(self)    
@@ -159,13 +158,10 @@ class Tower:
             target, distance = self.aim(unitList)
             cooldown = TOWER_TYPES[self.towerType]["atk_speed"]*1000
             now = pygame.time.get_ticks()
-            # print(now-self.last_shot)
 
             if distance <= TOWER_TYPES[self.towerType]["range"] and (now - self.last_shot) >= cooldown:
                 # TODO shoot them
-                # print(f"shooting at {target.unitType} | Distance: {distance}")
                 pew.play()
-                # target.take_dmg(TOWER_TYPES[self.towerType]["dmg"])
                 Projectile(TOWER_TYPES[self.towerType]["proj_type"], self, target)
                 self.last_shot = pygame.time.get_ticks()
         
@@ -195,8 +191,6 @@ class Unit:
         UNIT_LIST.remove(self)
 
         self.tile.has_unit = False
-        #self.tile.color = COLORS["green"]
-        #self.tile.surface.fill(self.tile.color)
 
         #TODO animation / sound etc.
     
@@ -209,8 +203,6 @@ class Unit:
     def move(self):
         self.y += UNIT_TYPES[self.unitType]["move_speed"]
         self.rect.y = self.y
-        #self.rect.y = self.rect.y + UNIT_TYPES[self.unitType]["move_speed"]
-        # doesnt work cuz units dont have rect yet, need to add that
 
 
 class Tile:
@@ -230,9 +222,7 @@ class Tile:
         self.surface = pygame.Surface(TILE_SIZE)
         self.surface.fill(self.color)
 
-        #self.has_unit = False
         self.has_tower = False
-    
 
     def spawn_tower(self, towerType):
         if self.tileType == 1:
@@ -244,7 +234,6 @@ class Tile:
             self.color = COLORS["blue"]
             self.surface.fill(self.color)
             
-
     def spawn_unit(self, unitType):
         if self.tileType == 0:
             print("This is a wall, you cannot place units here.")
@@ -288,7 +277,6 @@ def draw_window(tile_list):
     for u in UNIT_LIST:
         WIN.blit(u.surface, u.rect)
 
-
     pygame.display.update()
 
 
@@ -317,7 +305,6 @@ def main():
                             if tile.rect.collidepoint(mouse.get_pos()[0], mouse.get_pos()[1]):
                                 Unit("basic", tile)
 
-
         # Testing
         for t in TOWER_LIST:
             t.shoot(UNIT_LIST)
@@ -332,5 +319,6 @@ def main():
 
 
 # ------------------- Save for multiple files being executed -------------------
+
 if __name__ == "__main__":
     main()
