@@ -105,7 +105,6 @@ class Projectile:
         for u in UNIT_LIST:
             if u.rect.colliderect(self.rect):
                 u.take_dmg(3) #TODO make dynamic
-                print("HIT")
                 PROJ_LIST.remove(self)
                 return
             elif self.x < 0 or self.x > WIDTH:
@@ -129,7 +128,6 @@ class Projectile:
             self.check_hit()
             
                 
-
 class Tower:
     # Class that describes towers
     def __init__(self, towerType, tile):
@@ -316,7 +314,7 @@ def main():
                 elif event.button == 3:     # rechtcklick spawn unit
                     for c in mapTileList:
                         for tile in c:
-                            if tile.rect.collidepoint(mouse.get_pos()[0], mouse.get_pos()[1]):
+                            if tile.rect.collidepoint(mouse.get_pos()[0], mouse.get_pos()[1]) and tile.tileType == 1:
                                 Unit("basic", tile)
 
         update_objects()
