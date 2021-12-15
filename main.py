@@ -59,9 +59,9 @@ TOWER_TYPES = {
 
 UNIT_TYPES = {
     "basic": {
-        "move_speed": 2,
+        "move_speed": 1,
         "hp": 10,
-        "size": 1,          # verschieden große units?
+        "size": (16, 16),          # verschieden große units?
         "special": False    # vlt für sowas wie Schilde oder andere abilities?
     },
     "fast": "info",
@@ -70,7 +70,7 @@ UNIT_TYPES = {
 
 PROJ_TYPES = {
     "basic": {
-        "speed": 2,
+        "speed": 20,
         "spread": 1, # ???
         "AoE": False,
         "AoE_area": 0
@@ -94,10 +94,10 @@ class Projectile:
         self.surface = pygame.Surface(PROJ_SIZE)
         self.surface.fill(self.color)
 
-        self.angle = math.atan2(self.target.tile.rect.centery - self.origin.tile.rect.centery, self.target.tile.rect.centerx - self.origin.tile.rect.centerx)
+        self.angle = math.atan2(self.target.rect.centery - self.origin.tile.rect.centery, self.target.rect.centerx - self.origin.tile.rect.centerx)
         self.dx = math.cos(self.angle)*PROJ_TYPES[self.projType]["speed"]
         self.dy = math.sin(self.angle)*PROJ_TYPES[self.projType]["speed"]
-        print(self.dx, self.dy)
+        #print(self.dx, self.dy)
 
         global PROJ_LIST
         PROJ_LIST.append(self)    
@@ -117,7 +117,13 @@ class Projectile:
                 if u.tile.rect.colliderect(self.rect):
                     u.take_dmg(3) #TODO make dynamic
                     PROJ_LIST.remove(self)
-
+                    return
+                elif self.x < 0 or self.x > WIDTH:
+                    PROJ_LIST.remove(self)
+                    return
+                elif self.y < 0 or self.y > HEIGHT:
+                    PROJ_LIST.remove(self)
+                    return
                 
 
 class Tower:
@@ -139,7 +145,7 @@ class Tower:
         distance_list = []
     
         for u in unitList:
-            m_u = u.tile.rect.center
+            m_u = u.rect.center
             distance = ((m[0]-m_u[0])**2 + (m[1]-m_u[1])**2)**(1/2) # a^2+b^2 = c^2
             distance_list.append(distance)
 
@@ -173,28 +179,36 @@ class Unit:
         self.tile = tile
         self.hp = UNIT_TYPES[self.unitType]["hp"]
 
+        self.x = self.tile.rect.x + UNIT_TYPES[self.unitType]["size"][0]/2
+        self.y = self.tile.rect.y + UNIT_TYPES[self.unitType]["size"][1]/2
+        self.rect = pygame.Rect((self.x, self.y), UNIT_TYPES[self.unitType]["size"])
+        self.color = COLORS["yellow"]
+        self.surface = pygame.Surface(UNIT_TYPES[self.unitType]["size"])
+        self.surface.fill(self.color)
+
         global TOWER_LIST   # eig schlechte Lösung aber erstmal so: Globale variable mit allen Units
         UNIT_LIST.append(self)
-
+    
     def die(self):
         print(f"{self.unitType} unit died.")
         explosion.play()
         UNIT_LIST.remove(self)
 
         self.tile.has_unit = False
-        self.tile.color = COLORS["green"]
-        self.tile.surface.fill(self.tile.color)
+        #self.tile.color = COLORS["green"]
+        #self.tile.surface.fill(self.tile.color)
 
         #TODO animation / sound etc.
     
-    def take_dmg(self, amount):
+    def take_dmg(self, amount): #TODO funktioniert nicht richtig? teilweise werden hits nicht richtig wahrgenommen
         self.hp -= amount
         hit.play()
         if self.hp <= 0:
             self.die()
     
     def move(self):
-        pass
+        self.y += UNIT_TYPES[self.unitType]["move_speed"]
+        self.rect.y = self.y
         #self.rect.y = self.rect.y + UNIT_TYPES[self.unitType]["move_speed"]
         # doesnt work cuz units dont have rect yet, need to add that
 
@@ -216,7 +230,7 @@ class Tile:
         self.surface = pygame.Surface(TILE_SIZE)
         self.surface.fill(self.color)
 
-        self.has_unit = False
+        #self.has_unit = False
         self.has_tower = False
     
 
@@ -234,12 +248,8 @@ class Tile:
     def spawn_unit(self, unitType):
         if self.tileType == 0:
             print("This is a wall, you cannot place units here.")
-        elif self.has_unit:
-            print("This tile already has a unit on it.")
         else:
-            self.has_unit = Unit(unitType, self)
-            self.color = COLORS["red"]
-            self.surface.fill(self.color)
+            Unit(unitType, self)
 
 
 # ------------------- FUNCTIONS -------------------
@@ -275,6 +285,9 @@ def draw_window(tile_list):
     for p in PROJ_LIST:
         WIN.blit(p.surface, p.rect)
 
+    for u in UNIT_LIST:
+        WIN.blit(u.surface, u.rect)
+
 
     pygame.display.update()
 
@@ -300,9 +313,9 @@ def main():
                                 i.spawn_tower("basic")
                 elif event.button == 3:     # rechtcklick spawn unit
                     for c in mapTileList:
-                        for i in c:
-                            if i.rect.collidepoint(mouse.get_pos()[0], mouse.get_pos()[1]):
-                                i.spawn_unit("basic")
+                        for tile in c:
+                            if tile.rect.collidepoint(mouse.get_pos()[0], mouse.get_pos()[1]):
+                                Unit("basic", tile)
 
 
         # Testing
