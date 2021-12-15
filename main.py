@@ -1,4 +1,5 @@
-# ------------------- Import -------------------
+#
+#  ------------------- Import -------------------
 
 # https://www.pygame.org/docs/
 # https://www.youtube.com/watch?v=jO6qQDNa2UY
@@ -26,7 +27,8 @@ explosion.set_volume(0.4)
 # ------------------- Global Variables -------------------
 
 WIDTH, HEIGHT = 32*20, 32*20
-WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+MENU_W, MENU_H = 128, HEIGHT
+WIN = pygame.display.set_mode((WIDTH+MENU_W, HEIGHT))
 FPS = 60
 TILE_SIZE = (32, 32)
 PROJ_SIZE = (4, 4)
@@ -34,7 +36,6 @@ NUM_TILES = (WIDTH//TILE_SIZE[0], HEIGHT//TILE_SIZE[1]) # numbers of tiles as tu
 UNIT_LIST =[]
 TOWER_LIST = []
 PROJ_LIST = []
-
 
 COLORS = {
     "black": (0, 0, 0),
@@ -70,6 +71,7 @@ UNIT_TYPES = {
 
 PROJ_TYPES = {
     "basic": {
+        "dmg": 3,
         "speed": 20,
         "spread": 1, # ???
         "AoE": False,
@@ -79,7 +81,6 @@ PROJ_TYPES = {
 
 
 # ------------------- CLASSES -------------------
-
 
 class Projectile:
     def __init__(self, projType, origin, target):
@@ -102,9 +103,9 @@ class Projectile:
         PROJ_LIST.append(self)    
 
     def check_hit(self):
-        for u in UNIT_LIST:
-            if u.rect.colliderect(self.rect):
-                u.take_dmg(3) #TODO make dynamic
+        for unit in UNIT_LIST:
+            if unit.rect.colliderect(self.rect):
+                unit.take_dmg(PROJ_TYPES[self.projType]["dmg"])
                 PROJ_LIST.remove(self)
                 return
             elif self.x < 0 or self.x > WIDTH:
@@ -206,6 +207,13 @@ class Unit:
         self.y += UNIT_TYPES[self.unitType]["move_speed"]
         self.rect.y = self.y
 
+        if self.x < 0 or self.x > WIDTH: #TODO make this lose life of player
+            UNIT_LIST.remove(self)
+            return
+        elif self.y < 0 or self.y > HEIGHT:
+            UNIT_LIST.remove(self)
+            return
+
 
 class Tile:
     # Class that describes the map tiles
@@ -243,19 +251,58 @@ class Tile:
             Unit(unitType, self)
 
 
+class Player:
+    def __init__(self, money, life):
+        self.money = money
+        self.hp = life
+
+    def lose_life(self, amount):
+        print(f"Player lost {amount} life.")
+
+
+
 # ------------------- FUNCTIONS -------------------
 
 def make_map(tiles):
     colums, rows = tiles
+    print(tiles)
+
+    #TODO make a path here? maybe import some kind of map? nodes?
+    node_list = [(1, 0)]
+    for y in range(rows):
+        if y % 2 == 0:
+            pass # skip every second row
+        else:
+            node_list.append((1, y))
+            node_list.append((colums-2, y))
+    # node_list.append() # exit?
+    print(node_list)
+
+    path_list = []
+    for n in range(1, len(node_list)-1):
+        prev_node = node_list[n]
+        node = node_list[n]
+        dx = prev_node[0] - node[0]
+        dy = prev_node[1] - node[1]
+        if dx > 1:
+            for i in range(dx):
+                pass #TODO fix this shit
+        elif dy > 1:
+            for i in range(dy):
+                pass
+        else:
+            print("Difference of nodes is 1 or less")
+                
+
     tile_list = []
     i = 0
     for c in range(colums):
         c_list = []
         for r in range(rows):
-            if i == NUM_TILES[0]//2:
+            if (c, r) in node_list:
                 t = Tile(1, (c*TILE_SIZE[0], r*TILE_SIZE[1]))
             else:
-                t = Tile(0, (c*TILE_SIZE[0], r*TILE_SIZE[1]))
+                t = Tile(0, (c*TILE_SIZE[0], r*TILE_SIZE[1])) # alles wände
             c_list.append(t)
         tile_list.append(c_list)
         i += 1
