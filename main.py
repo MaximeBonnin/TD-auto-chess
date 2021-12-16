@@ -314,12 +314,6 @@ def make_map(tiles):
         last_node.next_val = next_node
         last_node = next_node
 
-
-    i = node_list_head
-    while i.next_val:
-        #print(i.position)
-        i = i.next_val
-
     # loop that connects each node with the next one
     path_list = [(1, 0)]
     i = node_list_head
@@ -327,7 +321,6 @@ def make_map(tiles):
 
         dx = i.position[0] - i.next_val.position[0]
         dy = i.position[1] - i.next_val.position[1]
-        #print(dx, dy)
         for tile in range(abs(dx)):
             if dx < 0:
                 path_tile_x = i.position[0] + tile
@@ -343,9 +336,6 @@ def make_map(tiles):
             path_list.append((path_tile_x, path_tile_y))
 
         i = i.next_val
-
-    #print(path_list)
-                
 
     tile_list = []
     i = 0
