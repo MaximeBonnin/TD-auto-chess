@@ -125,7 +125,6 @@ class Projectile:
                 self.dx = math.cos(self.angle)*PROJ_TYPES[self.projType]["speed"]
                 self.dy = math.sin(self.angle)*PROJ_TYPES[self.projType]["speed"]
 
-                print(self.dy, self.dy)
             self.x = self.x + self.dx
             self.y = self.y + self.dy
 
@@ -184,12 +183,13 @@ class Unit:
         self.unitType = unitType
         self.lvl = 1
         self.tile = tile
+        self.max_hp = UNIT_TYPES[self.unitType]["hp"]
         self.hp = UNIT_TYPES[self.unitType]["hp"]
 
         self.x = self.tile.rect.x + UNIT_TYPES[self.unitType]["size"][0]/2
         self.y = self.tile.rect.y + UNIT_TYPES[self.unitType]["size"][1]/2
         self.rect = pygame.Rect((self.x, self.y), UNIT_TYPES[self.unitType]["size"])
-        self.color = COLORS["yellow"]
+        self.color = COLORS["green"]
         self.surface = pygame.Surface(UNIT_TYPES[self.unitType]["size"])
         self.surface.fill(self.color)
 
@@ -207,6 +207,15 @@ class Unit:
     
     def take_dmg(self, amount):
         self.hp -= amount
+
+        # color from green -> red based on health
+        health_percent = self.hp/self.max_hp
+        if health_percent < 0:
+            health_percent = 0
+        self.color = (int(255 * (1-health_percent)), int(255 * health_percent), 0)
+        self.surface = pygame.Surface(UNIT_TYPES[self.unitType]["size"])
+        self.surface.fill(self.color)
+
         hit.play()
         if self.hp <= 0:
             self.die()
@@ -232,7 +241,7 @@ class Tile:
         if self.tileType == 0:
             self.color = COLORS["black"]
         elif self.tileType == 1:
-            self.color = COLORS["green"]
+            self.color = COLORS["yellow"]
         else:
             print("Tile Type Error")
 
