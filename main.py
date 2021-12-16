@@ -224,7 +224,7 @@ class Unit:
         self.y += UNIT_TYPES[self.unitType]["move_speed"]
         self.rect.y = self.y
 
-        if self.x < 0 or self.x > WIDTH: #TODO make this lose life of player
+        if self.x < 0 or self.x > WIDTH: #TODO make this lose life of player; maybe new type of tile "end"
             UNIT_LIST.remove(self)
             return
         elif self.y < 0 or self.y > HEIGHT:
@@ -277,38 +277,74 @@ class Player:
         print(f"Player lost {amount} life.")
 
 
+class MapNode:
+    def __init__(self, position, prev_val, next_val=None):
+        self.position = position
+        self.prev_val = prev_val
+        self.next_val = next_val
+
 
 # ------------------- FUNCTIONS -------------------
 
+def make_nodes():
+    pass
+
 def make_map(tiles):
     colums, rows = tiles
-    print(tiles)
 
-    #TODO make a path here? maybe import some kind of map? nodes?
-    node_list = [(1, 0)]
-    for y in range(rows):
-        if y % 2 == 0:
-            pass # skip every second row
-        else:
-            node_list.append((1, y))
-            node_list.append((colums-2, y))
-    # node_list.append() # exit?
-    print(node_list)
+    node_list_head = MapNode((1,1), None)
+    last_node = node_list_head
+    
+    current_y = 1
+    current_x = 1
 
-    path_list = []
-    for n in range(1, len(node_list)-1):
-        prev_node = node_list[n]
-        node = node_list[n]
-        dx = prev_node[0] - node[0]
-        dy = prev_node[1] - node[1]
-        if dx > 1:
-            for i in range(dx):
-                pass #TODO fix this shit
-        elif dy > 1:
-            for i in range(dy):
-                pass
+    while current_y < colums:
+        
+        if last_node == node_list_head: # erste node
+            current_y += 2
+        elif last_node.position[1] == last_node.prev_val.position[1]: # zwei mal hintereinander gleiches y -> 
+            current_y += 2
+
+        elif last_node.position[0] == 1:
+            current_x += colums-2
         else:
-            print("Difference of nodes is 1 or less")
+            current_x -= colums-2
+
+        next_node = MapNode((current_x, current_y), last_node)
+        last_node.next_val = next_node
+        last_node = next_node
+
+
+    i = node_list_head
+    while i.next_val:
+        #print(i.position)
+        i = i.next_val
+
+    # loop that connects each node with the next one
+    path_list = [(1, 0)]
+    i = node_list_head
+    while i.next_val:
+
+        dx = i.position[0] - i.next_val.position[0]
+        dy = i.position[1] - i.next_val.position[1]
+        #print(dx, dy)
+        for tile in range(abs(dx)):
+            if dx < 0:
+                path_tile_x = i.position[0] + tile
+                path_tile_y = i.position[1]
+                path_list.append((path_tile_x, path_tile_y))
+            else:
+                path_tile_x = i.position[0] - tile
+                path_tile_y = i.position[1]
+                path_list.append((path_tile_x, path_tile_y))
+        for tile in range(abs(dy)):
+            path_tile_x = i.position[0]
+            path_tile_y = i.position[1] + tile
+            path_list.append((path_tile_x, path_tile_y))
+
+        i = i.next_val
+
+    #print(path_list)
                 
 
     tile_list = []
@@ -316,13 +352,14 @@ def make_map(tiles):
     for c in range(colums):
         c_list = []
         for r in range(rows):
-            if (c, r) in node_list:
+            if (c, r) in path_list:
                 t = Tile(1, (c*TILE_SIZE[0], r*TILE_SIZE[1]))
             else:
                 t = Tile(0, (c*TILE_SIZE[0], r*TILE_SIZE[1])) # alles wände
             c_list.append(t)
         tile_list.append(c_list)
         i += 1
+    #TODO hier noch tile_list[-1] = "end" tile
 
     return tile_list
 
