@@ -221,7 +221,7 @@ class Unit:
             self.die()
     
     def move(self):
-        self.y += UNIT_TYPES[self.unitType]["move_speed"]
+        self.y += UNIT_TYPES[self.unitType]["move_speed"] #TODO pathfinding and moving in other directions
         self.rect.y = self.y
 
         if self.x < 0 or self.x > WIDTH: #TODO make this lose life of player; maybe new type of tile "end"
@@ -286,8 +286,6 @@ class MapNode:
 
 # ------------------- FUNCTIONS -------------------
 
-def make_nodes():
-    pass
 
 def make_map(tiles):
     colums, rows = tiles
