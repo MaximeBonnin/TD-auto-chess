@@ -72,10 +72,11 @@ UNIT_TYPES = {
 PROJ_TYPES = {
     "basic": {
         "dmg": 3,
-        "speed": 20,
+        "speed": 6,
         "spread": 1, # ???
         "AoE": False,
-        "AoE_area": 0
+        "AoE_area": 0,
+        "seeking": True
     }
 }
 
@@ -118,6 +119,13 @@ class Projectile:
     def move(self):
         now = pygame.time.get_ticks()
         if now - self.last_move >= 15: #15ms warten bis nächste bewegeung
+
+            if PROJ_TYPES[self.projType]["seeking"]: # change angle every tick; doesnt alsways hit??? why not? #TODO fix
+                self.angle = math.atan2(self.target.rect.centery - self.origin.tile.rect.centery, self.target.rect.centerx - self.origin.tile.rect.centerx)
+                self.dx = math.cos(self.angle)*PROJ_TYPES[self.projType]["speed"]
+                self.dy = math.sin(self.angle)*PROJ_TYPES[self.projType]["speed"]
+
+                print(self.dy, self.dy)
             self.x = self.x + self.dx
             self.y = self.y + self.dy
 
