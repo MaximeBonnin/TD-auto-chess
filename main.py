@@ -48,33 +48,61 @@ COLORS = {
 
 TOWER_TYPES = {
     "basic": {
-        "atk_speed": 1.5,     # alle 3 sekunden angreifen?
+        "atk_speed": 1,     # alle 3 sekunden angreifen?
         "cost": 15,
-        "dmg": 3,
-        "hp": 10,           # können Türme angegriffen werden?
-        "range": 300,
+        "range": 150,
         "proj_type": "basic"
     },
-    "AoE": "info",
-    "SingleTarget": "info"
+    "AoE": {
+        "atk_speed": 1.5,     # alle 3 sekunden angreifen?
+        "cost": 15,
+        "range": 150,
+        "proj_type": "basic"
+    },
+    "SingleTarget": {
+        "atk_speed": 5,     # alle 3 sekunden angreifen?
+        "cost": 25,
+        "range": 300,
+        "proj_type": "seeking"
+    }
 }
 
 UNIT_TYPES = {
     "basic": {
-        "move_speed": 5,
+        "move_speed": 2,
         "hp": 10,
         "size": (16, 16),          # verschieden große units?
         "gold_value": 5,
         "special": False    # vlt für sowas wie Schilde oder andere abilities?
     },
-    "fast": "info",
-    "tank": "info"
+    "fast": {
+        "move_speed": 5,
+        "hp": 5,
+        "size": (16, 16),          # verschieden große units?
+        "gold_value": 4,
+        "special": False    # vlt für sowas wie Schilde oder andere abilities?
+    },
+    "tank": {
+        "move_speed": 1,
+        "hp": 25,
+        "size": (16, 16),          # verschieden große units?
+        "gold_value": 10,
+        "special": False    # vlt für sowas wie Schilde oder andere abilities?
+    }
 }
 
 PROJ_TYPES = {
     "basic": {
         "dmg": 3,
         "speed": 6,
+        "spread": 1, # ???
+        "AoE": False,
+        "AoE_area": 0,
+        "seeking": False
+    },
+    "seeking": {
+        "dmg": 10,
+        "speed": 10,
         "spread": 1, # ???
         "AoE": False,
         "AoE_area": 0,
@@ -435,9 +463,11 @@ def main():
                     for c in mapTileList:
                         for i in c:
                             if i.rect.collidepoint(mouse.get_pos()[0], mouse.get_pos()[1]):
-                                i.spawn_tower("basic", player)
+                                tower = random.choice(["basic", "SingleTarget"])
+                                i.spawn_tower(tower, player)
                 elif event.button == 3:     # rechtcklick spawn unit #TODO this should spawn at first map node
-                    Unit("basic", mapNodeHead, player)
+                    unit = random.choice(["basic", "fast", "tank"])
+                    Unit(unit, mapNodeHead, player)
 
         update_objects()
 
