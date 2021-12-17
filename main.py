@@ -85,7 +85,7 @@ PROJ_TYPES = {
 
 class Projectile:
     def __init__(self, projType, origin, target):
-        self.projType = projType
+        self.projType = PROJ_TYPES[projType]
         self.origin = origin
         self.target = target
         self.x, self.y = origin.tile.rect.center
@@ -97,8 +97,8 @@ class Projectile:
         self.surface.fill(self.color)
 
         self.angle = math.atan2(self.target.rect.centery - self.origin.tile.rect.centery, self.target.rect.centerx - self.origin.tile.rect.centerx)
-        self.dx = math.cos(self.angle)*PROJ_TYPES[self.projType]["speed"]
-        self.dy = math.sin(self.angle)*PROJ_TYPES[self.projType]["speed"]
+        self.dx = math.cos(self.angle)*self.projType["speed"]
+        self.dy = math.sin(self.angle)*self.projType["speed"]
 
         global PROJ_LIST
         PROJ_LIST.append(self)    
@@ -106,7 +106,7 @@ class Projectile:
     def check_hit(self):
         for unit in UNIT_LIST:
             if unit.rect.colliderect(self.rect):
-                unit.take_dmg(PROJ_TYPES[self.projType]["dmg"])
+                unit.take_dmg(self.projType["dmg"])
                 PROJ_LIST.remove(self)
                 return
             elif self.x < 0 or self.x > WIDTH:
@@ -120,10 +120,10 @@ class Projectile:
         now = pygame.time.get_ticks()
         if now - self.last_move >= 15: #15ms warten bis nächste bewegeung
 
-            if PROJ_TYPES[self.projType]["seeking"]: 
+            if self.projType["seeking"]: 
                 self.angle = math.atan2(self.target.rect.centery - self.y, self.target.rect.centerx - self.x)
-                self.dx = math.cos(self.angle)*PROJ_TYPES[self.projType]["speed"]
-                self.dy = math.sin(self.angle)*PROJ_TYPES[self.projType]["speed"]
+                self.dx = math.cos(self.angle)*self.projType["speed"]
+                self.dy = math.sin(self.angle)*self.projType["speed"]
 
             self.x = self.x + self.dx
             self.y = self.y + self.dy
@@ -140,7 +140,7 @@ class Tower:
     # Class that describes towers
     def __init__(self, towerType, tile):
         print(f"Tower of type {towerType} spawned!")
-        self.towerType = towerType
+        self.towerType = TOWER_TYPES[towerType]
         self.tile = tile
         self.last_shot = pygame.time.get_ticks()
         self.kills = 0      # Zählen von kills für stats oder lvl system?
@@ -167,12 +167,12 @@ class Tower:
     def shoot(self, unitList):
         if unitList:
             target, distance = self.aim(unitList)
-            cooldown = TOWER_TYPES[self.towerType]["atk_speed"]*1000
+            cooldown = self.towerType["atk_speed"]*1000
             now = pygame.time.get_ticks()
 
-            if distance <= TOWER_TYPES[self.towerType]["range"] and (now - self.last_shot) >= cooldown:
+            if distance <= self.towerType["range"] and (now - self.last_shot) >= cooldown:
                 pew.play()
-                Projectile(TOWER_TYPES[self.towerType]["proj_type"], self, target)
+                Projectile(self.towerType["proj_type"], self, target)
                 self.last_shot = pygame.time.get_ticks()
         
 
@@ -180,17 +180,17 @@ class Unit:
     # Class that describes units
     def __init__(self, unitType, tile):
         print(f"Unit of type {unitType} spawned!")
-        self.unitType = unitType
+        self.unitType = UNIT_TYPES[unitType]
         self.lvl = 1
         self.tile = tile
-        self.max_hp = UNIT_TYPES[self.unitType]["hp"]
-        self.hp = UNIT_TYPES[self.unitType]["hp"]
+        self.max_hp = self.unitType["hp"]
+        self.hp = self.unitType["hp"]
 
-        self.x = self.tile.rect.x + UNIT_TYPES[self.unitType]["size"][0]/2
-        self.y = self.tile.rect.y + UNIT_TYPES[self.unitType]["size"][1]/2
-        self.rect = pygame.Rect((self.x, self.y), UNIT_TYPES[self.unitType]["size"])
+        self.x = self.tile.rect.x + self.unitType["size"][0]/2
+        self.y = self.tile.rect.y + self.unitType["size"][1]/2
+        self.rect = pygame.Rect((self.x, self.y), self.unitType["size"])
         self.color = COLORS["green"]
-        self.surface = pygame.Surface(UNIT_TYPES[self.unitType]["size"])
+        self.surface = pygame.Surface(self.unitType["size"])
         self.surface.fill(self.color)
 
         global TOWER_LIST   # eig schlechte Lösung aber erstmal so: Globale variable mit allen Units
@@ -213,7 +213,7 @@ class Unit:
         if health_percent < 0:
             health_percent = 0
         self.color = (int(255 * (1-health_percent)), int(255 * health_percent), 0)
-        self.surface = pygame.Surface(UNIT_TYPES[self.unitType]["size"])
+        self.surface = pygame.Surface(self.unitType["size"])
         self.surface.fill(self.color)
 
         hit.play()
@@ -221,9 +221,10 @@ class Unit:
             self.die()
     
     def move(self):
-        self.y += UNIT_TYPES[self.unitType]["move_speed"] #TODO pathfinding and moving in other directions
+        self.y += self.unitType["move_speed"] #TODO pathfinding and moving in other directions
         self.rect.y = self.y
 
+        # check if off screen and remove 
         if self.x < 0 or self.x > WIDTH: #TODO make this lose life of player; maybe new type of tile "end"
             UNIT_LIST.remove(self)
             return
@@ -286,8 +287,8 @@ class MapNode:
 
 # ------------------- FUNCTIONS -------------------
 
-
-def make_map(tiles):
+def make_nodes(tiles):
+    # function that creates a linked list of nodes with coordinates to represent a map path
     colums, rows = tiles
 
     node_list_head = MapNode((1,1), None)
@@ -298,19 +299,27 @@ def make_map(tiles):
 
     while current_y < colums:
         
-        if last_node == node_list_head: # erste node
+        if last_node == node_list_head: # first node
             current_y += 2
-        elif last_node.position[1] == last_node.prev_val.position[1]: # zwei mal hintereinander gleiches y -> 
+        elif last_node.position[1] == last_node.prev_val.position[1]: # two times same y -> y + 2
             current_y += 2
 
-        elif last_node.position[0] == 1:
+        elif last_node.position[0] == 1: # last was left node -> jump to right
             current_x += colums-2
-        else:
+        else: # last was right node -> jump to left (only happens if the last two x values arent the same)
             current_x -= colums-2
 
         next_node = MapNode((current_x, current_y), last_node)
         last_node.next_val = next_node
         last_node = next_node
+    
+    return node_list_head
+
+def make_map(tiles):
+    colums, rows = tiles
+
+    #TODO make node maps that can be loaded here
+    node_list_head = make_nodes(tiles)
 
     # loop that connects each node with the next one
     path_list = [(1, 0)]
@@ -322,15 +331,16 @@ def make_map(tiles):
         for tile in range(abs(dx)):
             if dx < 0:
                 path_tile_x = i.position[0] + tile
-                path_tile_y = i.position[1]
-                path_list.append((path_tile_x, path_tile_y))
             else:
                 path_tile_x = i.position[0] - tile
-                path_tile_y = i.position[1]
-                path_list.append((path_tile_x, path_tile_y))
+            path_tile_y = i.position[1]
+            path_list.append((path_tile_x, path_tile_y))
         for tile in range(abs(dy)):
             path_tile_x = i.position[0]
-            path_tile_y = i.position[1] + tile
+            if dy < 0:
+                path_tile_y = i.position[1] + tile
+            else:
+                path_tile_y = i.position[1] - tile
             path_list.append((path_tile_x, path_tile_y))
 
         i = i.next_val
