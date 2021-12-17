@@ -30,6 +30,7 @@ WIDTH, HEIGHT = 32*20, 32*20
 MENU_W, MENU_H = int(WIDTH*0.25), HEIGHT
 WIN = pygame.display.set_mode((WIDTH+MENU_W, HEIGHT))
 FPS = 60
+ROUND_COOLDOWN = 5*1000 # in milliseconds
 TILE_SIZE = (32, 32)
 PROJ_SIZE = (4, 4)
 NUM_TILES = (WIDTH//TILE_SIZE[0], HEIGHT//TILE_SIZE[1]) # numbers of tiles as tuple (columns, rows)
@@ -239,6 +240,8 @@ class Unit:
         self.max_hp = self.unitType["hp"]
         self.hp = self.unitType["hp"]
 
+        self.random_move_modifier = random.randint(1, 10)/100
+
         self.x = mapNodeHead.position[0]*TILE_SIZE[0]*1.5 - self.unitType["size"][0]/2
         self.y = mapNodeHead.position[1]*TILE_SIZE[1]*1.5 + self.unitType["size"][1]/2
         #print(f"Unit of type {unitType} spawned at ({self.x} | {self.y})!")
@@ -277,13 +280,13 @@ class Unit:
     
     def move(self): # move to next node in path
         if self.current_node.position[0] > self.next_node.position[0]:      # move left
-            self.x -= self.unitType["move_speed"]
+            self.x -= self.unitType["move_speed"]*(1 + self.random_move_modifier)
         elif self.current_node.position[0] < self.next_node.position[0]:    # move right
-            self.x += self.unitType["move_speed"]
+            self.x += self.unitType["move_speed"]*(1 + self.random_move_modifier)
         elif self.current_node.position[1] < self.next_node.position[1]:    # move down
-            self.y += self.unitType["move_speed"]
+            self.y += self.unitType["move_speed"]*(1 + self.random_move_modifier)
         else:                                                               # move up
-            self.y -= self.unitType["move_speed"]
+            self.y -= self.unitType["move_speed"]*(1 + self.random_move_modifier)
         self.rect.x = self.x
         self.rect.y = self.y
         
@@ -463,6 +466,7 @@ def update_objects():
     for u in UNIT_LIST:
         u.move()
         
+    #TODO make rounds start every few seconds
 
 
 # ------------------- Main Game Loop -------------------
@@ -473,9 +477,19 @@ def main():
     player = Player()
 
     run = True
+    last_round = 0
     while run:
         clock.tick(FPS)
         # vlt ersttmal nen Menü? aber kann später kommen
+        if last_round + pygame.time.get_ticks() >= ROUND_COOLDOWN:
+            print("new round starting")
+            last_round = - pygame.time.get_ticks()
+            round_num = pygame.time.get_ticks()//ROUND_COOLDOWN
+            for i in range(round_num):
+                unit = random.choice(["basic", "fast", "tank"])
+                Unit(unit, mapNodeHead, player)
+            
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -489,9 +503,7 @@ def main():
                 elif event.button == 3:     # rechtcklick spawn unit 
                     unit = random.choice(["basic", "fast", "tank"])
                     Unit(unit, mapNodeHead, player)
-
         update_objects()
-
         draw_window(mapTileList)    
     pygame.quit()
 
