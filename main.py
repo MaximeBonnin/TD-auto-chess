@@ -27,7 +27,7 @@ explosion.set_volume(0.4)
 # ------------------- Global Variables -------------------
 
 WIDTH, HEIGHT = 32*20, 32*20
-MENU_W, MENU_H = 128, HEIGHT
+MENU_W, MENU_H = int(WIDTH*0.25), HEIGHT
 WIN = pygame.display.set_mode((WIDTH+MENU_W, HEIGHT))
 FPS = 60
 TILE_SIZE = (32, 32)
@@ -486,7 +486,7 @@ def main():
                             if i.rect.collidepoint(mouse.get_pos()[0], mouse.get_pos()[1]):
                                 tower = random.choice(["basic", "singleTarget", "superFast"])
                                 i.spawn_tower(tower, player)
-                elif event.button == 3:     # rechtcklick spawn unit #TODO this should spawn at first map node
+                elif event.button == 3:     # rechtcklick spawn unit 
                     unit = random.choice(["basic", "fast", "tank"])
                     Unit(unit, mapNodeHead, player)
 
