@@ -59,11 +59,17 @@ TOWER_TYPES = {
         "range": 150,
         "proj_type": "basic"
     },
-    "SingleTarget": {
+    "singleTarget": {
         "atk_speed": 5,     # alle 3 sekunden angreifen?
         "cost": 25,
         "range": 300,
         "proj_type": "seeking"
+    },
+    "superFast": {
+        "atk_speed": 0.2,     # alle 3 sekunden angreifen?
+        "cost": 25,
+        "range": 100,
+        "proj_type": "weak"
     }
 }
 
@@ -94,7 +100,7 @@ UNIT_TYPES = {
 PROJ_TYPES = {
     "basic": {
         "dmg": 3,
-        "speed": 6,
+        "speed": 20,
         "spread": 1, # ???
         "AoE": False,
         "AoE_area": 0,
@@ -102,11 +108,19 @@ PROJ_TYPES = {
     },
     "seeking": {
         "dmg": 10,
-        "speed": 10,
+        "speed": 6,
         "spread": 1, # ???
         "AoE": False,
         "AoE_area": 0,
         "seeking": True
+    },
+    "weak": {
+        "dmg": 1,
+        "speed": 50,
+        "spread": 1, # ???
+        "AoE": False,
+        "AoE_area": 0,
+        "seeking": False
     }
 }
 
@@ -339,9 +353,10 @@ class MapNode:
 
 # ------------------- FUNCTIONS -------------------
 
-def make_nodes(tiles):
+def make_nodes():
     # function that creates a linked list of nodes with coordinates to represent a map path
-    colums, rows = tiles
+    colums, rows = NUM_TILES
+
 
     node_list_head = MapNode((1, 0), None)
     last_node = node_list_head
@@ -368,11 +383,11 @@ def make_nodes(tiles):
     return node_list_head
 
 
-def make_map(tiles):
-    colums, rows = tiles
+def make_map():
+    colums, rows = NUM_TILES
 
     #TODO make node maps that can be loaded here
-    node_list_head = make_nodes(tiles)
+    node_list_head = make_nodes()
 
     # loop that connects each node with the next one
     path_list = [(1, 0)]
@@ -447,7 +462,7 @@ def update_objects():
 # ------------------- Main Game Loop -------------------
 
 def main():
-    mapTileList, mapNodeHead = make_map(NUM_TILES) 
+    mapTileList, mapNodeHead = make_map() 
     clock = pygame.time.Clock()
     player = Player()
 
@@ -463,7 +478,7 @@ def main():
                     for c in mapTileList:
                         for i in c:
                             if i.rect.collidepoint(mouse.get_pos()[0], mouse.get_pos()[1]):
-                                tower = random.choice(["basic", "SingleTarget"])
+                                tower = random.choice(["basic", "singleTarget", "superFast"])
                                 i.spawn_tower(tower, player)
                 elif event.button == 3:     # rechtcklick spawn unit #TODO this should spawn at first map node
                     unit = random.choice(["basic", "fast", "tank"])
