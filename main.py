@@ -501,8 +501,9 @@ def main():
                                 tower = random.choice(["basic", "singleTarget", "superFast"])
                                 i.spawn_tower(tower, player)
                 elif event.button == 3:     # rechtcklick spawn unit 
-                    unit = random.choice(["basic", "fast", "tank"])
-                    Unit(unit, mapNodeHead, player)
+                    print("Key not bound.")
+                    #unit = random.choice(["basic", "fast", "tank"])
+                    #Unit(unit, mapNodeHead, player)
         update_objects()
         draw_window(mapTileList)    
     pygame.quit()
