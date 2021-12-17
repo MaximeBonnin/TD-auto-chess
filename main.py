@@ -49,6 +49,7 @@ COLORS = {
 TOWER_TYPES = {
     "basic": {
         "atk_speed": 1.5,     # alle 3 sekunden angreifen?
+        "cost": 15,
         "dmg": 3,
         "hp": 10,           # können Türme angegriffen werden?
         "range": 300,
@@ -60,9 +61,10 @@ TOWER_TYPES = {
 
 UNIT_TYPES = {
     "basic": {
-        "move_speed": 1,
+        "move_speed": 5,
         "hp": 10,
         "size": (16, 16),          # verschieden große units?
+        "gold_value": 5,
         "special": False    # vlt für sowas wie Schilde oder andere abilities?
     },
     "fast": "info",
@@ -84,13 +86,14 @@ PROJ_TYPES = {
 # ------------------- CLASSES -------------------
 
 class Projectile:
-    def __init__(self, projType, origin, target):
+    def __init__(self, projType, origin, target, player):
         self.projType = PROJ_TYPES[projType]
         self.origin = origin
         self.target = target
         self.x, self.y = origin.tile.rect.center
         self.color = COLORS["white"] # verschiedene Farben?
         self.last_move = pygame.time.get_ticks()
+        self.player = player
 
         self.rect = pygame.Rect(origin.tile.rect.center, PROJ_SIZE) #TODO spawn ist nicht mittig
         self.surface = pygame.Surface(PROJ_SIZE)
@@ -106,7 +109,7 @@ class Projectile:
     def check_hit(self):
         for unit in UNIT_LIST:
             if unit.rect.colliderect(self.rect):
-                unit.take_dmg(self.projType["dmg"])
+                unit.take_dmg(self.projType["dmg"], self.origin)
                 PROJ_LIST.remove(self)
                 return
             elif self.x < 0 or self.x > WIDTH:
@@ -138,11 +141,12 @@ class Projectile:
                 
 class Tower:
     # Class that describes towers
-    def __init__(self, towerType, tile):
-        print(f"Tower of type {towerType} spawned!")
+    def __init__(self, towerType, tile, player):
+        #print(f"Tower of type {towerType} spawned!")
         self.towerType = TOWER_TYPES[towerType]
         self.tile = tile
         self.last_shot = pygame.time.get_ticks()
+        self.player = player
         self.kills = 0      # Zählen von kills für stats oder lvl system?
 
         global TOWER_LIST   # eig schlechte Lösung aber erstmal so: Globale variable mit allen Türmen
@@ -172,21 +176,24 @@ class Tower:
 
             if distance <= self.towerType["range"] and (now - self.last_shot) >= cooldown:
                 pew.play()
-                Projectile(self.towerType["proj_type"], self, target)
+                Projectile(self.towerType["proj_type"], self, target, self.player)
                 self.last_shot = pygame.time.get_ticks()
         
 
 class Unit:
     # Class that describes units
-    def __init__(self, unitType, mapNodeHead):
+    def __init__(self, unitType, mapNodeHead, player):
         self.unitType = UNIT_TYPES[unitType]
+        self.current_node = mapNodeHead
+        self.next_node = self.current_node.next_val
+        self.player = player
         self.lvl = 1
         self.max_hp = self.unitType["hp"]
         self.hp = self.unitType["hp"]
 
         self.x = mapNodeHead.position[0]*TILE_SIZE[0]*1.5 - self.unitType["size"][0]/2
         self.y = mapNodeHead.position[1]*TILE_SIZE[1]*1.5 + self.unitType["size"][1]/2
-        print(f"Unit of type {unitType} spawned at ({self.x} | {self.y})!")
+        #print(f"Unit of type {unitType} spawned at ({self.x} | {self.y})!")
         self.rect = pygame.Rect((self.x, self.y), self.unitType["size"])
         self.color = COLORS["green"]
         self.surface = pygame.Surface(self.unitType["size"])
@@ -195,14 +202,17 @@ class Unit:
         global TOWER_LIST   # eig schlechte Lösung aber erstmal so: Globale variable mit allen Units
         UNIT_LIST.append(self)
     
-    def die(self):
-        print(f"{self.unitType} unit died.")
+    def die(self, origin):
+        origin.kills += 1
+        origin.player.money += self.unitType["gold_value"]
+        #print(f"{self.unitType} unit was killed by {origin.towerType}")
+        print(f"New balance after kill reward: {origin.player.money}")
         explosion.play()
         UNIT_LIST.remove(self)
 
         #TODO animation
     
-    def take_dmg(self, amount):
+    def take_dmg(self, amount, origin):
         self.hp -= amount
 
         # color from green -> red based on health
@@ -215,18 +225,34 @@ class Unit:
 
         hit.play()
         if self.hp <= 0:
-            self.die()
+            self.die(origin)
     
-    def move(self):
-        self.y += self.unitType["move_speed"] #TODO pathfinding and moving in other directions
+    def move(self): # move to next node in path
+        if self.current_node.position[0] > self.next_node.position[0]:      # move left
+            self.x -= self.unitType["move_speed"]
+        elif self.current_node.position[0] < self.next_node.position[0]:    # move right
+            self.x += self.unitType["move_speed"]
+        elif self.current_node.position[1] < self.next_node.position[1]:    # move down
+            self.y += self.unitType["move_speed"]
+        else:                                                               # move up
+            self.y -= self.unitType["move_speed"]
+        self.rect.x = self.x
         self.rect.y = self.y
+        
+        next_node_coords = (self.next_node.position[0]*TILE_SIZE[0] + TILE_SIZE[0]/2, self.next_node.position[1]*TILE_SIZE[1] + TILE_SIZE[1]/2)
+
+        if self.rect.collidepoint(next_node_coords): # next node if arrived at node
+            self.current_node = self.current_node.next_val
+            self.next_node = self.current_node.next_val
 
         # check if off screen and remove 
         if self.x < 0 or self.x > WIDTH: #TODO make this lose life of player; maybe new type of tile "end"
             UNIT_LIST.remove(self)
+            self.player.lose_life(1) #TODO different dmg based on unit type?
             return
         elif self.y < 0 or self.y > HEIGHT:
             UNIT_LIST.remove(self)
+            self.player.lose_life(1) #TODO different dmg based on unit type?
             return
 
 
@@ -249,25 +275,31 @@ class Tile:
 
         self.has_tower = False
 
-    def spawn_tower(self, towerType):
+    def spawn_tower(self, towerType, player):
         if self.tileType == 1:
             print("This is a path, you cannot place towers here.")
         elif self.has_tower:
             print("This tile already has a tower on it.")
-        else:
-            self.has_tower = Tower(towerType, self)
+        elif player.money >= TOWER_TYPES[towerType]["cost"]:
+            player.money -= TOWER_TYPES[towerType]["cost"]
+            self.has_tower = Tower(towerType, self, player)
             self.color = COLORS["blue"]
             self.surface.fill(self.color)
+        else:
+            print(f"Not enough money: {player.money}")
             
 
-
 class Player:
-    def __init__(self, money, life):
+    def __init__(self, money=100, life=100):
         self.money = money
         self.hp = life
 
     def lose_life(self, amount):
         print(f"Player lost {amount} life.")
+        self.hp -= amount
+
+        if self.hp <= 0:
+            print("Player lost the game.")
 
 
 class MapNode:
@@ -389,6 +421,7 @@ def update_objects():
 def main():
     mapTileList, mapNodeHead = make_map(NUM_TILES) 
     clock = pygame.time.Clock()
+    player = Player()
 
     run = True
     while run:
@@ -402,9 +435,9 @@ def main():
                     for c in mapTileList:
                         for i in c:
                             if i.rect.collidepoint(mouse.get_pos()[0], mouse.get_pos()[1]):
-                                i.spawn_tower("basic")
+                                i.spawn_tower("basic", player)
                 elif event.button == 3:     # rechtcklick spawn unit #TODO this should spawn at first map node
-                    Unit("basic", mapNodeHead)
+                    Unit("basic", mapNodeHead, player)
 
         update_objects()
 
