@@ -120,7 +120,7 @@ class Projectile:
         now = pygame.time.get_ticks()
         if now - self.last_move >= 15: #15ms warten bis nächste bewegeung
 
-            if self.projType["seeking"]: 
+            if self.projType["seeking"] and self.target in UNIT_LIST: 
                 self.angle = math.atan2(self.target.rect.centery - self.y, self.target.rect.centerx - self.x)
                 self.dx = math.cos(self.angle)*self.projType["speed"]
                 self.dy = math.sin(self.angle)*self.projType["speed"]
@@ -178,16 +178,15 @@ class Tower:
 
 class Unit:
     # Class that describes units
-    def __init__(self, unitType, tile):
-        print(f"Unit of type {unitType} spawned!")
+    def __init__(self, unitType, mapNodeHead):
         self.unitType = UNIT_TYPES[unitType]
         self.lvl = 1
-        self.tile = tile
         self.max_hp = self.unitType["hp"]
         self.hp = self.unitType["hp"]
 
-        self.x = self.tile.rect.x + self.unitType["size"][0]/2
-        self.y = self.tile.rect.y + self.unitType["size"][1]/2
+        self.x = mapNodeHead.position[0]*TILE_SIZE[0]*1.5 - self.unitType["size"][0]/2
+        self.y = mapNodeHead.position[1]*TILE_SIZE[1]*1.5 + self.unitType["size"][1]/2
+        print(f"Unit of type {unitType} spawned at ({self.x} | {self.y})!")
         self.rect = pygame.Rect((self.x, self.y), self.unitType["size"])
         self.color = COLORS["green"]
         self.surface = pygame.Surface(self.unitType["size"])
@@ -200,8 +199,6 @@ class Unit:
         print(f"{self.unitType} unit died.")
         explosion.play()
         UNIT_LIST.remove(self)
-
-        self.tile.has_unit = False
 
         #TODO animation
     
@@ -262,11 +259,6 @@ class Tile:
             self.color = COLORS["blue"]
             self.surface.fill(self.color)
             
-    def spawn_unit(self, unitType):
-        if self.tileType == 0:
-            print("This is a wall, you cannot place units here.")
-        else:
-            Unit(unitType, self)
 
 
 class Player:
@@ -291,7 +283,7 @@ def make_nodes(tiles):
     # function that creates a linked list of nodes with coordinates to represent a map path
     colums, rows = tiles
 
-    node_list_head = MapNode((1,1), None)
+    node_list_head = MapNode((1, 0), None)
     last_node = node_list_head
     
     current_y = 1
@@ -314,6 +306,7 @@ def make_nodes(tiles):
         last_node = next_node
     
     return node_list_head
+
 
 def make_map(tiles):
     colums, rows = tiles
@@ -359,7 +352,7 @@ def make_map(tiles):
         i += 1
     #TODO hier noch tile_list[-1] = "end" tile
 
-    return tile_list
+    return tile_list, node_list_head
 
 
 def draw_window(tile_list):
@@ -394,7 +387,7 @@ def update_objects():
 # ------------------- Main Game Loop -------------------
 
 def main():
-    mapTileList = make_map(NUM_TILES) 
+    mapTileList, mapNodeHead = make_map(NUM_TILES) 
     clock = pygame.time.Clock()
 
     run = True
@@ -410,11 +403,8 @@ def main():
                         for i in c:
                             if i.rect.collidepoint(mouse.get_pos()[0], mouse.get_pos()[1]):
                                 i.spawn_tower("basic")
-                elif event.button == 3:     # rechtcklick spawn unit
-                    for c in mapTileList:
-                        for tile in c:
-                            if tile.rect.collidepoint(mouse.get_pos()[0], mouse.get_pos()[1]) and tile.tileType == 1:
-                                Unit("basic", tile)
+                elif event.button == 3:     # rechtcklick spawn unit #TODO this should spawn at first map node
+                    Unit("basic", mapNodeHead)
 
         update_objects()
 
