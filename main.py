@@ -43,31 +43,37 @@ COLORS = {
     "red": (255, 0, 0),
     "yellow": (255, 255, 0),
     "green": (0, 255, 0),
-    "blue": (0, 0, 255)
+    "blue": (0, 0, 255),
+    "dark_blue": (0, 0, 139),
+    "light_blue": (173, 216, 230)
 }
 
 TOWER_TYPES = {
     "basic": {
         "atk_speed": 1,     # alle 3 sekunden angreifen?
         "cost": 15,
+        "color": "blue",
         "range": 150,
         "proj_type": "basic"
     },
     "AoE": {
         "atk_speed": 1.5,     # alle 3 sekunden angreifen?
         "cost": 15,
+        "color": "blue",
         "range": 150,
         "proj_type": "basic"
     },
     "singleTarget": {
         "atk_speed": 5,     # alle 3 sekunden angreifen?
         "cost": 25,
+        "color": "dark_blue",
         "range": 300,
         "proj_type": "seeking"
     },
     "superFast": {
         "atk_speed": 0.2,     # alle 3 sekunden angreifen?
         "cost": 25,
+        "color": "light_blue",
         "range": 100,
         "proj_type": "weak"
     }
@@ -84,14 +90,14 @@ UNIT_TYPES = {
     "fast": {
         "move_speed": 5,
         "hp": 5,
-        "size": (16, 16),          # verschieden große units?
+        "size": (8, 8),          # verschieden große units?
         "gold_value": 4,
         "special": False    # vlt für sowas wie Schilde oder andere abilities?
     },
     "tank": {
         "move_speed": 1,
         "hp": 25,
-        "size": (16, 16),          # verschieden große units?
+        "size": (28, 28),          # verschieden große units?
         "gold_value": 10,
         "special": False    # vlt für sowas wie Schilde oder andere abilities?
     }
@@ -120,7 +126,7 @@ PROJ_TYPES = {
         "spread": 1, # ???
         "AoE": False,
         "AoE_area": 0,
-        "seeking": False
+        "seeking": True
     }
 }
 
@@ -325,7 +331,7 @@ class Tile:
         elif player.money >= TOWER_TYPES[towerType]["cost"]:
             player.money -= TOWER_TYPES[towerType]["cost"]
             self.has_tower = Tower(towerType, self, player)
-            self.color = COLORS["blue"]
+            self.color = COLORS[TOWER_TYPES[towerType]["color"]]
             self.surface.fill(self.color)
         else:
             print(f"Not enough money: {player.money}")
