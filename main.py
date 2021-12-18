@@ -23,6 +23,7 @@ hit.set_volume(0.2)
 explosion = pygame.mixer.Sound(os.path.join("Assets","Sound","explosion.wav"))
 explosion.set_volume(0.4)
 
+pygame.font.init()
 
 # ------------------- Global Variables -------------------
 
@@ -30,7 +31,7 @@ WIDTH, HEIGHT = 32*20, 32*20
 MENU_W, MENU_H = int(WIDTH*0.25), HEIGHT
 WIN = pygame.display.set_mode((WIDTH+MENU_W, HEIGHT))
 FPS = 60
-ROUND_COOLDOWN = 5*1000 # in milliseconds
+ROUND_COOLDOWN = 20*1000 # in milliseconds
 TILE_SIZE = (32, 32)
 PROJ_SIZE = (4, 4)
 NUM_TILES = (WIDTH//TILE_SIZE[0], HEIGHT//TILE_SIZE[1]) # numbers of tiles as tuple (columns, rows)
@@ -478,6 +479,8 @@ def main():
 
     run = True
     last_round = 0
+    last_unit_spawn = 0
+    units_to_spawn = 0
     while run:
         clock.tick(FPS)
         # vlt ersttmal nen Menü? aber kann später kommen
@@ -485,9 +488,14 @@ def main():
             print("new round starting")
             last_round = - pygame.time.get_ticks()
             round_num = pygame.time.get_ticks()//ROUND_COOLDOWN
-            for i in range(round_num):
-                unit = random.choice(["basic", "fast", "tank"])
-                Unit(unit, mapNodeHead, player)
+            units_to_spawn = round_num
+        
+        if units_to_spawn > 0 and last_unit_spawn + pygame.time.get_ticks() >= (ROUND_COOLDOWN*0.25)/(pygame.time.get_ticks()//ROUND_COOLDOWN):
+            unit = random.choice(["basic", "fast", "tank"])
+            #unit_spawn_cooldown = ROUND_COOLDOWN*0.25
+            Unit(unit, mapNodeHead, player)
+            units_to_spawn -= 1
+            last_unit_spawn = - pygame.time.get_ticks()
             
 
         for event in pygame.event.get():
