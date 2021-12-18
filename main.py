@@ -33,7 +33,7 @@ WIN = pygame.display.set_mode((WIDTH+MENU_W, HEIGHT))
 FPS = 60
 
 MAIN_FONT = pygame.font.SysFont("Arial", 20)
-ROUND_COOLDOWN = 20*1000 # in milliseconds
+ROUND_COOLDOWN = 15*1000 # in milliseconds
 
 TILE_SIZE = (32, 32)
 PROJ_SIZE = (4, 4)
@@ -175,7 +175,7 @@ class Projectile:
 
     def move(self):
         now = pygame.time.get_ticks()
-        if now - self.last_move >= 15: #15ms warten bis nächste bewegeung
+        if now - self.last_move >= 5: # ms warten bis nächste bewegeung
 
             if self.projType["seeking"] and self.target in UNIT_LIST: 
                 self.angle = math.atan2(self.target.rect.centery - self.y, self.target.rect.centerx - self.x)
@@ -339,7 +339,8 @@ class Tile:
             self.color = COLORS[TOWER_TYPES[towerType]["color"]]
             self.surface.fill(self.color)
         else:
-            print(f"Not enough money: {player.money}")
+            #print(f"Not enough money: {player.money}")
+            pass
             
 
 class Player:
