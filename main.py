@@ -363,6 +363,14 @@ class MapNode:
         self.next_val = next_val
 
 
+class Button:
+    def __init__(self, text, coords):
+        self.text = text
+        self.rendered_text = MAIN_FONT.render(self.text, 1, COLORS["black"])
+        self.coords = coords
+        self.function = function
+        self.size = (MENU_W - 20, self.rendered_text.get_height()) # ?
+
 # ------------------- FUNCTIONS -------------------
 
 def make_nodes():
@@ -494,17 +502,16 @@ def main():
     while run:
         clock.tick(FPS)
         # vlt ersttmal nen Menü? aber kann später kommen
-        if last_round + pygame.time.get_ticks() >= ROUND_COOLDOWN:
+        if last_round + pygame.time.get_ticks() >= ROUND_COOLDOWN: # automatic round start
             last_round = - pygame.time.get_ticks()
             round_num = pygame.time.get_ticks()//ROUND_COOLDOWN
             units_to_spawn = round_num
         
-        if units_to_spawn > 0 and last_unit_spawn + pygame.time.get_ticks() >= (ROUND_COOLDOWN*0.25)/(pygame.time.get_ticks()//ROUND_COOLDOWN):
+        if units_to_spawn > 0 and last_unit_spawn + pygame.time.get_ticks() >= (ROUND_COOLDOWN*0.25)/(pygame.time.get_ticks()//ROUND_COOLDOWN): # staggered unit spawn
             unit = random.choice(["basic", "fast", "tank"])
             Unit(unit, mapNodeHead, player)
             units_to_spawn -= 1
             last_unit_spawn = - pygame.time.get_ticks()
-            
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
