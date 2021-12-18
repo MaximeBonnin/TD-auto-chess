@@ -31,10 +31,14 @@ WIDTH, HEIGHT = 32*20, 32*20
 MENU_W, MENU_H = int(WIDTH*0.25), HEIGHT
 WIN = pygame.display.set_mode((WIDTH+MENU_W, HEIGHT))
 FPS = 60
+
+MAIN_FONT = pygame.font.SysFont("Arial", 20)
 ROUND_COOLDOWN = 20*1000 # in milliseconds
+
 TILE_SIZE = (32, 32)
 PROJ_SIZE = (4, 4)
 NUM_TILES = (WIDTH//TILE_SIZE[0], HEIGHT//TILE_SIZE[1]) # numbers of tiles as tuple (columns, rows)
+
 UNIT_LIST =[]
 TOWER_LIST = []
 PROJ_LIST = []
@@ -245,7 +249,6 @@ class Unit:
 
         self.x = mapNodeHead.position[0]*TILE_SIZE[0]*1.5 - self.unitType["size"][0]/2
         self.y = mapNodeHead.position[1]*TILE_SIZE[1]*1.5 + self.unitType["size"][1]/2
-        #print(f"Unit of type {unitType} spawned at ({self.x} | {self.y})!")
         self.rect = pygame.Rect((self.x, self.y), self.unitType["size"])
         self.color = COLORS["green"]
         self.surface = pygame.Surface(self.unitType["size"])
@@ -257,8 +260,6 @@ class Unit:
     def die(self, origin):
         origin.kills += 1
         origin.player.money += self.unitType["gold_value"]
-        #print(f"{self.unitType} unit was killed by {origin.towerType}")
-        print(f"New balance after kill reward: {origin.player.money}")
         explosion.play()
         UNIT_LIST.remove(self)
 
@@ -344,10 +345,10 @@ class Tile:
 class Player:
     def __init__(self, money=100, life=100):
         self.money = money
+        self.max_hp = life
         self.hp = life
 
     def lose_life(self, amount):
-        print(f"Player lost {amount} life.")
         self.hp -= amount
 
         if self.hp <= 0:
@@ -440,7 +441,7 @@ def make_map():
     return tile_list, node_list_head
 
 
-def draw_window(tile_list):
+def draw_window(tile_list, player, last_round):
     # Function that draws everything on screen (every frame)
 
     WIN.fill(COLORS["white"])
@@ -456,6 +457,16 @@ def draw_window(tile_list):
     for u in UNIT_LIST:
         WIN.blit(u.surface, u.rect)
 
+
+    round_start_text = MAIN_FONT.render(f"Next round: {(ROUND_COOLDOWN - last_round - pygame.time.get_ticks())//1000}", 1, COLORS["black"]) 
+    WIN.blit(round_start_text, (WIDTH+10, 10))
+
+    player_health_text = MAIN_FONT.render(f"HP:{player.hp}/{player.max_hp}", 1, COLORS["black"]) #TODO put this in player class?
+    WIN.blit(player_health_text, (WIDTH+10, 10 + round_start_text.get_height() + 10))
+
+    player_money_text = MAIN_FONT.render(f"$:{player.money}", 1, COLORS["black"]) #TODO put this in player class?
+    WIN.blit(player_money_text, (WIDTH + 10, 10 + round_start_text.get_height() + 10 + player_health_text.get_height() + 10))
+
     pygame.display.update()
 
 
@@ -466,8 +477,6 @@ def update_objects():
         p.move()
     for u in UNIT_LIST:
         u.move()
-        
-    #TODO make rounds start every few seconds
 
 
 # ------------------- Main Game Loop -------------------
@@ -485,14 +494,12 @@ def main():
         clock.tick(FPS)
         # vlt ersttmal nen Menü? aber kann später kommen
         if last_round + pygame.time.get_ticks() >= ROUND_COOLDOWN:
-            print("new round starting")
             last_round = - pygame.time.get_ticks()
             round_num = pygame.time.get_ticks()//ROUND_COOLDOWN
             units_to_spawn = round_num
         
         if units_to_spawn > 0 and last_unit_spawn + pygame.time.get_ticks() >= (ROUND_COOLDOWN*0.25)/(pygame.time.get_ticks()//ROUND_COOLDOWN):
             unit = random.choice(["basic", "fast", "tank"])
-            #unit_spawn_cooldown = ROUND_COOLDOWN*0.25
             Unit(unit, mapNodeHead, player)
             units_to_spawn -= 1
             last_unit_spawn = - pygame.time.get_ticks()
@@ -510,10 +517,8 @@ def main():
                                 i.spawn_tower(tower, player)
                 elif event.button == 3:     # rechtcklick spawn unit 
                     print("Key not bound.")
-                    #unit = random.choice(["basic", "fast", "tank"])
-                    #Unit(unit, mapNodeHead, player)
         update_objects()
-        draw_window(mapTileList)    
+        draw_window(mapTileList, player, last_round)    
     pygame.quit()
 
 
