@@ -42,6 +42,7 @@ NUM_TILES = (WIDTH//TILE_SIZE[0], HEIGHT//TILE_SIZE[1]) # numbers of tiles as tu
 UNIT_LIST =[]
 TOWER_LIST = []
 PROJ_LIST = []
+BUTTON_LIST = []
 
 COLORS = {
     "black": (0, 0, 0),
@@ -135,7 +136,6 @@ PROJ_TYPES = {
         "seeking": True
     }
 }
-
 
 # ------------------- CLASSES -------------------
 
@@ -368,8 +368,45 @@ class Button:
         self.text = text
         self.rendered_text = MAIN_FONT.render(self.text, 1, COLORS["black"])
         self.coords = coords
-        self.function = function
+        self.pressed_down = False
         self.size = (MENU_W - 20, self.rendered_text.get_height()) # ?
+        self.rect = pygame.Rect(self.coords, self.size)
+        self.color = COLORS["light_blue"]
+        self.surface = pygame.Surface(self.size)
+        self.surface.fill(self.color)
+        self.surface.blit(self.rendered_text, self.coords)
+
+        BUTTON_LIST.append(self)
+
+    def pressed(self): #TODO click sound?
+        if self.text == "start round": # Button to start the next round early
+            print("button start round")
+
+        for t in TOWER_TYPES.keys():
+            if self.text == t:
+                print(f"Spawning {t} tower")
+
+        self.surface.fill(self.color)
+        self.surface.blit(self.rendered_text, self.coords)
+
+    def check_hover(self):
+        if self.rect.collidepoint(mouse.get_pos()):
+            if pygame.mouse.get_pressed()[0]:
+                self.pressed_down = True
+                self.color = COLORS["dark_blue"]
+                self.surface.fill(self.color)
+                self.surface.blit(self.rendered_text, self.coords)
+            else:
+                self.pressed_down = False
+                self.color = COLORS["blue"]
+                self.surface.fill(self.color)
+                self.surface.blit(self.rendered_text, self.coords)
+        else:
+            self.pressed_down = False
+            self.color = COLORS["light_blue"]
+            self.surface.fill(self.color)
+            self.surface.blit(self.rendered_text, self.coords)
+
 
 # ------------------- FUNCTIONS -------------------
 
@@ -450,6 +487,14 @@ def make_map():
     return tile_list, node_list_head
 
 
+def make_buttons():
+    Button("start round", (WIDTH + 10, 100))
+
+    for t in TOWER_TYPES.keys():
+        y_pos = BUTTON_LIST[-1].rect.bottomleft[1] + 10
+        Button(t, (WIDTH + 10, y_pos))
+
+
 def draw_window(tile_list, player, last_round):
     # Function that draws everything on screen (every frame)
 
@@ -466,6 +511,9 @@ def draw_window(tile_list, player, last_round):
     for u in UNIT_LIST:
         WIN.blit(u.surface, u.rect)
 
+    for b in BUTTON_LIST:
+        b.check_hover()
+        WIN.blits(((b.surface, b.rect),(b.rendered_text, b.rect)))
 
     round_start_text = MAIN_FONT.render(f"Next round: {(ROUND_COOLDOWN - last_round - pygame.time.get_ticks())//1000}", 1, COLORS["black"]) 
     WIN.blit(round_start_text, (WIDTH+10, 10))
@@ -492,6 +540,7 @@ def update_objects():
 
 def main():
     mapTileList, mapNodeHead = make_map() 
+    make_buttons()
     clock = pygame.time.Clock()
     player = Player()
 
@@ -502,11 +551,13 @@ def main():
     while run:
         clock.tick(FPS)
         # vlt ersttmal nen Menü? aber kann später kommen
+
         if last_round + pygame.time.get_ticks() >= ROUND_COOLDOWN: # automatic round start
+            print("round starting")
             last_round = - pygame.time.get_ticks()
             round_num = pygame.time.get_ticks()//ROUND_COOLDOWN
             units_to_spawn = round_num
-        
+
         if units_to_spawn > 0 and last_unit_spawn + pygame.time.get_ticks() >= (ROUND_COOLDOWN*0.25)/(pygame.time.get_ticks()//ROUND_COOLDOWN): # staggered unit spawn
             unit = random.choice(["basic", "fast", "tank"])
             Unit(unit, mapNodeHead, player)
@@ -517,14 +568,16 @@ def main():
             if event.type == pygame.QUIT:
                 run = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:       # linksclick spawnt turm
+                if event.button == 1:       # linksclick check buttons
+                    for b in BUTTON_LIST:
+                        if b.rect.collidepoint(mouse.get_pos()):
+                            b.pressed()
+                elif event.button == 3:     # rechtcklick spawn turm 
                     for c in mapTileList:
                         for i in c:
                             if i.rect.collidepoint(mouse.get_pos()[0], mouse.get_pos()[1]):
                                 tower = random.choice(["basic", "singleTarget", "superFast"])
                                 i.spawn_tower(tower, player)
-                elif event.button == 3:     # rechtcklick spawn unit 
-                    print("Key not bound.")
         update_objects()
         draw_window(mapTileList, player, last_round)    
     pygame.quit()
