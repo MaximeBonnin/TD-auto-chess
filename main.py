@@ -27,6 +27,9 @@ pygame.font.init()
 
 tower_base_img = pygame.image.load(os.path.join("Assets","Images","tower_base.png"))
 tower_turret_img = pygame.image.load(os.path.join("Assets","Images","tower_turret.png"))
+unit_basic_img = pygame.image.load(os.path.join("Assets","Images","unit_basic.png"))
+unit_fast_img = pygame.image.load(os.path.join("Assets","Images","unit_fast.png"))
+unit_tank_img = pygame.image.load(os.path.join("Assets","Images","unit_tank.png"))
 
 # ------------------- Global Variables -------------------
 
@@ -36,7 +39,7 @@ WIN = pygame.display.set_mode((WIDTH+MENU_W, HEIGHT))
 FPS = 60
 
 MAIN_FONT = pygame.font.SysFont("Arial", 20)
-ROUND_COOLDOWN = 15*1000 # in milliseconds
+ROUND_COOLDOWN = 5*1000 # in milliseconds
 
 TILE_SIZE = (32, 32)
 PROJ_SIZE = (4, 4)
@@ -55,9 +58,11 @@ COLORS = {
     "red": (255, 0, 0),
     "yellow": (255, 255, 0),
     "green": (0, 255, 0),
+    "dark_green": (0, 120, 0),
     "blue": (0, 0, 255),
     "dark_blue": (0, 0, 139),
-    "light_blue": (173, 216, 230)
+    "light_blue": (173, 216, 230),
+    "brown": (153, 120, 0)
 }
 
 TOWER_TYPES = {
@@ -102,23 +107,26 @@ UNIT_TYPES = {
     "basic": {
         "move_speed": 2,
         "hp": 10,
-        "size": (16, 16),          # verschieden große units?
+        "size": (20, 20),          # verschieden große units?
         "gold_value": 5,
-        "special": False    # vlt für sowas wie Schilde oder andere abilities?
+        "special": False,    # vlt für sowas wie Schilde oder andere abilities?
+        "skin": unit_basic_img
     },
     "fast": {
         "move_speed": 5,
         "hp": 5,
-        "size": (16, 16),          # verschieden große units?
+        "size": (20, 20),          # verschieden große units?
         "gold_value": 4,
-        "special": False    # vlt für sowas wie Schilde oder andere abilities?
+        "special": False,    # vlt für sowas wie Schilde oder andere abilities?
+        "skin": unit_fast_img
     },
     "tank": {
         "move_speed": 1,
         "hp": 25,
-        "size": (16, 16),          # verschieden große units?
+        "size": (20, 20),          # verschieden große units?
         "gold_value": 10,
-        "special": False    # vlt für sowas wie Schilde oder andere abilities?
+        "special": False,    # vlt für sowas wie Schilde oder andere abilities?
+        "skin": unit_tank_img
     }
 }
 
@@ -279,7 +287,7 @@ class Unit:
         self.rect = pygame.Rect((self.x, self.y), self.unitType["size"])
         self.color = COLORS["green"]
         self.surface = pygame.Surface(self.unitType["size"])
-        self.surface.fill(self.color)
+        self.surface.blit(self.unitType["skin"], (0,0))
 
         global TOWER_LIST   # eig schlechte Lösung aber erstmal so: Globale variable mit allen Units
         UNIT_LIST.append(self)
@@ -343,9 +351,9 @@ class Tile:
         self.position = position
 
         if self.tileType == 0:
-            self.color = COLORS["gray"]
+            self.color = COLORS["dark_green"]
         elif self.tileType == 1:
-            self.color = COLORS["yellow"]
+            self.color = COLORS["brown"]
         else:
             print("Tile Type Error")
 
