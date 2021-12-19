@@ -25,6 +25,9 @@ explosion.set_volume(0.4)
 
 pygame.font.init()
 
+tower_base_img = pygame.image.load(os.path.join("Assets","Images","tower_base.png"))
+tower_turret_img = pygame.image.load(os.path.join("Assets","Images","tower_turret.png"))
+
 # ------------------- Global Variables -------------------
 
 WIDTH, HEIGHT = 32*20, 32*20
@@ -37,6 +40,7 @@ ROUND_COOLDOWN = 15*1000 # in milliseconds
 
 TILE_SIZE = (32, 32)
 PROJ_SIZE = (4, 4)
+TOWER_SIZE = (32, 32)
 NUM_TILES = (WIDTH//TILE_SIZE[0], HEIGHT//TILE_SIZE[1]) # numbers of tiles as tuple (columns, rows)
 
 UNIT_LIST =[]
@@ -47,6 +51,7 @@ BUTTON_LIST = []
 COLORS = {
     "black": (0, 0, 0),
     "white": (255, 255, 255),
+    "gray": (128, 128, 128),
     "red": (255, 0, 0),
     "yellow": (255, 255, 0),
     "green": (0, 255, 0),
@@ -196,12 +201,19 @@ class Projectile:
 class Tower:
     # Class that describes towers
     def __init__(self, towerType, tile, player):
-        #print(f"Tower of type {towerType} spawned!")
         self.towerType = TOWER_TYPES[towerType]
         self.tile = tile
         self.last_shot = pygame.time.get_ticks()
         self.player = player
         self.kills = 0      # Zählen von kills für stats oder lvl system?
+        self.rect = self.tile.rect
+        self.surface = pygame.Surface(TOWER_SIZE)
+        self.inner_surface = pygame.Surface((TOWER_SIZE[0]-8, TOWER_SIZE[1]-8))
+        self.inner_surface.fill(COLORS[self.towerType["color"]])
+        self.surface.blit(self.inner_surface, (4, 4))
+        self.surface.blit(tower_base_img, (0,0))
+        self.surface.blit(tower_turret_img, (0,0))
+
 
         global TOWER_LIST   # eig schlechte Lösung aber erstmal so: Globale variable mit allen Türmen
         TOWER_LIST.append(self)
@@ -219,6 +231,14 @@ class Tower:
 
         distance = min(distance_list)
         target = UNIT_LIST[distance_list.index(min(distance_list))]
+
+        #TODO turret spin
+        angle = math.atan2(target.rect.centery - self.rect.centery, target.rect.centerx - self.rect.centerx) * -180/math.pi
+        print(angle)
+        rotated_image = pygame.transform.rotate(tower_turret_img, angle)
+        self.surface.blit(self.inner_surface, (4, 4))
+        self.surface.blit(tower_base_img, (0,0))
+        self.surface.blit(rotated_image, (0,0))
 
         return target, distance
 
@@ -316,7 +336,7 @@ class Tile:
         self.position = position
 
         if self.tileType == 0:
-            self.color = COLORS["black"]
+            self.color = COLORS["gray"]
         elif self.tileType == 1:
             self.color = COLORS["yellow"]
         else:
@@ -505,11 +525,15 @@ def draw_window(tile_list, player, last_round):
         for r in c:
             WIN.blit(r.surface, r.rect)
     
-    for p in PROJ_LIST:
-        WIN.blit(p.surface, p.rect)
+    for t in TOWER_LIST:
+        WIN.blit(t.surface, t.rect)
 
     for u in UNIT_LIST:
         WIN.blit(u.surface, u.rect)
+
+    for p in PROJ_LIST:
+        WIN.blit(p.surface, p.rect)
+
 
     for b in BUTTON_LIST:
         b.check_hover()
