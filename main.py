@@ -285,7 +285,7 @@ class Unit:
         self.x = mapNodeHead.position[0]*TILE_SIZE[0]*1.5 - self.unitType["size"][0]/2
         self.y = mapNodeHead.position[1]*TILE_SIZE[1]*1.5 + self.unitType["size"][1]/2
         self.rect = pygame.Rect((self.x, self.y), self.unitType["size"])
-        self.color = COLORS["green"]
+        # self.color = COLORS["green"]
         self.surface = pygame.Surface(self.unitType["size"])
         self.surface.blit(self.unitType["skin"], (0,0))
 
@@ -307,9 +307,9 @@ class Unit:
         health_percent = self.hp/self.max_hp
         if health_percent < 0:
             health_percent = 0
-        self.color = (int(255 * (1-health_percent)), int(255 * health_percent), 0)
+        # self.color = (int(255 * (1-health_percent)), int(255 * health_percent), 0)
         self.surface = pygame.Surface(self.unitType["size"])
-        self.surface.fill(self.color)
+        self.surface.blit(self.unitType["skin"], (0,0))
 
         hit.play()
         if self.hp <= 0:
