@@ -88,6 +88,13 @@ TOWER_TYPES = {
         "color": "light_blue",
         "range": 100,
         "proj_type": "weak"
+    },
+    "lightning": {
+        "atk_speed": 0.2,     # alle 3 sekunden angreifen?
+        "cost": 25,
+        "color": "light_blue",
+        "range": 100,
+        "proj_type": "weak"
     }
 }
 
@@ -102,14 +109,14 @@ UNIT_TYPES = {
     "fast": {
         "move_speed": 5,
         "hp": 5,
-        "size": (8, 8),          # verschieden große units?
+        "size": (16, 16),          # verschieden große units?
         "gold_value": 4,
         "special": False    # vlt für sowas wie Schilde oder andere abilities?
     },
     "tank": {
         "move_speed": 1,
         "hp": 25,
-        "size": (28, 28),          # verschieden große units?
+        "size": (16, 16),          # verschieden große units?
         "gold_value": 10,
         "special": False    # vlt für sowas wie Schilde oder andere abilities?
     }
@@ -599,8 +606,8 @@ def main():
                 elif event.button == 3:     # rechtcklick spawn turm 
                     for c in mapTileList:
                         for i in c:
-                            if i.rect.collidepoint(mouse.get_pos()[0], mouse.get_pos()[1]):
-                                tower = random.choice(["basic", "singleTarget", "superFast"])
+                            if i.rect.collidepoint(mouse.get_pos()):
+                                tower = random.choice(list(TOWER_TYPES.keys()))
                                 i.spawn_tower(tower, player)
         update_objects()
         draw_window(mapTileList, player, last_round)    
