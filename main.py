@@ -521,7 +521,7 @@ def draw_window(tile_list, player, last_round):
     player_health_text = MAIN_FONT.render(f"HP:{player.hp}/{player.max_hp}", 1, COLORS["black"]) #TODO put this in player class?
     WIN.blit(player_health_text, (WIDTH+10, 10 + round_start_text.get_height() + 10))
 
-    player_money_text = MAIN_FONT.render(f"$:{player.money}", 1, COLORS["black"]) #TODO put this in player class?
+    player_money_text = MAIN_FONT.render(f"money:{player.money}", 1, COLORS["black"]) #TODO put this in player class?
     WIN.blit(player_money_text, (WIDTH + 10, 10 + round_start_text.get_height() + 10 + player_health_text.get_height() + 10))
 
     pygame.display.update()
