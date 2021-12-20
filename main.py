@@ -64,7 +64,7 @@ COLORS = {
     "white": (255, 255, 255),
     "yellow": (255, 255, 0)
 }
-
+# @MJ hier könnten wir gucken ob wir die variablen in ein anderes file packen und importieren
 TOWER_TYPES = {
     "basic": {
         "atk_speed": 1,     # alle 3 sekunden angreifen?
@@ -249,7 +249,6 @@ class Tower:
 
         #TODO turret spin
         angle = math.atan2(target.rect.centery - self.rect.centery, target.rect.centerx - self.rect.centerx) * -180/math.pi
-        print(angle)
         rotated_image = pygame.transform.rotate(tower_turret_img, angle)
         self.surface.blit(self.inner_surface, (4, 4))
         self.surface.blit(tower_base_img, (0,0))
@@ -287,7 +286,7 @@ class Unit:
         self.rect = pygame.Rect((self.x, self.y), self.unitType["size"])
         # self.color = COLORS["green"]
         self.surface = pygame.Surface(self.unitType["size"])
-        self.surface.blit(self.unitType["skin"], (0,0))
+        self.surface.blit(self.unitType["skin"], (0,0)) # @MJ nice! müssen noch mit drehen gucken und die hintergründe weg kriegen, weiß aber auch nicht wie das geht :D
 
         global TOWER_LIST   # eig schlechte Lösung aber erstmal so: Globale variable mit allen Units
         UNIT_LIST.append(self)
@@ -308,7 +307,7 @@ class Unit:
         if health_percent < 0:
             health_percent = 0
         # self.color = (int(255 * (1-health_percent)), int(255 * health_percent), 0)
-        self.surface = pygame.Surface(self.unitType["size"])
+        self.surface = pygame.Surface(self.unitType["size"]) # @MJ sehr nice das du das auch gefunden hast! dann müssen wir mit hp-bar nochmal gucken
         self.surface.blit(self.unitType["skin"], (0,0))
 
         hit.play()
