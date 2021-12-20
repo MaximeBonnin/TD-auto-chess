@@ -28,11 +28,8 @@ pygame.font.init()
 tower_base_img = pygame.image.load(os.path.join("Assets","Images","tower_base.png"))
 tower_turret_img = pygame.image.load(os.path.join("Assets","Images","tower_turret.png"))
 unit_basic_img = pygame.image.load(os.path.join("Assets","Images","unit_basic.png")) # @MJ das könnte eig auch gleich in TOWER_TYPES gemacht werden denke ich
-unit_basic_img.set_colorkey((0,0,0))
 unit_fast_img = pygame.image.load(os.path.join("Assets","Images","unit_fast.png"))
-unit_fast_img.set_colorkey((0,0,0))
 unit_tank_img = pygame.image.load(os.path.join("Assets","Images","unit_tank.png"))
-unit_tank_img.set_colorkey((0,0,0))
 
 # ------------------- Global Variables -------------------
 
@@ -205,8 +202,14 @@ class Projectile:
 
             if self.projType["seeking"] and self.target in UNIT_LIST: 
                 self.angle = math.atan2(self.target.rect.centery - self.y, self.target.rect.centerx - self.x)
-                self.dx = math.cos(self.angle)*self.projType["speed"]
-                self.dy = math.sin(self.angle)*self.projType["speed"]
+
+                distance = ((self.target.rect.centery - self.y)**2+(self.target.rect.centerx - self.x)**2)**(1/2)
+                if distance <= self.projType["speed"]:
+                    self.dx = math.cos(self.angle)*distance
+                    self.dy = math.sin(self.angle)*distance
+                else:
+                    self.dx = math.cos(self.angle)*self.projType["speed"]
+                    self.dy = math.sin(self.angle)*self.projType["speed"]
 
             self.x = self.x + self.dx
             self.y = self.y + self.dy
@@ -294,7 +297,7 @@ class Unit:
         self.rect = pygame.Rect((self.x, self.y), self.unitType["size"])
         # self.color = COLORS["green"]
         self.surface = pygame.Surface(self.unitType["size"])
-        self.surface.blit(self.unitType["skin"], (0,0)) # @MJ nice! müssen noch mit drehen gucken und die hintergründe weg kriegen, weiß aber auch nicht wie das geht :D
+        self.surface.blit(self.unitType["skin"], (0,0))
         self.surface.set_colorkey((0,0,0))
 
         global TOWER_LIST   # eig schlechte Lösung aber erstmal so: Globale variable mit allen Units
