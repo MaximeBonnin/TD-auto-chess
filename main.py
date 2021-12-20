@@ -53,16 +53,16 @@ BUTTON_LIST = []
 
 COLORS = {
     "black": (0, 0, 0),
-    "white": (255, 255, 255),
-    "gray": (128, 128, 128),
-    "red": (255, 0, 0),
-    "yellow": (255, 255, 0),
-    "green": (0, 255, 0),
-    "dark_green": (0, 120, 0),
     "blue": (0, 0, 255),
-    "dark_blue": (0, 0, 139),
-    "light_blue": (173, 216, 230),
-    "brown": (153, 120, 0)
+    "blue_dark": (0, 0, 139),
+    "blue_light": (173, 216, 230),
+    "brown": (153, 120, 0),
+    "gray": (128, 128, 128),
+    "green": (0, 255, 0),
+    "green_dark": (0, 120, 0),
+    "red": (255, 0, 0),
+    "white": (255, 255, 255),
+    "yellow": (255, 255, 0)
 }
 
 TOWER_TYPES = {
@@ -73,34 +73,34 @@ TOWER_TYPES = {
         "range": 150,
         "proj_type": "basic"
     },
-    "AoE": {
-        "atk_speed": 1.5,     # alle 3 sekunden angreifen?
-        "cost": 15,
-        "color": "blue",
-        "range": 150,
-        "proj_type": "basic"
-    },
+    # "AoE": {
+    #     "atk_speed": 1.5,     # alle 3 sekunden angreifen?
+    #     "cost": 15,
+    #     "color": "blue",
+    #     "range": 150,
+    #     "proj_type": "basic"
+    # },
     "singleTarget": {
         "atk_speed": 5,     # alle 3 sekunden angreifen?
         "cost": 25,
-        "color": "dark_blue",
+        "color": "blue_dark",
         "range": 300,
         "proj_type": "seeking"
     },
     "superFast": {
         "atk_speed": 0.2,     # alle 3 sekunden angreifen?
         "cost": 25,
-        "color": "light_blue",
+        "color": "blue_light",
         "range": 100,
         "proj_type": "weak"
     },
-    "lightning": {
-        "atk_speed": 0.2,     # alle 3 sekunden angreifen?
-        "cost": 25,
-        "color": "light_blue",
-        "range": 100,
-        "proj_type": "weak"
-    }
+    # "lightning": {
+    #     "atk_speed": 0.2,     # alle 3 sekunden angreifen?
+    #     "cost": 25,
+    #     "color": "blue_light",
+    #     "range": 100,
+    #     "proj_type": "weak"
+    # }
 }
 
 UNIT_TYPES = {
@@ -351,7 +351,7 @@ class Tile:
         self.position = position
 
         if self.tileType == 0:
-            self.color = COLORS["dark_green"]
+            self.color = COLORS["green_dark"]
         elif self.tileType == 1:
             self.color = COLORS["brown"]
         else:
@@ -406,7 +406,7 @@ class Button:
         self.pressed_down = False
         self.size = (MENU_W - 20, self.rendered_text.get_height()) # ?
         self.rect = pygame.Rect(self.coords, self.size)
-        self.color = COLORS["light_blue"]
+        self.color = COLORS["blue_light"]
         self.surface = pygame.Surface(self.size)
         self.surface.fill(self.color)
         self.surface.blit(self.rendered_text, self.coords)
@@ -428,7 +428,7 @@ class Button:
         if self.rect.collidepoint(mouse.get_pos()):
             if pygame.mouse.get_pressed()[0]:
                 self.pressed_down = True
-                self.color = COLORS["dark_blue"]
+                self.color = COLORS["blue_dark"]
                 self.surface.fill(self.color)
                 self.surface.blit(self.rendered_text, self.coords)
             else:
@@ -438,7 +438,7 @@ class Button:
                 self.surface.blit(self.rendered_text, self.coords)
         else:
             self.pressed_down = False
-            self.color = COLORS["light_blue"]
+            self.color = COLORS["blue_light"]
             self.surface.fill(self.color)
             self.surface.blit(self.rendered_text, self.coords)
 
