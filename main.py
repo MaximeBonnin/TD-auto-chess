@@ -84,7 +84,7 @@ COLORS = {
 # @MJ hier könnten wir gucken ob wir die variablen in ein anderes file packen und importieren
 TOWER_TYPES = {
     "basic": {
-        "atk_speed": 1,     # alle 3 sekunden angreifen?
+        "atk_speed": 1,    
         "cost": 10,
         "color": "white",
         "range": 150,
@@ -92,7 +92,7 @@ TOWER_TYPES = {
         "skin": tower_base_img
     },
     "singleTarget": {
-        "atk_speed": 5,     # alle 3 sekunden angreifen?
+        "atk_speed": 5,     
         "cost": 25,
         "color": "yellow",
         "range": 300,
@@ -100,7 +100,7 @@ TOWER_TYPES = {
         "skin": tower_base_img
     },
     "AoE": {
-        "atk_speed": 3,     # alle 3 sekunden angreifen?
+        "atk_speed": 3,     
         "cost": 50,
         "color": "red",
         "range": 100,
@@ -108,7 +108,7 @@ TOWER_TYPES = {
         "skin": tower_base_img
     },
     "superFast": {
-        "atk_speed": 0.2,     # alle 3 sekunden angreifen?
+        "atk_speed": 0.2,     
         "cost": 50,
         "color": "blue_light",
         "range": 100,
@@ -116,7 +116,7 @@ TOWER_TYPES = {
         "skin": tower_base_img
     },
     # "lightning": {
-    #     "atk_speed": 0.2,     # alle 3 sekunden angreifen?
+    #     "atk_speed": 0.2,     
     #     "cost": 25,
     #     "color": "blue_light",
     #     "range": 100,
@@ -128,25 +128,25 @@ UNIT_TYPES = {
     "basic": {
         "move_speed": 2,
         "hp": 10,
-        "size": (20, 20),          # verschieden große units?
+        "size": (20, 20),          
         "gold_value": 5,
-        "special": False,    # vlt für sowas wie Schilde oder andere abilities?
+        "special": False,   
         "skin": unit_basic_img
     },
     "fast": {
         "move_speed": 5,
         "hp": 5,
-        "size": (20, 20),          # verschieden große units?
+        "size": (20, 20),          
         "gold_value": 4,
-        "special": False,    # vlt für sowas wie Schilde oder andere abilities?
+        "special": False,    
         "skin": unit_fast_img
     },
     "tank": {
         "move_speed": 1,
         "hp": 25,
-        "size": (20, 20),          # verschieden große units?
+        "size": (20, 20),          
         "gold_value": 10,
-        "special": False,    # vlt für sowas wie Schilde oder andere abilities?
+        "special": False,    
         "skin": unit_tank_img
     }
 }
@@ -211,9 +211,6 @@ class Effect:
 
         if self.frame > self.maxframe:
             EFFECT_LIST.remove(self)
-
-
-
 
 
 class Projectile:
@@ -510,14 +507,17 @@ class Button:
         self.surface.fill(self.color)
         self.surface.blit(self.rendered_text, self.coords)
 
+        self.last_round_start_press = pygame.time.get_ticks()
+        
 
         BUTTON_LIST.append(self)
 
     def pressed(self, player):
         click.play()
-        if self.text == "start round": # Button to start the next round early
+        if self.text == "start round" and self.last_round_start_press + ROUND_COOLDOWN//4 <= pygame.time.get_ticks(): # Button to start the next round early, can't be spammed
             round_event = pygame.event.Event(USEREVENTS["round_start"])
             pygame.event.post(round_event)
+            self.last_round_start_press = pygame.time.get_ticks()
 
         for t in TOWER_TYPES.keys():
             if self.text == t:
