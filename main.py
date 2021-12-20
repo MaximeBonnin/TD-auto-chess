@@ -81,13 +81,14 @@ TOWER_TYPES = {
         "proj_type": "basic",
         "skin": tower_base_img
     },
-    # "AoE": {
-    #     "atk_speed": 1.5,     # alle 3 sekunden angreifen?
-    #     "cost": 15,
-    #     "color": "blue",
-    #     "range": 150,
-    #     "proj_type": "basic"
-    # },
+    "AoE": {
+        "atk_speed": 1.5,     # alle 3 sekunden angreifen?
+        "cost": 15,
+        "color": "blue",
+        "range": 150,
+        "proj_type": "AoE",
+        "skin": tower_base_img
+    },
     "singleTarget": {
         "atk_speed": 5,     # alle 3 sekunden angreifen?
         "cost": 25,
@@ -164,6 +165,14 @@ PROJ_TYPES = {
         "AoE": False,
         "AoE_area": 0,
         "seeking": True
+    },
+    "AoE": {
+        "dmg": 2,
+        "speed": 10,
+        "spread": 1, # ???
+        "AoE": True,
+        "AoE_area": 50,
+        "seeking": True
     }
 }
 
@@ -178,6 +187,8 @@ class Projectile:
         self.color = COLORS["white"] # verschiedene Farben?
         self.last_move = pygame.time.get_ticks()
         self.player = player
+        self.AoE = self.projType["AoE"]
+        self.AoE_area = self.projType["AoE_area"]
 
         self.rect = pygame.Rect(origin.tile.rect.center, PROJ_SIZE) #TODO spawn ist nicht mittig
         self.surface = pygame.Surface(PROJ_SIZE)
@@ -193,7 +204,14 @@ class Projectile:
     def check_hit(self):
         for unit in UNIT_LIST:
             if unit.rect.colliderect(self.rect):
-                unit.take_dmg(self.projType["dmg"], self.origin)
+                #TODO add Aoe
+                if self.AoE:
+                    self.AoE_rect = pygame.Rect((self.rect.x - self.AoE_area//2, self.rect.y - self.AoE_area//2), (self.AoE_area, self.AoE_area))
+                    for unit2 in UNIT_LIST:
+                        if unit2.rect.colliderect(self.AoE_rect):
+                            unit2.take_dmg(self.projType["dmg"], self.origin)
+                else:
+                    unit.take_dmg(self.projType["dmg"], self.origin)
                 PROJ_LIST.remove(self)
                 return
             elif self.x < 0 or self.x > WIDTH:
