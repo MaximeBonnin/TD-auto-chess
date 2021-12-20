@@ -301,7 +301,8 @@ class Tower:
         self.surface.blit(self.inner_surface, (4, 4))
         self.surface.blit(tower_base_img, (0,0))
         self.surface.blit(tower_turret_img, (0,0))
-        
+        self.targeting = "close"
+
         click_plop.play()
         global TOWER_LIST   # eig schlechte Lösung aber erstmal so: Globale variable mit allen Türmen
         TOWER_LIST.append(self)
@@ -311,16 +312,27 @@ class Tower:
         m = self.tile.rect.center
         target = False
         distance_list = []
+
+
+        if self.targeting == "close":
+            for u in unitList: #TODO make this more efficient, currently every turret checks every unit every frame => num_units * num_turrets calcs per sec; maybe recursive?
+                m_u = u.rect.center
+                distance = ((m[0]-m_u[0])**2 + (m[1]-m_u[1])**2)**(1/2) # a^2+b^2 = c^2
+                distance_list.append(distance)
+            target = UNIT_LIST[distance_list.index(min(distance_list))]
+
+        elif self.targeting == "first": #TODO this doesnt work at all, fix it! maybe try/except?
+            max_moved_in_range = 0
+            for u in UNIT_LIST:
+                m_u = u.rect.center
+                distance = ((m[0]-m_u[0])**2 + (m[1]-m_u[1])**2)**(1/2)
+                if distance <= self.towerType["range"]:
+                    if u.moved >= max_moved_in_range:
+                        target = u
+
+            if not target:
+                target = UNIT_LIST[distance_list.index(max([unit.moved for unit in UNIT_LIST]))]
     
-        for u in unitList:
-            m_u = u.rect.center
-            distance = ((m[0]-m_u[0])**2 + (m[1]-m_u[1])**2)**(1/2) # a^2+b^2 = c^2
-            distance_list.append(distance)
-
-        distance = min(distance_list)
-        target = UNIT_LIST[distance_list.index(min(distance_list))]
-
-        #TODO fix turret spin
         angle = math.atan2(target.rect.centery - self.rect.centery, target.rect.centerx - self.rect.centerx) * -180/math.pi
         rotated_image = pygame.transform.rotate(tower_turret_img, angle)
 
@@ -355,6 +367,7 @@ class Unit:
         self.lvl = 1
         self.max_hp = self.unitType["hp"]
         self.hp = self.unitType["hp"]
+        self.moved = 0
 
         self.random_move_modifier = random.randint(1, 10)/100
 
@@ -403,6 +416,8 @@ class Unit:
             self.y -= self.unitType["move_speed"]*(1 + self.random_move_modifier)
         self.rect.x = self.x
         self.rect.y = self.y
+
+        self.moved += self.unitType["move_speed"]
         
         next_node_coords = (self.next_node.position[0]*TILE_SIZE[0] + TILE_SIZE[0]/2, self.next_node.position[1]*TILE_SIZE[1] + TILE_SIZE[1]/2)
 
