@@ -27,7 +27,7 @@ pygame.font.init()
 
 tower_base_img = pygame.image.load(os.path.join("Assets","Images","tower_base.png"))
 tower_turret_img = pygame.image.load(os.path.join("Assets","Images","tower_turret.png"))
-unit_basic_img = pygame.image.load(os.path.join("Assets","Images","unit_basic.png"))
+unit_basic_img = pygame.image.load(os.path.join("Assets","Images","unit_basic.png")) # @MJ das könnte eig auch gleich in TOWER_TYPES gemacht werden denke ich
 unit_fast_img = pygame.image.load(os.path.join("Assets","Images","unit_fast.png"))
 unit_tank_img = pygame.image.load(os.path.join("Assets","Images","unit_tank.png"))
 
@@ -71,7 +71,8 @@ TOWER_TYPES = {
         "cost": 15,
         "color": "blue",
         "range": 150,
-        "proj_type": "basic"
+        "proj_type": "basic",
+        "skin": tower_base_img
     },
     # "AoE": {
     #     "atk_speed": 1.5,     # alle 3 sekunden angreifen?
@@ -85,14 +86,16 @@ TOWER_TYPES = {
         "cost": 25,
         "color": "blue_dark",
         "range": 300,
-        "proj_type": "seeking"
+        "proj_type": "seeking",
+        "skin": tower_base_img
     },
     "superFast": {
         "atk_speed": 0.2,     # alle 3 sekunden angreifen?
         "cost": 25,
         "color": "blue_light",
         "range": 100,
-        "proj_type": "weak"
+        "proj_type": "weak",
+        "skin": tower_base_img
     },
     # "lightning": {
     #     "atk_speed": 0.2,     # alle 3 sekunden angreifen?
@@ -228,7 +231,6 @@ class Tower:
         self.surface.blit(self.inner_surface, (4, 4))
         self.surface.blit(tower_base_img, (0,0))
         self.surface.blit(tower_turret_img, (0,0))
-
 
         global TOWER_LIST   # eig schlechte Lösung aber erstmal so: Globale variable mit allen Türmen
         TOWER_LIST.append(self)
@@ -382,6 +384,7 @@ class Player:
         self.money = money
         self.max_hp = life
         self.hp = life
+        self.selected = None
 
     def lose_life(self, amount):
         self.hp -= amount
@@ -389,6 +392,18 @@ class Player:
         if self.hp <= 0:
             print("Player lost the game.")
 
+    def display_selected(self):
+        if self.selected:
+            to_display = TOWER_TYPES[self.selected]["skin"]
+            img_w, img_h = to_display.get_width(), to_display.get_height()
+            m_x, m_y = pygame.mouse.get_pos()
+            x, y = m_x - img_w//2, m_y - img_h//2
+
+            return (to_display, (x, y))
+
+
+    def select(self, towerType = None): # select given tower type, if no type is given -> set to None
+        self.selected = towerType
 
 class MapNode:
     def __init__(self, position, prev_val, next_val=None):
@@ -410,15 +425,18 @@ class Button:
         self.surface.fill(self.color)
         self.surface.blit(self.rendered_text, self.coords)
 
+
         BUTTON_LIST.append(self)
 
-    def pressed(self): #TODO click sound?
+    def pressed(self, player): #TODO click sound?
         if self.text == "start round": # Button to start the next round early
             print("button start round")
 
         for t in TOWER_TYPES.keys():
             if self.text == t:
-                print(f"Spawning {t} tower")
+                print(f"Selecting {t} tower")
+                player.select(t)
+
 
         self.surface.fill(self.color)
         self.surface.blit(self.rendered_text, self.coords)
@@ -548,10 +566,13 @@ def draw_window(tile_list, player, last_round):
     for p in PROJ_LIST:
         WIN.blit(p.surface, p.rect)
 
-
     for b in BUTTON_LIST:
         b.check_hover()
         WIN.blits(((b.surface, b.rect),(b.rendered_text, b.rect)))
+
+    if player.selected:
+        selected_unit_img, selected_unit_coords = player.display_selected()
+        WIN.blit(selected_unit_img, selected_unit_coords)
 
     round_start_text = MAIN_FONT.render(f"Next round: {(ROUND_COOLDOWN - last_round - pygame.time.get_ticks())//1000}", 1, COLORS["black"]) 
     WIN.blit(round_start_text, (WIDTH+10, 10))
@@ -609,13 +630,16 @@ def main():
                 if event.button == 1:       # linksclick check buttons
                     for b in BUTTON_LIST:
                         if b.rect.collidepoint(mouse.get_pos()):
-                            b.pressed()
-                elif event.button == 3:     # rechtcklick spawn turm 
-                    for c in mapTileList:
+                            b.pressed(player)
+                    for c in mapTileList: # linksclick ausgewählten spawn turm 
                         for i in c:
-                            if i.rect.collidepoint(mouse.get_pos()):
-                                tower = random.choice(list(TOWER_TYPES.keys()))
+                            if player.selected and i.rect.collidepoint(mouse.get_pos()):
+                                tower = player.selected
                                 i.spawn_tower(tower, player)
+                                if not pygame.key.get_pressed()[pygame.K_LSHIFT]: # holding shift keeps unit selected after placing
+                                    player.select()
+                elif event.button == 3:     # rechtcklick spawn turm 
+                    player.select()
         update_objects()
         draw_window(mapTileList, player, last_round)    
     pygame.quit()
