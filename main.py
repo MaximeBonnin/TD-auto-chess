@@ -13,21 +13,23 @@ from pygame import mouse
 from pygame.constants import USEREVENT
 
 # ------------------- Initiallize -------------------
+#TODO add central volume control
+MASTER_VOLUME = 0
 
 pygame.init()
 pygame.display.set_caption("Tower Defence Game")
 
 pygame.mixer.init()
 pew = pygame.mixer.Sound(os.path.join("Assets","Sound","pew.wav"))
-pew.set_volume(0.1)
+pew.set_volume(0.1*MASTER_VOLUME)
 hit = pygame.mixer.Sound(os.path.join("Assets","Sound","hit.mp3"))
-hit.set_volume(0.2)
+hit.set_volume(0.2*MASTER_VOLUME)
 explosion = pygame.mixer.Sound(os.path.join("Assets","Sound","explosion.wav"))
-explosion.set_volume(0.4)
+explosion.set_volume(0.4*MASTER_VOLUME)
 click = pygame.mixer.Sound(os.path.join("Assets","Sound","click.wav"))
-click.set_volume(0.4)
+click.set_volume(0.4*MASTER_VOLUME)
 click_plop = pygame.mixer.Sound(os.path.join("Assets","Sound","click_plop.wav"))
-click_plop.set_volume(0.4)
+click_plop.set_volume(0.4*MASTER_VOLUME)
 
 
 pygame.font.init()
@@ -75,31 +77,31 @@ COLORS = {
 TOWER_TYPES = {
     "basic": {
         "atk_speed": 1,     # alle 3 sekunden angreifen?
-        "cost": 15,
-        "color": "blue",
+        "cost": 10,
+        "color": "white",
         "range": 150,
         "proj_type": "basic",
-        "skin": tower_base_img
-    },
-    "AoE": {
-        "atk_speed": 1.5,     # alle 3 sekunden angreifen?
-        "cost": 15,
-        "color": "blue",
-        "range": 150,
-        "proj_type": "AoE",
         "skin": tower_base_img
     },
     "singleTarget": {
         "atk_speed": 5,     # alle 3 sekunden angreifen?
         "cost": 25,
-        "color": "blue_dark",
+        "color": "yellow",
         "range": 300,
         "proj_type": "seeking",
         "skin": tower_base_img
     },
+    "AoE": {
+        "atk_speed": 3,     # alle 3 sekunden angreifen?
+        "cost": 50,
+        "color": "red",
+        "range": 100,
+        "proj_type": "AoE",
+        "skin": tower_base_img
+    },
     "superFast": {
         "atk_speed": 0.2,     # alle 3 sekunden angreifen?
-        "cost": 25,
+        "cost": 50,
         "color": "blue_light",
         "range": 100,
         "proj_type": "weak",
@@ -148,7 +150,8 @@ PROJ_TYPES = {
         "spread": 1, # ???
         "AoE": False,
         "AoE_area": 0,
-        "seeking": False
+        "seeking": False,
+        "color": "white"
     },
     "seeking": {
         "dmg": 10,
@@ -156,7 +159,8 @@ PROJ_TYPES = {
         "spread": 1, # ???
         "AoE": False,
         "AoE_area": 0,
-        "seeking": True
+        "seeking": True,
+        "color": "blue"
     },
     "weak": {
         "dmg": 1,
@@ -164,7 +168,8 @@ PROJ_TYPES = {
         "spread": 1, # ???
         "AoE": False,
         "AoE_area": 0,
-        "seeking": True
+        "seeking": True,
+        "color": "blue_light"
     },
     "AoE": {
         "dmg": 2,
@@ -172,7 +177,8 @@ PROJ_TYPES = {
         "spread": 1, # ???
         "AoE": True,
         "AoE_area": 50,
-        "seeking": True
+        "seeking": True,
+        "color": "red"
     }
 }
 
@@ -184,7 +190,7 @@ class Projectile:
         self.origin = origin
         self.target = target
         self.x, self.y = origin.tile.rect.centerx - PROJ_SIZE[0]//2, origin.tile.rect.centery - PROJ_SIZE[0]//2
-        self.color = COLORS["white"] # verschiedene Farben?
+        self.color = origin.color
         self.last_move = pygame.time.get_ticks()
         self.player = player
         self.AoE = self.projType["AoE"]
@@ -259,7 +265,8 @@ class Tower:
         self.surface = pygame.Surface(TOWER_SIZE)
         self.surface.fill(COLORS["green_dark"])
         self.inner_surface = pygame.Surface((TOWER_SIZE[0]-8, TOWER_SIZE[1]-8))
-        self.inner_surface.fill(COLORS[self.towerType["color"]])
+        self.color = COLORS[self.towerType["color"]]
+        self.inner_surface.fill(self.color)
         self.surface.blit(self.inner_surface, (4, 4))
         self.surface.blit(tower_base_img, (0,0))
         self.surface.blit(tower_turret_img, (0,0))
@@ -323,7 +330,6 @@ class Unit:
         self.x = mapNodeHead.position[0]*TILE_SIZE[0]*1.5 - self.unitType["size"][0]/2
         self.y = mapNodeHead.position[1]*TILE_SIZE[1]*1.5 + self.unitType["size"][1]/2
         self.rect = pygame.Rect((self.x, self.y), self.unitType["size"])
-        # self.color = COLORS["green"]
         self.surface = pygame.Surface(self.unitType["size"])
         self.surface.blit(self.unitType["skin"], (0,0))
         self.surface.set_colorkey((0,0,0))
@@ -455,7 +461,10 @@ class MapNode:
 class Button:
     def __init__(self, text, coords):
         self.text = text
-        self.rendered_text = MAIN_FONT.render(self.text, 1, COLORS["black"])
+        self.text_to_render = text
+        if self.text in TOWER_TYPES.keys():
+            self.text_to_render = f"{TOWER_TYPES[self.text]['cost']} - {self.text}" 
+        self.rendered_text = MAIN_FONT.render(self.text_to_render, 1, COLORS["black"])
         self.coords = coords
         self.pressed_down = False
         self.size = (MENU_W - 20, self.rendered_text.get_height()) # ?
@@ -623,7 +632,7 @@ def draw_window(tile_list, player, round):
     player_health_text = MAIN_FONT.render(f"HP:{player.hp}/{player.max_hp}", 1, COLORS["black"]) #TODO put this in player class?
     WIN.blit(player_health_text, (WIDTH+10, 10 + round_start_text.get_height() + 10))
 
-    player_money_text = MAIN_FONT.render(f"money:{player.money}", 1, COLORS["black"]) #TODO put this in player class?
+    player_money_text = MAIN_FONT.render(f"Money:{player.money}", 1, COLORS["black"]) #TODO put this in player class?
     WIN.blit(player_money_text, (WIDTH + 10, 10 + round_start_text.get_height() + 10 + player_health_text.get_height() + 10))
 
     pygame.display.update()
