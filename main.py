@@ -60,6 +60,11 @@ TOWER_LIST = []
 PROJ_LIST = []
 BUTTON_LIST = []
 
+USEREVENTS = {
+    "round_start": pygame.USEREVENT,
+    "unit_spawn": pygame.USEREVENT + 1
+}
+
 COLORS = {
     "black": (0, 0, 0),
     "blue": (0, 0, 255),
@@ -480,8 +485,8 @@ class Button:
     def pressed(self, player):
         click.play()
         if self.text == "start round": # Button to start the next round early
-            event = pygame.event.Event(USEREVENT)
-            pygame.event.post(event)
+            round_event = pygame.event.Event(USEREVENTS["round_start"])
+            pygame.event.post(round_event)
 
         for t in TOWER_TYPES.keys():
             if self.text == t:
@@ -626,8 +631,12 @@ def draw_window(tile_list, player, round):
         WIN.blit(selected_unit_img, selected_unit_coords)
 
 
-    round_start_text = MAIN_FONT.render(f"Next round: {(ROUND_COOLDOWN - (pygame.time.get_ticks() - round['time']))//1000}", 1, COLORS["black"]) 
-    WIN.blit(round_start_text, (WIDTH+10, 10))
+    if round['number'] > 1:
+        round_start_text = MAIN_FONT.render(f"Next round ({round['number']}): {(ROUND_COOLDOWN - (pygame.time.get_ticks() - round['time']))//1000}", 1, COLORS["black"]) 
+        WIN.blit(round_start_text, (WIDTH+10, 10))
+    else:
+        round_start_text = MAIN_FONT.render(f"Not started", 1, COLORS["black"]) 
+        WIN.blit(round_start_text, (WIDTH+10, 10))
 
     player_health_text = MAIN_FONT.render(f"HP:{player.hp}/{player.max_hp}", 1, COLORS["black"]) #TODO put this in player class?
     WIN.blit(player_health_text, (WIDTH+10, 10 + round_start_text.get_height() + 10))
@@ -648,9 +657,11 @@ def update_objects():
 
 
 def handle_rounds(round, mapNodeHead, player):
-    for u in range(round["number"]):
-        unit = random.choice(list(UNIT_TYPES.keys()))
-        Unit(unit, mapNodeHead, player)
+    print("round start")
+    
+    unit_spawn_spacing = int(ROUND_COOLDOWN*0.25/round["number"])
+    unit_event = pygame.event.Event(USEREVENTS["unit_spawn"])
+    pygame.time.set_timer(unit_event, unit_spawn_spacing)
 
 # ------------------- Main Game Loop -------------------
 
@@ -665,8 +676,7 @@ def main():
         "time": 0,
         "number": 1
     }
-    event = pygame.event.Event(USEREVENT)
-    pygame.time.set_timer(event, ROUND_COOLDOWN)
+    
     while run:
         clock.tick(FPS)
         # vlt ersttmal nen Menü? aber kann später kommen
@@ -674,6 +684,7 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:       # linksclick check buttons
                     for b in BUTTON_LIST:
@@ -688,10 +699,25 @@ def main():
                                     player.select()
                 elif event.button == 3:     # rechtcklick spawn turm 
                     player.select()
-            elif event.type == pygame.USEREVENT:
+
+            elif event.type == USEREVENTS["round_start"]:
                 handle_rounds(round, mapNodeHead, player)
+                units_to_spawn = round["number"]
+
                 round["number"] += 1
                 round["time"] = pygame.time.get_ticks()
+
+                round_event = pygame.event.Event(USEREVENTS["round_start"])
+                pygame.time.set_timer(round_event, ROUND_COOLDOWN)
+
+            elif event.type == USEREVENTS["unit_spawn"]:
+                if units_to_spawn > 0:
+                    unit = random.choice(list(UNIT_TYPES.keys()))
+                    Unit(unit, mapNodeHead, player)
+                    units_to_spawn -= 1
+                else:
+                    unit_event = pygame.event.Event(USEREVENTS["unit_spawn"])
+                    pygame.time.set_timer(unit_event, 0)
 
         update_objects()
         draw_window(mapTileList, player, round)    
