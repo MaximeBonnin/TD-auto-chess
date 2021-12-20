@@ -656,8 +656,7 @@ def update_objects():
         u.move()
 
 
-def handle_rounds(round, mapNodeHead, player):
-    print("round start")
+def handle_rounds(round):
     
     unit_spawn_spacing = int(ROUND_COOLDOWN*0.25/round["number"])
     unit_event = pygame.event.Event(USEREVENTS["unit_spawn"])
@@ -701,7 +700,7 @@ def main():
                     player.select()
 
             elif event.type == USEREVENTS["round_start"]:
-                handle_rounds(round, mapNodeHead, player)
+                handle_rounds(round)
                 units_to_spawn = round["number"]
 
                 round["number"] += 1
