@@ -24,6 +24,11 @@ hit = pygame.mixer.Sound(os.path.join("Assets","Sound","hit.mp3"))
 hit.set_volume(0.2)
 explosion = pygame.mixer.Sound(os.path.join("Assets","Sound","explosion.wav"))
 explosion.set_volume(0.4)
+click = pygame.mixer.Sound(os.path.join("Assets","Sound","click.wav"))
+click.set_volume(0.4)
+click_plop = pygame.mixer.Sound(os.path.join("Assets","Sound","click_plop.wav"))
+click_plop.set_volume(0.4)
+
 
 pygame.font.init()
 
@@ -241,7 +246,7 @@ class Tower:
         self.surface.blit(tower_base_img, (0,0))
         self.surface.blit(tower_turret_img, (0,0))
         
-
+        click_plop.play()
         global TOWER_LIST   # eig schlechte Lösung aber erstmal so: Globale variable mit allen Türmen
         TOWER_LIST.append(self)
 
@@ -348,13 +353,13 @@ class Unit:
             self.next_node = self.current_node.next_val
 
         # check if off screen and remove 
-        if self.x < 0 or self.x > WIDTH: #TODO make this lose life of player; maybe new type of tile "end"
+        if self.x < 0 or self.x > WIDTH:
             UNIT_LIST.remove(self)
-            self.player.lose_life(1) #TODO different dmg based on unit type?
+            self.player.lose_life(1)
             return
         elif self.y < 0 or self.y > HEIGHT:
             UNIT_LIST.remove(self)
-            self.player.lose_life(1) #TODO different dmg based on unit type?
+            self.player.lose_life(1)
             return
 
 
@@ -442,7 +447,8 @@ class Button:
 
         BUTTON_LIST.append(self)
 
-    def pressed(self, player): #TODO click sound?
+    def pressed(self, player):
+        click.play()
         if self.text == "start round": # Button to start the next round early
             event = pygame.event.Event(USEREVENT)
             pygame.event.post(event)
