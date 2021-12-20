@@ -10,41 +10,17 @@ Mal gucken was das wird
 4. Projectiles
 5. Balancing
 
-## Sonstiges
+## Upgarding
 
-### Setting?
-- space?
-- fantasy?
-- was anderes?
-    - Piraten?
-    - Magic?
+Towers can be upgraded into other towers according to this plan:
 
-### Multiplayer?
-- pvp?
-- pve? 
-- solo?
-
-### Type?
-- selber bauen?
-- feste wände?
-- units schicken?
-
-### Economy
-- einfach mehr?
-- econ kaufen?
-
-### Upgrades
-- exp system?
-- kaufen?
-- kombinieren?
-- skill tree?
-
-## Design
-
-### Tower
-- Platform mit beweglichem turm?
-- Verschiedene designs für andere Türme
-- Abhängig von Setting
-
-### Units
-Grade linie oder nen offener weg? kein plan wie das geht :D
+1. Basic Tower
+    1. Single Target
+        1. Sniper
+        2. Super fast
+    2. AoE
+        1. Mortar
+        2. Area
+    3. Special
+        1. Slow
+        2. Support
