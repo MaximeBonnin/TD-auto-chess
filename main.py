@@ -183,7 +183,7 @@ class Projectile:
         self.projType = PROJ_TYPES[projType]
         self.origin = origin
         self.target = target
-        self.x, self.y = origin.tile.rect.center
+        self.x, self.y = origin.tile.rect.centerx - PROJ_SIZE[0]//2, origin.tile.rect.centery - PROJ_SIZE[0]//2
         self.color = COLORS["white"] # verschiedene Farben?
         self.last_move = pygame.time.get_ticks()
         self.player = player
@@ -204,7 +204,7 @@ class Projectile:
     def check_hit(self):
         for unit in UNIT_LIST:
             if unit.rect.colliderect(self.rect):
-                #TODO add Aoe
+                #TODO add Aoe image / animation
                 if self.AoE:
                     self.AoE_rect = pygame.Rect((self.rect.x - self.AoE_area//2, self.rect.y - self.AoE_area//2), (self.AoE_area, self.AoE_area))
                     for unit2 in UNIT_LIST:
@@ -285,10 +285,13 @@ class Tower:
         #TODO fix turret spin
         angle = math.atan2(target.rect.centery - self.rect.centery, target.rect.centerx - self.rect.centerx) * -180/math.pi
         rotated_image = pygame.transform.rotate(tower_turret_img, angle)
+
+        new_rect = rotated_image.get_rect(center = tower_turret_img.get_rect().center)
+
         self.surface.fill(COLORS["green_dark"])
         self.surface.blit(self.inner_surface, (4, 4))
         self.surface.blit(tower_base_img, (0,0))
-        self.surface.blit(rotated_image, (0,0))
+        self.surface.blit(rotated_image, new_rect.topleft)
 
         return target, distance
 
