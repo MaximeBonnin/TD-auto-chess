@@ -28,8 +28,11 @@ pygame.font.init()
 tower_base_img = pygame.image.load(os.path.join("Assets","Images","tower_base.png"))
 tower_turret_img = pygame.image.load(os.path.join("Assets","Images","tower_turret.png"))
 unit_basic_img = pygame.image.load(os.path.join("Assets","Images","unit_basic.png")) # @MJ das könnte eig auch gleich in TOWER_TYPES gemacht werden denke ich
+unit_basic_img.set_colorkey((0,0,0))
 unit_fast_img = pygame.image.load(os.path.join("Assets","Images","unit_fast.png"))
+unit_fast_img.set_colorkey((0,0,0))
 unit_tank_img = pygame.image.load(os.path.join("Assets","Images","unit_tank.png"))
+unit_tank_img.set_colorkey((0,0,0))
 
 # ------------------- Global Variables -------------------
 
@@ -226,11 +229,13 @@ class Tower:
         self.kills = 0      # Zählen von kills für stats oder lvl system?
         self.rect = self.tile.rect
         self.surface = pygame.Surface(TOWER_SIZE)
+        self.surface.fill(COLORS["green_dark"])
         self.inner_surface = pygame.Surface((TOWER_SIZE[0]-8, TOWER_SIZE[1]-8))
         self.inner_surface.fill(COLORS[self.towerType["color"]])
         self.surface.blit(self.inner_surface, (4, 4))
         self.surface.blit(tower_base_img, (0,0))
         self.surface.blit(tower_turret_img, (0,0))
+        
 
         global TOWER_LIST   # eig schlechte Lösung aber erstmal so: Globale variable mit allen Türmen
         TOWER_LIST.append(self)
@@ -249,9 +254,10 @@ class Tower:
         distance = min(distance_list)
         target = UNIT_LIST[distance_list.index(min(distance_list))]
 
-        #TODO turret spin
+        #TODO fix turret spin
         angle = math.atan2(target.rect.centery - self.rect.centery, target.rect.centerx - self.rect.centerx) * -180/math.pi
         rotated_image = pygame.transform.rotate(tower_turret_img, angle)
+        self.surface.fill(COLORS["green_dark"])
         self.surface.blit(self.inner_surface, (4, 4))
         self.surface.blit(tower_base_img, (0,0))
         self.surface.blit(rotated_image, (0,0))
@@ -289,6 +295,7 @@ class Unit:
         # self.color = COLORS["green"]
         self.surface = pygame.Surface(self.unitType["size"])
         self.surface.blit(self.unitType["skin"], (0,0)) # @MJ nice! müssen noch mit drehen gucken und die hintergründe weg kriegen, weiß aber auch nicht wie das geht :D
+        self.surface.set_colorkey((0,0,0))
 
         global TOWER_LIST   # eig schlechte Lösung aber erstmal so: Globale variable mit allen Units
         UNIT_LIST.append(self)
@@ -311,6 +318,7 @@ class Unit:
         # self.color = (int(255 * (1-health_percent)), int(255 * health_percent), 0)
         self.surface = pygame.Surface(self.unitType["size"]) # @MJ sehr nice das du das auch gefunden hast! dann müssen wir mit hp-bar nochmal gucken
         self.surface.blit(self.unitType["skin"], (0,0))
+        self.surface.set_colorkey((0,0,0))
 
         hit.play()
         if self.hp <= 0:
@@ -404,6 +412,7 @@ class Player:
 
     def select(self, towerType = None): # select given tower type, if no type is given -> set to None
         self.selected = towerType
+
 
 class MapNode:
     def __init__(self, position, prev_val, next_val=None):
