@@ -14,7 +14,7 @@ from pygame.constants import USEREVENT
 
 # ------------------- Initiallize -------------------
 #TODO add central volume control
-MASTER_VOLUME = 0.5
+MASTER_VOLUME = 0.1
 
 pygame.init()
 pygame.display.set_caption("Tower Defence Game")
@@ -61,6 +61,7 @@ UNIT_LIST =[]
 TOWER_LIST = []
 PROJ_LIST = []
 BUTTON_LIST = []
+EFFECT_LIST = []
 
 USEREVENTS = {
     "round_start": pygame.USEREVENT,
@@ -191,6 +192,30 @@ PROJ_TYPES = {
 
 # ------------------- CLASSES -------------------
 
+class Effect:
+    def __init__(self, effectType, rect):
+        self.type = effectType
+        self.frame = 1
+        self.maxframe = 30
+        self.rect = rect
+        self.color = COLORS["red"]
+        self.surface = pygame.Surface((self.rect.width, self.rect.height))
+        self.surface.fill(self.color)
+
+        EFFECT_LIST.append(self)
+
+    def tick(self):
+        self.frame += 1
+        self.surface.set_alpha(255 - 255 * self.frame/self.maxframe)
+        self.surface.fill(self.color)
+
+        if self.frame > self.maxframe:
+            EFFECT_LIST.remove(self)
+
+
+
+
+
 class Projectile:
     def __init__(self, projType, origin, target, player):
         self.projType = PROJ_TYPES[projType]
@@ -220,9 +245,11 @@ class Projectile:
                 #TODO add Aoe image / animation
                 if self.AoE:
                     self.AoE_rect = pygame.Rect((self.rect.x - self.AoE_area//2, self.rect.y - self.AoE_area//2), (self.AoE_area, self.AoE_area))
+                    Effect("explosion", self.AoE_rect)
                     for unit2 in UNIT_LIST:
                         if unit2.rect.colliderect(self.AoE_rect):
                             unit2.take_dmg(self.projType["dmg"], self.origin)
+            
                 else:
                     unit.take_dmg(self.projType["dmg"], self.origin)
                 PROJ_LIST.remove(self)
@@ -242,7 +269,7 @@ class Projectile:
                 self.angle = math.atan2(self.target.rect.centery - self.y, self.target.rect.centerx - self.x)
 
                 distance = ((self.target.rect.centery - self.y)**2+(self.target.rect.centerx - self.x)**2)**(1/2)
-                if distance <= self.projType["speed"]:
+                if distance <= self.projType["speed"]: # avoid overshooting 
                     self.dx = math.cos(self.angle)*distance
                     self.dy = math.sin(self.angle)*distance
                 else:
@@ -625,6 +652,10 @@ def draw_window(tile_list, player, round):
 
     for p in PROJ_LIST:
         WIN.blit(p.surface, p.rect)
+
+    for e in EFFECT_LIST:
+        WIN.blit(e.surface, e.rect)
+        e.tick()
 
     for b in BUTTON_LIST:
         b.check_hover()
