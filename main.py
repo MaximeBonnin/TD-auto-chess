@@ -14,7 +14,7 @@ from pygame.constants import USEREVENT
 
 # ------------------- Initiallize -------------------
 #TODO add central volume control
-MASTER_VOLUME = 0
+MASTER_VOLUME = 0.5
 
 pygame.init()
 pygame.display.set_caption("Tower Defence Game")
@@ -30,6 +30,8 @@ click = pygame.mixer.Sound(os.path.join("Assets","Sound","click.wav"))
 click.set_volume(0.4*MASTER_VOLUME)
 click_plop = pygame.mixer.Sound(os.path.join("Assets","Sound","click_plop.wav"))
 click_plop.set_volume(0.4*MASTER_VOLUME)
+error_sound = pygame.mixer.Sound(os.path.join("Assets","Sound","error.wav"))
+error_sound.set_volume(0.4*MASTER_VOLUME)
 
 
 pygame.font.init()
@@ -416,9 +418,11 @@ class Tile:
 
     def spawn_tower(self, towerType, player):
         if self.tileType == 1:
-            print("This is a path, you cannot place towers here.")
+            error_sound.play()
+            #print("This is a path, you cannot place towers here.")
         elif self.has_tower:
-            print("This tile already has a tower on it.")
+            error_sound.play()
+            #print("This tile already has a tower on it.")
         elif player.money >= TOWER_TYPES[towerType]["cost"]:
             player.money -= TOWER_TYPES[towerType]["cost"]
             self.has_tower = Tower(towerType, self, player)
@@ -426,7 +430,7 @@ class Tile:
             self.surface.fill(self.color)
         else:
             #print(f"Not enough money: {player.money}")
-            pass
+            error_sound.play()
             
 
 class Player:
@@ -699,7 +703,7 @@ def main():
                 elif event.button == 3:     # rechtcklick spawn turm 
                     player.select()
 
-            elif event.type == USEREVENTS["round_start"]:
+            elif event.type == USEREVENTS["round_start"]: # triggers after every coolddown or when button is pressed
                 handle_rounds(round)
                 units_to_spawn = round["number"]
 
@@ -709,7 +713,7 @@ def main():
                 round_event = pygame.event.Event(USEREVENTS["round_start"])
                 pygame.time.set_timer(round_event, ROUND_COOLDOWN)
 
-            elif event.type == USEREVENTS["unit_spawn"]:
+            elif event.type == USEREVENTS["unit_spawn"]: # triggers on the start of the round and spawns units until number of units in the round is reached
                 if units_to_spawn > 0:
                     unit = random.choice(list(UNIT_TYPES.keys()))
                     Unit(unit, mapNodeHead, player)
