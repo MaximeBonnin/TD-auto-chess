@@ -10,9 +10,11 @@ import random
 import os
 
 from pygame import mouse
+from pygame.constants import USEREVENT
 
 # ------------------- Initiallize -------------------
 
+pygame.init()
 pygame.display.set_caption("Tower Defence Game")
 
 pygame.mixer.init()
@@ -39,7 +41,7 @@ WIN = pygame.display.set_mode((WIDTH+MENU_W, HEIGHT))
 FPS = 60
 
 MAIN_FONT = pygame.font.SysFont("Arial", 20)
-ROUND_COOLDOWN = 5*1000 # in milliseconds
+ROUND_COOLDOWN = 10*1000 # in milliseconds
 
 TILE_SIZE = (32, 32)
 PROJ_SIZE = (4, 4)
@@ -442,7 +444,8 @@ class Button:
 
     def pressed(self, player): #TODO click sound?
         if self.text == "start round": # Button to start the next round early
-            print("button start round")
+            event = pygame.event.Event(USEREVENT)
+            pygame.event.post(event)
 
         for t in TOWER_TYPES.keys():
             if self.text == t:
@@ -559,7 +562,7 @@ def make_buttons():
         Button(t, (WIDTH + 10, y_pos))
 
 
-def draw_window(tile_list, player, last_round):
+def draw_window(tile_list, player, round):
     # Function that draws everything on screen (every frame)
 
     WIN.fill(COLORS["white"])
@@ -586,7 +589,8 @@ def draw_window(tile_list, player, last_round):
         selected_unit_img, selected_unit_coords = player.display_selected()
         WIN.blit(selected_unit_img, selected_unit_coords)
 
-    round_start_text = MAIN_FONT.render(f"Next round: {(ROUND_COOLDOWN - last_round - pygame.time.get_ticks())//1000}", 1, COLORS["black"]) 
+
+    round_start_text = MAIN_FONT.render(f"Next round: {(ROUND_COOLDOWN - (pygame.time.get_ticks() - round['time']))//1000}", 1, COLORS["black"]) 
     WIN.blit(round_start_text, (WIDTH+10, 10))
 
     player_health_text = MAIN_FONT.render(f"HP:{player.hp}/{player.max_hp}", 1, COLORS["black"]) #TODO put this in player class?
@@ -607,6 +611,11 @@ def update_objects():
         u.move()
 
 
+def handle_rounds(round, mapNodeHead, player):
+    for u in range(round["number"]):
+        unit = random.choice(list(UNIT_TYPES.keys()))
+        Unit(unit, mapNodeHead, player)
+
 # ------------------- Main Game Loop -------------------
 
 def main():
@@ -616,24 +625,15 @@ def main():
     player = Player()
 
     run = True
-    last_round = 0
-    last_unit_spawn = 0
-    units_to_spawn = 0
+    round = {
+        "time": 0,
+        "number": 1
+    }
+    event = pygame.event.Event(USEREVENT)
+    pygame.time.set_timer(event, ROUND_COOLDOWN)
     while run:
         clock.tick(FPS)
         # vlt ersttmal nen Menü? aber kann später kommen
-
-        if last_round + pygame.time.get_ticks() >= ROUND_COOLDOWN: # automatic round start
-            print("round starting")
-            last_round = - pygame.time.get_ticks()
-            round_num = pygame.time.get_ticks()//ROUND_COOLDOWN
-            units_to_spawn = round_num
-
-        if units_to_spawn > 0 and last_unit_spawn + pygame.time.get_ticks() >= (ROUND_COOLDOWN*0.25)/(pygame.time.get_ticks()//ROUND_COOLDOWN): # staggered unit spawn
-            unit = random.choice(["basic", "fast", "tank"])
-            Unit(unit, mapNodeHead, player)
-            units_to_spawn -= 1
-            last_unit_spawn = - pygame.time.get_ticks()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -652,8 +652,13 @@ def main():
                                     player.select()
                 elif event.button == 3:     # rechtcklick spawn turm 
                     player.select()
+            elif event.type == pygame.USEREVENT:
+                handle_rounds(round, mapNodeHead, player)
+                round["number"] += 1
+                round["time"] = pygame.time.get_ticks()
+
         update_objects()
-        draw_window(mapTileList, player, last_round)    
+        draw_window(mapTileList, player, round)    
     pygame.quit()
 
 
