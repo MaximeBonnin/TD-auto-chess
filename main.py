@@ -313,13 +313,13 @@ class Tower:
         target = False
         distance_list = []
 
-
         if self.targeting == "close":
             for u in unitList: #TODO make this more efficient, currently every turret checks every unit every frame => num_units * num_turrets calcs per sec; maybe recursive?
                 m_u = u.rect.center
                 distance = ((m[0]-m_u[0])**2 + (m[1]-m_u[1])**2)**(1/2) # a^2+b^2 = c^2
                 distance_list.append(distance)
             target = UNIT_LIST[distance_list.index(min(distance_list))]
+            distance = min(distance_list)
 
         elif self.targeting == "first": #TODO this doesnt work at all, fix it! maybe try/except?
             max_moved_in_range = 0
@@ -332,6 +332,10 @@ class Tower:
 
             if not target:
                 target = UNIT_LIST[distance_list.index(max([unit.moved for unit in UNIT_LIST]))]
+                print("no target in range")
+
+        else:
+            print("This should not happen")
     
         angle = math.atan2(target.rect.centery - self.rect.centery, target.rect.centerx - self.rect.centerx) * -180/math.pi
         rotated_image = pygame.transform.rotate(tower_turret_img, angle)
