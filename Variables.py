@@ -1,11 +1,36 @@
 import pygame
-import os
 
-tower_base_img = pygame.image.load(os.path.join("Assets","Images","tower_base.png"))
-tower_turret_img = pygame.image.load(os.path.join("Assets","Images","tower_turret.png"))
-unit_basic_img = pygame.image.load(os.path.join("Assets","Images","unit_basic.png")) # @MJ das könnte eig auch gleich in TOWER_TYPES gemacht werden denke ich
-unit_fast_img = pygame.image.load(os.path.join("Assets","Images","unit_fast.png"))
-unit_tank_img = pygame.image.load(os.path.join("Assets","Images","unit_tank.png"))
+import asset_list
+from asset_list import tower_base_img
+from asset_list import unit_basic_img
+from asset_list import unit_fast_img
+from asset_list import unit_tank_img
+
+pygame.font.init()
+
+WIDTH, HEIGHT = 32*20, 32*20
+MENU_W, MENU_H = int(WIDTH*0.25), HEIGHT
+WIN = pygame.display.set_mode((WIDTH+MENU_W, HEIGHT))
+FPS = 60
+
+MAIN_FONT = pygame.font.SysFont("Arial", 20)
+ROUND_COOLDOWN = 10*1000 # in milliseconds
+
+TILE_SIZE = (32, 32)
+PROJ_SIZE = (4, 4)
+TOWER_SIZE = (32, 32)
+NUM_TILES = (WIDTH//TILE_SIZE[0], HEIGHT//TILE_SIZE[1]) # numbers of tiles as tuple (columns, rows)
+
+UNIT_LIST =[]
+TOWER_LIST = []
+PROJ_LIST = []
+BUTTON_LIST = []
+EFFECT_LIST = []
+
+USEREVENTS = {
+    "round_start": pygame.USEREVENT,
+    "unit_spawn": pygame.USEREVENT + 1
+}
 
 COLORS = {
     "black": (0, 0, 0),
