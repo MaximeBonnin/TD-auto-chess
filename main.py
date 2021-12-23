@@ -6,6 +6,7 @@
 # https://csatlas.com/python-import-file-module/ (HowTo multi file)
 
 import random
+import shutil
 
 import pygame
 from pygame import mouse
@@ -82,6 +83,8 @@ def main():
         update_objects()
         draw_window(mapTileList, player, round)    
     pygame.quit()
+    shutil.rmtree("__pycache__", ignore_errors=False, onerror=None)
+
 
 
 # ------------------- Save for multiple files being executed -------------------
