@@ -10,25 +10,13 @@ import random
 import pygame
 from pygame import mouse
 
-
-import Variables
-from Variables import UNIT_TYPES
-from Variables import UNIT_TYPES
-from Variables import ROUND_COOLDOWN
-from Variables import USEREVENTS
-from Variables import BUTTON_LIST
-from Variables import FPS
-
 import Clases
-from Clases import Player
-from Clases import Unit
-
 import functions
-from functions import make_buttons
-from functions import make_map
-from functions import handle_rounds
-from functions import draw_window
-from functions import update_objects
+import Variables
+from Clases import Player, Unit
+from functions import (draw_window, handle_rounds, make_buttons, make_map,
+                       update_objects)
+from Variables import BUTTON_LIST, FPS, ROUND_COOLDOWN, UNIT_TYPES, USEREVENTS
 
 # ------------------- Initiallize -------------------
 
