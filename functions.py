@@ -1,26 +1,11 @@
 import pygame
 
-import Variables
-from Variables import NUM_TILES
-from Variables import TILE_SIZE
-from Variables import BUTTON_LIST
-from Variables import TOWER_TYPES
-from Variables import WIDTH
-from Variables import COLORS
-from Variables import WIN
-from Variables import TOWER_LIST
-from Variables import UNIT_LIST
-from Variables import EFFECT_LIST
-from Variables import MAIN_FONT
-from Variables import ROUND_COOLDOWN
-from Variables import PROJ_LIST
-from Variables import USEREVENTS
-
 import Clases
-from Clases import Tile
-from Clases import MapNode
-from Clases import Button
-
+import Variables
+from Clases import Button, MapNode, Tile
+from Variables import (BUTTON_LIST, COLORS, EFFECT_LIST, MAIN_FONT, NUM_TILES,
+                       PROJ_LIST, ROUND_COOLDOWN, TILE_SIZE, TOWER_LIST,
+                       TOWER_TYPES, UNIT_LIST, USEREVENTS, WIDTH, WIN)
 
 
 def make_nodes():

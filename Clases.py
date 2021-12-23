@@ -1,40 +1,17 @@
-import pygame
-from pygame import mouse
-
 import math
 import random
 
-import Variables
-from Variables import COLORS
-from Variables import TOWER_TYPES
-from Variables import PROJ_TYPES
-from Variables import UNIT_TYPES
-from Variables import MAIN_FONT
-from Variables import EFFECT_LIST
-from Variables import PROJ_SIZE
-from Variables import PROJ_LIST
-from Variables import PROJ_TYPES
-from Variables import UNIT_LIST
-from Variables import UNIT_TYPES
-from Variables import TOWER_SIZE
-from Variables import TOWER_LIST
-from Variables import WIDTH
-from Variables import HEIGHT
-from Variables import TILE_SIZE
-from Variables import ROUND_COOLDOWN
-from Variables import USEREVENTS
-from Variables import MENU_W
-from Variables import BUTTON_LIST
+import pygame
+from pygame import mouse
 
 import asset_list
-from asset_list import tower_base_img
-from asset_list import tower_turret_img
-from asset_list import error_sound
-from asset_list import click
-from asset_list import click_plop
-from asset_list import pew
-from asset_list import explosion
-from asset_list import hit
+import Variables
+from asset_list import (click, click_plop, error_sound, explosion, hit, pew,
+                        tower_base_img, tower_turret_img)
+from Variables import (BUTTON_LIST, COLORS, EFFECT_LIST, HEIGHT, MAIN_FONT,
+                       MENU_W, PROJ_LIST, PROJ_SIZE, PROJ_TYPES,
+                       ROUND_COOLDOWN, TILE_SIZE, TOWER_LIST, TOWER_SIZE,
+                       TOWER_TYPES, UNIT_LIST, UNIT_TYPES, USEREVENTS, WIDTH)
 
 
 class Effect:

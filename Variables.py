@@ -1,10 +1,8 @@
 import pygame
 
 import asset_list
-from asset_list import tower_base_img
-from asset_list import unit_basic_img
-from asset_list import unit_fast_img
-from asset_list import unit_tank_img
+from asset_list import (tower_base_img, unit_basic_img, unit_fast_img,
+                        unit_tank_img)
 
 pygame.font.init()
 
