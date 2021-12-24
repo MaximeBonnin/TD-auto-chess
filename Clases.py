@@ -108,6 +108,7 @@ class Projectile:
                 
 class Tower:
     # Class that describes towers
+    # TODO eventuell einen kreis um den zu platzierenden Turm zeichnen, für die Schussreichweite?
     def __init__(self, towerType, tile, player):
         self.towerType = TOWER_TYPES[towerType]
         self.tile = tile

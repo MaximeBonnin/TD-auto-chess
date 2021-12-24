@@ -9,7 +9,7 @@ MASTER_VOLUME = 0.1
 # ------------------- Images -------------------
 tower_base_img = pygame.image.load(os.path.join("Assets","Images","tower_base.png"))
 tower_turret_img = pygame.image.load(os.path.join("Assets","Images","tower_turret.png"))
-unit_basic_img = pygame.image.load(os.path.join("Assets","Images","unit_basic.png")) # @MJ das könnte eig auch gleich in TOWER_TYPES gemacht werden denke ich
+unit_basic_img = pygame.image.load(os.path.join("Assets","Images","unit_basic.png"))
 unit_fast_img = pygame.image.load(os.path.join("Assets","Images","unit_fast.png"))
 unit_tank_img = pygame.image.load(os.path.join("Assets","Images","unit_tank.png"))
 
