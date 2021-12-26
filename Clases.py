@@ -278,7 +278,7 @@ class Tile:
 
         self.rect = pygame.Rect(self.position, TILE_SIZE)
         self.surface = pygame.Surface(TILE_SIZE)
-        self.surface.fill(self.color)
+        self.surface.fill(self.color)  # TODO @MJ implement tile_gras_png
 
         self.has_tower = False
 
