@@ -12,6 +12,7 @@ tower_turret_img = pygame.image.load(os.path.join("Assets","Images","tower_turre
 unit_basic_img = pygame.image.load(os.path.join("Assets","Images","unit_basic.png"))
 unit_fast_img = pygame.image.load(os.path.join("Assets","Images","unit_fast.png"))
 unit_tank_img = pygame.image.load(os.path.join("Assets","Images","unit_tank.png"))
+tile_gras_img = pygame.image.load(os.path.join("Assets","Images","tile_gras.png"))
 
 # ------------------- Sounds -------------------
 pew = pygame.mixer.Sound(os.path.join("Assets","Sound","pew.wav"))
