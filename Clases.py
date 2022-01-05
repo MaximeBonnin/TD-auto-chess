@@ -7,7 +7,7 @@ from pygame import mouse
 import asset_list
 import Variables
 from asset_list import (click, click_plop, error_sound, explosion, hit, pew,
-                        tower_base_img, tower_turret_img)
+                        tile_gras_img, tile_path_img, tower_base_img, tower_turret_img)
 from Variables import (BUTTON_LIST, COLORS, EFFECT_LIST, HEIGHT, MAIN_FONT,
                        MENU_W, PROJ_LIST, PROJ_SIZE, PROJ_TYPES,
                        ROUND_COOLDOWN, TILE_SIZE, TOWER_LIST, TOWER_SIZE,
@@ -270,15 +270,17 @@ class Tile:
         self.position = position
 
         if self.tileType == 0:
-            self.color = COLORS["green_dark"]
+            skin = tile_gras_img    # @Maxime habe ich das hier mit skin so richtig gemacht? Also es funktioniert, aber ich habe deine Struktur noch nicht ganz verstanden
         elif self.tileType == 1:
-            self.color = COLORS["brown"]
+            skin = tile_path_img
         else:
             print("Tile Type Error")
 
         self.rect = pygame.Rect(self.position, TILE_SIZE)
+
         self.surface = pygame.Surface(TILE_SIZE)
-        self.surface.fill(self.color)  # TODO @MJ implement tile_gras_png
+        self.surface.blit(skin, (0,0))
+        self.surface.set_colorkey((0,0,0))   
 
         self.has_tower = False
 
