@@ -28,3 +28,8 @@ click_plop = pygame.mixer.Sound(os.path.join("Assets","Sound","click_plop.wav"))
 click_plop.set_volume(0.4*MASTER_VOLUME)
 error_sound = pygame.mixer.Sound(os.path.join("Assets","Sound","error.wav"))
 error_sound.set_volume(0.4*MASTER_VOLUME)
+
+# ------------------- Save for multiple files being executed -------------------
+
+if __name__ == "__main__":
+    print("Don't run this as main.")

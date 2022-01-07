@@ -11,13 +11,9 @@ import shutil
 import pygame
 from pygame import mouse
 
-import all_classes
-import functions
-import Variables
-from all_classes import Player, Unit
-from functions import (draw_window, handle_rounds, make_buttons, make_map,
-                       update_objects)
-from Variables import BUTTON_LIST, FPS, ROUND_COOLDOWN, UNIT_TYPES, USEREVENTS
+from all_classes import *
+from functions import *
+from Variables import *
 
 # ------------------- Initiallize -------------------
 
