@@ -314,6 +314,7 @@ class Player:
         self.max_hp = life
         self.hp = life
         self.selected = None
+        self.info_requested = None
 
     def lose_life(self, amount):
         self.hp -= amount
@@ -322,18 +323,23 @@ class Player:
             print("Player lost the game.")
 
     def display_selected(self):
-        if self.selected:
-            to_display = TOWER_TYPES[self.selected]["skin"]
-            img_w, img_h = to_display.get_width(), to_display.get_height()
-            m_x, m_y = pygame.mouse.get_pos()
-            x, y = m_x - img_w//2, m_y - img_h//2
+        to_display = TOWER_TYPES[self.selected]["skin"]
+        img_w, img_h = to_display.get_width(), to_display.get_height()
+        m_x, m_y = pygame.mouse.get_pos()
+        x, y = m_x - img_w//2, m_y - img_h//2
 
-            return (to_display, (x, y))
-
+        return (to_display, (x, y))
 
     def select(self, towerType = None): # select given tower type, if no type is given -> set to None
         self.selected = towerType
 
+
+    def display_info(self):
+        if self.info_requested:
+            print(f"{self.info_requested=}")
+
+    def request_info(self, towerType = None): # select given tower type, if no type is given -> set to None
+        self.selected = towerType
 
 class MapNode:
     def __init__(self, position, prev_val, next_val=None):

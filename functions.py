@@ -119,6 +119,9 @@ def draw_window(tile_list, player, round):
     if player.selected:
         selected_unit_img, selected_unit_coords = player.display_selected()
         WIN.blit(selected_unit_img, selected_unit_coords)
+        
+    if player.info_requested:
+        player.display_info()
 
 
     if round['number'] > 1:

@@ -47,13 +47,16 @@ def main():
                     for b in BUTTON_LIST:
                         if b.rect.collidepoint(mouse.get_pos()):
                             b.pressed(player)
-                    for c in mapTileList: # linksclick ausgewählten spawn turm 
+                            break
+                    for c in mapTileList: # linksclick ausgewählten spawn turm #TODO this is a weird way of handleing tower spawns
                         for i in c:
                             if player.selected and i.rect.collidepoint(mouse.get_pos()):
                                 tower = player.selected
                                 i.spawn_tower(tower, player)
                                 if not pygame.key.get_pressed()[pygame.K_LSHIFT]: # holding shift keeps unit selected after placing
                                     player.select()
+                                break
+
                 elif event.button == 3:     # rechtcklick spawn turm 
                     player.select()
 
