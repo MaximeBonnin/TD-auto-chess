@@ -1,8 +1,8 @@
 import pygame
 
-import Clases
+import all_classes
 import Variables
-from Clases import Button, MapNode, Tile
+from all_classes import Button, MapNode, Tile
 from Variables import (BUTTON_LIST, COLORS, EFFECT_LIST, MAIN_FONT, NUM_TILES,
                        PROJ_LIST, ROUND_COOLDOWN, TILE_SIZE, TOWER_LIST,
                        TOWER_TYPES, UNIT_LIST, USEREVENTS, WIDTH, WIN)

@@ -51,6 +51,7 @@ TOWER_TYPES = {
         "color": "white",
         "range": 150,
         "proj_type": "basic",
+        "crit_chance": 0.1,
         "skin": tower_base_img
     },
     "singleTarget": {
@@ -59,6 +60,7 @@ TOWER_TYPES = {
         "color": "yellow",
         "range": 300,
         "proj_type": "seeking",
+        "crit_chance": 0.5,
         "skin": tower_base_img
     },
     "AoE": {
@@ -67,6 +69,7 @@ TOWER_TYPES = {
         "color": "red",
         "range": 100,
         "proj_type": "AoE",
+        "crit_chance": 0.1,
         "skin": tower_base_img
     },
     "superFast": {
@@ -75,6 +78,7 @@ TOWER_TYPES = {
         "color": "blue_light",
         "range": 100,
         "proj_type": "weak",
+        "crit_chance": 0.2,
         "skin": tower_base_img
     },
     # "lightning": {
@@ -83,6 +87,7 @@ TOWER_TYPES = {
     #     "color": "blue_light",
     #     "range": 100,
     #     "proj_type": "weak"
+    #     "crit_chance": 0.1,
     # }
 }
 

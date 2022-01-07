@@ -36,14 +36,20 @@ class Effect:
 
 
 class Projectile:
-    def __init__(self, projType, origin, target, player):
+    def __init__(self, projType, origin, target, player, is_crit):
         self.projType = PROJ_TYPES[projType]
         self.origin = origin
         self.target = target
         self.x, self.y = origin.tile.rect.centerx - PROJ_SIZE[0]//2, origin.tile.rect.centery - PROJ_SIZE[0]//2
-        self.color = origin.color
-        self.last_move = pygame.time.get_ticks()
         self.player = player
+        self.is_crit = is_crit
+        if is_crit:
+            self.color = COLORS["black"]
+            self.dmg = self.projType["dmg"] * 2
+        else:
+            self.color = origin.color
+            self.dmg = self.projType["dmg"]
+        self.last_move = pygame.time.get_ticks()
         self.AoE = self.projType["AoE"]
         self.AoE_area = self.projType["AoE_area"]
 
@@ -179,8 +185,14 @@ class Tower:
             now = pygame.time.get_ticks()
 
             if distance <= self.towerType["range"] and (now - self.last_shot) >= cooldown:
+                
+                if random.random() <= self.towerType["crit_chance"]:
+                    is_crit = True
+                else:
+                    is_crit = False
+
                 pew.play()
-                Projectile(self.towerType["proj_type"], self, target, self.player)
+                Projectile(self.towerType["proj_type"], self, target, self.player, is_crit)
                 self.last_shot = pygame.time.get_ticks()
         
 
