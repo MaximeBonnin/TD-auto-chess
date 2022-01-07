@@ -313,7 +313,7 @@ class Player:
         self.money = money
         self.max_hp = life
         self.hp = life
-        self.selected = None
+        self.selected = None #TODO rename this and change it with actual selected
         self.info_requested = None
 
     def lose_life(self, amount):
@@ -335,11 +335,16 @@ class Player:
 
 
     def display_info(self):
-        if self.info_requested:
-            print(f"{self.info_requested=}")
+        info_box = pygame.Surface((MENU_W, 200))
+        info_box.fill(COLORS[self.info_requested.towerType["color"]])
+        info = MAIN_FONT.render(f"{self.info_requested.towerType['display_name']}", 1, COLORS["black"])
+        info_box.blit(info, (0, 0))
+        x, y = WIDTH, HEIGHT-200
 
-    def request_info(self, towerType = None): # select given tower type, if no type is given -> set to None
-        self.selected = towerType
+        return (info_box, (x, y))
+
+    def request_info(self, tower = None):
+        self.info_requested = tower
 
 class MapNode:
     def __init__(self, position, prev_val, next_val=None):

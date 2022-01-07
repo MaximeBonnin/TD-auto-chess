@@ -50,6 +50,7 @@ TOWER_TYPES = {
         "range": 150,
         "proj_type": "basic",
         "crit_chance": 0.1,
+        "display_name": "Basic Tower",
         "skin": tower_base_img
     },
     "singleTarget": {
@@ -59,6 +60,7 @@ TOWER_TYPES = {
         "range": 300,
         "proj_type": "seeking",
         "crit_chance": 0.5,
+        "display_name": "Single Target Tower",
         "skin": tower_base_img
     },
     "AoE": {
@@ -68,6 +70,7 @@ TOWER_TYPES = {
         "range": 100,
         "proj_type": "AoE",
         "crit_chance": 0.1,
+        "display_name": "Explosion Tower",
         "skin": tower_base_img
     },
     "superFast": {
@@ -77,6 +80,7 @@ TOWER_TYPES = {
         "range": 100,
         "proj_type": "weak",
         "crit_chance": 0.2,
+        "display_name": "Fast Tower",
         "skin": tower_base_img
     },
     # "lightning": {

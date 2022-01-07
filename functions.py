@@ -116,12 +116,13 @@ def draw_window(tile_list, player, round):
         b.check_hover()
         WIN.blits(((b.surface, b.rect),(b.rendered_text, b.rect)))
 
-    if player.selected:
+    if player.selected: # drag and drop tower display
         selected_unit_img, selected_unit_coords = player.display_selected()
         WIN.blit(selected_unit_img, selected_unit_coords)
-        
-    if player.info_requested:
-        player.display_info()
+
+    if player.info_requested: # displays info about towers
+        info, x_y = player.display_info()
+        WIN.blit(info, x_y)
 
 
     if round['number'] > 1:

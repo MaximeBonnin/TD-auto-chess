@@ -56,6 +56,10 @@ def main():
                                 if not pygame.key.get_pressed()[pygame.K_LSHIFT]: # holding shift keeps unit selected after placing
                                     player.select()
                                 break
+                    for t in TOWER_LIST:
+                        if t.rect.collidepoint(mouse.get_pos()):
+                            player.info_requested = t
+                            break
 
                 elif event.button == 3:     # rechtcklick spawn turm 
                     player.select()
