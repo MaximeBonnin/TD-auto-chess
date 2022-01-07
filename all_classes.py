@@ -189,6 +189,11 @@ class Tower:
                 Projectile(self.towerType["proj_type"], self, target, self.player, is_crit)
                 self.last_shot = pygame.time.get_ticks()
         
+    def sell(self):
+        explosion.play()
+        self.player.money += self.towerType["cost"] * 0.75
+        TOWER_LIST.remove(self)
+
 
 class Unit:
     # Class that describes units
@@ -315,6 +320,7 @@ class Player:
         self.hp = life
         self.selected = None #TODO rename this and change it with actual selected
         self.info_requested = None
+        self.unit_sell_button = None
 
     def lose_life(self, amount):
         self.hp -= amount
@@ -335,16 +341,27 @@ class Player:
 
 
     def display_info(self):
+        x, y = WIDTH, HEIGHT-200
+
         info_box = pygame.Surface((MENU_W, 200))
         info_box.fill(COLORS[self.info_requested.towerType["color"]])
-        info = MAIN_FONT.render(f"{self.info_requested.towerType['display_name']}", 1, COLORS["black"])
-        info_box.blit(info, (0, 0))
-        x, y = WIDTH, HEIGHT-200
+        if self.info_requested is None:
+            print("idk")
+        else: 
+            info = MAIN_FONT.render(f"{self.info_requested.towerType['display_name']}", 1, COLORS["black"])
+        
+            info_box.blit(info, (0, 0))
+
+            # sell button, upgrade button, stats
+            self.unit_sell_button = Button("sell", (x, y+20))
+            info_box.blit(self.unit_sell_button.surface, (0, 20))
+        
 
         return (info_box, (x, y))
 
     def request_info(self, tower = None):
         self.info_requested = tower
+
 
 class MapNode:
     def __init__(self, position, prev_val, next_val=None):
@@ -371,7 +388,6 @@ class Button:
 
         self.last_round_start_press = pygame.time.get_ticks()
         
-
         BUTTON_LIST.append(self)
 
     def pressed(self, player):
@@ -380,11 +396,16 @@ class Button:
             round_event = pygame.event.Event(USEREVENTS["round_start"])
             pygame.event.post(round_event)
             self.last_round_start_press = pygame.time.get_ticks()
-
-        for t in TOWER_TYPES.keys():
-            if self.text == t:
-                print(f"Selecting {t} tower")
-                player.select(t)
+        elif self.text == "sell":
+            if player.info_requested:
+                player.info_requested.sell()
+            player.request_info()
+        else:
+            for t in TOWER_TYPES.keys():
+                if self.text == t:
+                    print(f"Selecting {t} tower")
+                    player.select(t)
+                    break
 
 
         self.surface.fill(self.color)

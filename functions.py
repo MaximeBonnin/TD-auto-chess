@@ -99,20 +99,24 @@ def draw_window(tile_list, player, round):
         for r in c:
             WIN.blit(r.surface, r.rect)
     
-    for t in TOWER_LIST:
+    for t in TOWER_LIST: # display all towers on screen
         WIN.blit(t.surface, t.rect)
 
-    for u in UNIT_LIST:
+    for u in UNIT_LIST: # display all units on screen
         WIN.blit(u.surface, u.rect)
 
-    for p in PROJ_LIST:
+    for p in PROJ_LIST: # display all projectiles on screen
         WIN.blit(p.surface, p.rect)
 
-    for e in EFFECT_LIST:
+    for e in EFFECT_LIST: # display all effects on screen
         WIN.blit(e.surface, e.rect)
         e.tick()
 
-    for b in BUTTON_LIST:
+    if player.info_requested != None: # displays info about towers
+        info, x_y = player.display_info()
+        WIN.blit(info, x_y)
+
+    for b in BUTTON_LIST: # display all buttons on screen
         b.check_hover()
         WIN.blits(((b.surface, b.rect),(b.rendered_text, b.rect)))
 
@@ -120,9 +124,6 @@ def draw_window(tile_list, player, round):
         selected_unit_img, selected_unit_coords = player.display_selected()
         WIN.blit(selected_unit_img, selected_unit_coords)
 
-    if player.info_requested: # displays info about towers
-        info, x_y = player.display_info()
-        WIN.blit(info, x_y)
 
 
     if round['number'] > 1:
