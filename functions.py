@@ -151,3 +151,8 @@ def handle_rounds(round):
     unit_spawn_spacing = int(ROUND_COOLDOWN*0.25/round["number"])
     unit_event = pygame.event.Event(USEREVENTS["unit_spawn"])
     pygame.time.set_timer(unit_event, unit_spawn_spacing)
+
+# ------------------- Save for multiple files being executed -------------------
+
+if __name__ == "__main__":
+    print("Don't run this as main.")

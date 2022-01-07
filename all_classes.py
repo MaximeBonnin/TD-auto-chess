@@ -4,14 +4,8 @@ import random
 import pygame
 from pygame import mouse
 
-import asset_list
-import Variables
-from asset_list import (click, click_plop, error_sound, explosion, hit, pew,
-                        tile_gras_img, tile_path_img, tower_base_img, tower_turret_img)
-from Variables import (BUTTON_LIST, COLORS, EFFECT_LIST, HEIGHT, MAIN_FONT,
-                       MENU_W, PROJ_LIST, PROJ_SIZE, PROJ_TYPES,
-                       ROUND_COOLDOWN, TILE_SIZE, TOWER_LIST, TOWER_SIZE,
-                       TOWER_TYPES, UNIT_LIST, UNIT_TYPES, USEREVENTS, WIDTH)
+from asset_list import *
+from Variables import *
 
 
 class Effect:
@@ -402,3 +396,8 @@ class Button:
             self.color = COLORS["blue_light"]
             self.surface.fill(self.color)
             self.surface.blit(self.rendered_text, self.coords)
+
+# ------------------- Save for multiple files being executed -------------------
+
+if __name__ == "__main__":
+    print("Don't run this as main.")

@@ -154,3 +154,8 @@ PROJ_TYPES = {
         "color": "red"
     }
 }
+
+# ------------------- Save for multiple files being executed -------------------
+
+if __name__ == "__main__":
+    print("Don't run this as main.")
