@@ -11,7 +11,7 @@ FPS = 60
 
 MAIN_FONT = pygame.font.SysFont("Arial", 20)
 SMALL_FONT = pygame.font.SysFont("Arial", 10)
-ROUND_COOLDOWN = 10*1000 # in milliseconds
+ROUND_COOLDOWN = 25*1000 # in milliseconds
 
 TILE_SIZE = (32, 32)
 PROJ_SIZE = (4, 4)

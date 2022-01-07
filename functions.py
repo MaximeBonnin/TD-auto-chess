@@ -124,7 +124,7 @@ def draw_window(tile_list, player, round):
         selected_unit_img, selected_unit_coords = player.display_selected()
         WIN.blit(selected_unit_img, selected_unit_coords)
 
-
+    
 
     if round['number'] > 1:
         round_start_text = MAIN_FONT.render(f"Next round ({round['number']}): {(ROUND_COOLDOWN - (pygame.time.get_ticks() - round['time']))//1000}", 1, COLORS["black"]) 

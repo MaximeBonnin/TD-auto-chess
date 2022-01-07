@@ -116,6 +116,7 @@ class Tower:
         self.player = player
         self.kills = 0      # Zählen von kills für stats oder lvl system?
         self.rect = self.tile.rect
+        #self.range_rect = pygame.draw.circle(WIN, COLORS["red"], (10, 10), self.towerType["range"])
         self.surface = pygame.Surface(TOWER_SIZE)
         self.surface.fill(COLORS["green_dark"])
         self.inner_surface = pygame.Surface((TOWER_SIZE[0]-8, TOWER_SIZE[1]-8)) #TODO der Tower hat nach dem platzieren immer noch einen dunkelgrünen rand, den würde ich gerne durch das img ersetzen, aber ich habe keine Ahnung wie das geh
@@ -340,7 +341,7 @@ class Player:
         self.selected = towerType
 
 
-    def display_info(self):
+    def display_info(self): #TODO this is making the game slow somehow? idk
         x, y = WIDTH, HEIGHT-200
 
         info_box = pygame.Surface((MENU_W, 200))
