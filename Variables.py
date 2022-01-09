@@ -40,7 +40,8 @@ COLORS = {
     "green_dark": (0, 120, 0),
     "red": (255, 0, 0),
     "white": (255, 255, 255),
-    "yellow": (255, 255, 0)
+    "yellow": (255, 255, 0),
+    "orange": (255, 136, 0)
 }
 
 TOWER_TYPES = {
@@ -52,7 +53,31 @@ TOWER_TYPES = {
         "proj_type": "basic",
         "crit_chance": 0.1,
         "display_name": "Basic Tower",
-        "skin": tower_base_img
+        "skin": tower_base_img,
+        "upgrades": {
+            "upgrade_a": {
+                "atk_speed": 1,    
+                "cost": 10,
+                "color": "gray",
+                "range": 300,
+                "proj_type": "basic",
+                "crit_chance": 0.1,
+                "display_name": "Ranged Basic Tower",
+                "skin": tower_base_img,
+                "upgrades": {}
+            },
+            "upgrade_b": {
+                "atk_speed": 0.5,    
+                "cost": 10,
+                "color": "gray",
+                "range": 150,
+                "proj_type": "basic",
+                "crit_chance": 0.1,
+                "display_name": "Fast Basic Tower",
+                "skin": tower_base_img,
+                "upgrades": {}
+            }
+        }
     },
     "singleTarget": {
         "atk_speed": 5,     
@@ -62,7 +87,31 @@ TOWER_TYPES = {
         "proj_type": "seeking",
         "crit_chance": 0.5,
         "display_name": "Single Target Tower",
-        "skin": tower_base_img
+        "skin": tower_base_img,
+        "upgrades": {
+            "upgrade_a": {
+                "atk_speed": 5,     
+                "cost": 25,
+                "color": "orange",
+                "range": 600,
+                "proj_type": "seeking",
+                "crit_chance": 0.5,
+                "display_name": "Ranged Single Target Tower",
+                "skin": tower_base_img,
+                "upgrades": {}
+            },
+            "upgrade_b": {
+                "atk_speed": 2.5,     
+                "cost": 25,
+                "color": "orange",
+                "range": 300,
+                "proj_type": "seeking",
+                "crit_chance": 0.5,
+                "display_name": "Fast Single Target Tower",
+                "skin": tower_base_img,
+                "upgrades": {}
+            }
+        }
     },
     "AoE": {
         "atk_speed": 3,     
@@ -72,7 +121,31 @@ TOWER_TYPES = {
         "proj_type": "AoE",
         "crit_chance": 0.1,
         "display_name": "Explosion Tower",
-        "skin": tower_base_img
+        "skin": tower_base_img,
+        "upgrades": {
+            "upgrade_a": {
+                "atk_speed": 3,     
+                "cost": 50,
+                "color": "red",
+                "range": 200,
+                "proj_type": "AoE",
+                "crit_chance": 0.1,
+                "display_name": "Ranged Explosion Tower",
+                "skin": tower_base_img,
+                "upgrades": {}
+            },
+            "upgrade_b": {
+                "atk_speed": 3,     
+                "cost": 50,
+                "color": "red",
+                "range": 100,
+                "proj_type": "AoE",
+                "crit_chance": 0.5,
+                "display_name": "Crit Explosion Tower",
+                "skin": tower_base_img,
+                "upgrades": {}
+            }
+        }
     },
     "superFast": {
         "atk_speed": 0.2,     
@@ -82,7 +155,31 @@ TOWER_TYPES = {
         "proj_type": "weak",
         "crit_chance": 0.2,
         "display_name": "Fast Tower",
-        "skin": tower_base_img
+        "skin": tower_base_img,
+        "upgrades": {
+            "upgrade_a": {
+                "atk_speed": 0.1,     
+                "cost": 50,
+                "color": "blue",
+                "range": 100,
+                "proj_type": "weak",
+                "crit_chance": 0.2,
+                "display_name": "Mega Fast Tower",
+                "skin": tower_base_img,
+                "upgrades": {}
+            },
+            "upgrade_b": {
+                "atk_speed": 0.2,     
+                "cost": 50,
+                "color": "blue",
+                "range": 100,
+                "proj_type": "weak",
+                "crit_chance": 1,
+                "display_name": "Fast Crit Tower",
+                "skin": tower_base_img,
+                "upgrades": {}
+            }
+        }
     },
     # "lightning": {
     #     "atk_speed": 0.2,     

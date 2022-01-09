@@ -82,11 +82,11 @@ def make_map():
 
 
 def make_buttons():
-    Button("start round", (WIDTH + 10, 100))
+    Button("start round", "Start Round", (WIDTH + 10, 100))
 
     for t in TOWER_TYPES.keys():
         y_pos = BUTTON_LIST[-1].rect.bottomleft[1] + 10
-        Button(t, (WIDTH + 10, y_pos))
+        Button(t, TOWER_TYPES[t]["display_name"], (WIDTH + 10, y_pos))
 
 
 def draw_window(tile_list, player, round):

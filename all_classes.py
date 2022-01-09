@@ -67,10 +67,10 @@ class Projectile:
                     Effect("explosion", self.AoE_rect)
                     for unit2 in UNIT_LIST:
                         if unit2.rect.colliderect(self.AoE_rect):
-                            unit2.take_dmg(self.projType["dmg"], self.origin)
+                            unit2.take_dmg(self.dmg, self.origin)
             
                 else:
-                    unit.take_dmg(self.projType["dmg"], self.origin)
+                    unit.take_dmg(self.dmg, self.origin)
                 PROJ_LIST.remove(self)
                 return
             elif self.x < 0 or self.x > WIDTH:
@@ -116,7 +116,6 @@ class Tower:
         self.player = player
         self.kills = 0      # Zählen von kills für stats oder lvl system?
         self.rect = self.tile.rect
-        #self.range_rect = pygame.draw.circle(WIN, COLORS["red"], (10, 10), self.towerType["range"])
         self.surface = pygame.Surface(TOWER_SIZE)
         self.surface.fill(COLORS["green_dark"])
         self.inner_surface = pygame.Surface((TOWER_SIZE[0]-8, TOWER_SIZE[1]-8)) #TODO der Tower hat nach dem platzieren immer noch einen dunkelgrünen rand, den würde ich gerne durch das img ersetzen, aber ich habe keine Ahnung wie das geh
@@ -194,6 +193,22 @@ class Tower:
         explosion.play()
         self.player.money += self.towerType["cost"] * 0.75
         TOWER_LIST.remove(self)
+        self.tile.has_tower = False
+
+    def upgrade(self, direction):
+        if direction in self.towerType["upgrades"].keys():
+            print(f"Upgrading {self.towerType['display_name']} to {self.towerType['upgrades'][direction]['display_name']}")
+            self.towerType = self.towerType["upgrades"][direction]
+
+            self.surface.fill(COLORS["green_dark"])
+            self.inner_surface = pygame.Surface((TOWER_SIZE[0]-8, TOWER_SIZE[1]-8)) #TODO der Tower hat nach dem platzieren immer noch einen dunkelgrünen rand, den würde ich gerne durch das img ersetzen, aber ich habe keine Ahnung wie das geh
+            self.color = COLORS[self.towerType["color"]]
+            self.inner_surface.fill(self.color)
+            self.surface.blit(self.inner_surface, (4, 4))
+            self.surface.blit(tower_base_img, (0,0))
+            self.surface.blit(tower_turret_img, (0,0))
+        else:
+            print("No upgrade here")
 
 
 class Unit:
@@ -322,6 +337,8 @@ class Player:
         self.selected = None #TODO rename this and change it with actual selected
         self.info_requested = None
         self.unit_sell_button = None
+        self.unit_upgrade_a_button = None
+        self.unit_upgrade_b_button = None
 
     def lose_life(self, amount):
         self.hp -= amount
@@ -346,16 +363,23 @@ class Player:
 
         info_box = pygame.Surface((MENU_W, 200))
         info_box.fill(COLORS[self.info_requested.towerType["color"]])
-        if self.info_requested is None:
-            print("idk")
-        else: 
-            info = MAIN_FONT.render(f"{self.info_requested.towerType['display_name']}", 1, COLORS["black"])
-        
-            info_box.blit(info, (0, 0))
 
-            # sell button, upgrade button, stats
-            self.unit_sell_button = Button("sell", (x, y+20))
-            info_box.blit(self.unit_sell_button.surface, (0, 20))
+        info = MAIN_FONT.render(f"{self.info_requested.towerType['display_name']}", 1, COLORS["black"])
+    
+        info_box.blit(info, (0, 0))
+
+        # sell button, upgrade button, stats
+        if self.unit_sell_button not in BUTTON_LIST:
+            self.unit_sell_button = Button("sell", "Sell", (x, y+20))
+        info_box.blit(self.unit_sell_button.surface, (0, 20))
+
+        if self.unit_upgrade_a_button not in BUTTON_LIST:
+            self.unit_upgrade_a_button = Button("upgrade_a", self.info_requested.towerType["upgrades"]["upgrade_a"]["display_name"], (x, y+40))
+        info_box.blit(self.unit_upgrade_a_button.surface, (0, 40))
+
+        if self.unit_upgrade_b_button not in BUTTON_LIST:
+            self.unit_upgrade_b_button = Button("upgrade_b", self.info_requested.towerType["upgrades"]["upgrade_b"]["display_name"], (x, y+60))
+        info_box.blit(self.unit_upgrade_b_button.surface, (0, 60))
         
 
         return (info_box, (x, y))
@@ -372,11 +396,9 @@ class MapNode:
 
 
 class Button:
-    def __init__(self, text, coords):
+    def __init__(self, text, text_to_render, coords):
         self.text = text
-        self.text_to_render = text
-        if self.text in TOWER_TYPES.keys():
-            self.text_to_render = f"{TOWER_TYPES[self.text]['cost']} - {self.text}" 
+        self.text_to_render = text_to_render  
         self.rendered_text = MAIN_FONT.render(self.text_to_render, 1, COLORS["black"])
         self.coords = coords
         self.pressed_down = False
@@ -401,6 +423,12 @@ class Button:
             if player.info_requested:
                 player.info_requested.sell()
             player.request_info()
+        elif self.text == "upgrade_a":
+            print("works a")
+            player.info_requested.upgrade("upgrade_a")
+        elif self.text == "upgrade_b":
+            print("works b")
+            player.info_requested.upgrade("upgrade_b")
         else:
             for t in TOWER_TYPES.keys():
                 if self.text == t:
