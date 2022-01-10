@@ -58,7 +58,7 @@ TOWER_TYPES = {
         "upgrades": {
             "upgrade_a": {
                 "atk_speed": 1,    
-                "cost": 100,
+                "cost": 25,
                 "color": "gray",
                 "range": 300,
                 "proj_type": "basic",
@@ -69,7 +69,7 @@ TOWER_TYPES = {
             },
             "upgrade_b": {
                 "atk_speed": 0.5,    
-                "cost": 100,
+                "cost": 25,
                 "color": "gray",
                 "range": 150,
                 "proj_type": "basic",
@@ -92,7 +92,7 @@ TOWER_TYPES = {
         "upgrades": {
             "upgrade_a": {
                 "atk_speed": 5,     
-                "cost": 250,
+                "cost": 150,
                 "color": "orange",
                 "range": 600,
                 "proj_type": "seeking",
@@ -102,8 +102,8 @@ TOWER_TYPES = {
                 "upgrades": {}
             },
             "upgrade_b": {
-                "atk_speed": 2.5,     
-                "cost": 250,
+                "atk_speed": 2,     
+                "cost": 150,
                 "color": "orange",
                 "range": 300,
                 "proj_type": "seeking",
@@ -128,7 +128,7 @@ TOWER_TYPES = {
                 "atk_speed": 3,     
                 "cost": 500,
                 "color": "red",
-                "range": 200,
+                "range": 300,
                 "proj_type": "AoE",
                 "crit_chance": 0.1,
                 "display_name": "Ranged Explosion Tower",
@@ -141,7 +141,7 @@ TOWER_TYPES = {
                 "color": "red",
                 "range": 100,
                 "proj_type": "AoE",
-                "crit_chance": 0.5,
+                "crit_chance": 0.75,
                 "display_name": "Crit Explosion Tower",
                 "skin": tower_base_img,
                 "upgrades": {}
@@ -159,7 +159,7 @@ TOWER_TYPES = {
         "skin": tower_base_img,
         "upgrades": {
             "upgrade_a": {
-                "atk_speed": 0.1,     
+                "atk_speed": 0.04,     
                 "cost": 500,
                 "color": "blue",
                 "range": 100,

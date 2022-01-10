@@ -210,7 +210,7 @@ class Tower:
 
             self.player.money -= self.towerType['cost']
         elif direction in self.towerType["upgrades"].keys() and self.player.money < self.towerType['upgrades'][direction]['cost']:
-            print("Not enough money to upgrade")
+            print(f"Not enough money: {self.towerType['upgrades'][direction]['cost']} needed.")
             error_sound.play()
         else:
             print("No upgrade here")
