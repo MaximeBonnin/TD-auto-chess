@@ -89,6 +89,48 @@ def make_buttons():
         Button(t, TOWER_TYPES[t]["display_name"], (WIDTH + 10, y_pos))
 
 
+def info_box(player):
+    info_box = pygame.Surface((MENU_W, 200))
+    x, y = WIDTH, HEIGHT-200
+
+    if player.info_requested != None: # displays info about towers
+
+        info_box.fill(COLORS[player.info_requested.towerType["color"]])
+
+        info = MAIN_FONT.render(f"{player.info_requested.towerType['display_name']}", 1, COLORS["black"])
+
+        info_box.blit(info, (0, 0))
+
+        if player.unit_sell_button not in BUTTON_LIST:
+            player.unit_sell_button = Button("sell", "Sell", (x+10, y+20))
+        info_box.blit(player.unit_sell_button.surface, (10, 20))
+
+        if player.unit_upgrade_a_button not in BUTTON_LIST:
+            player.unit_upgrade_a_button = Button("upgrade_a", player.info_requested.towerType["upgrades"]["upgrade_a"]["display_name"], (x+10, y+40))
+        info_box.blit(player.unit_upgrade_a_button.surface, (10, 40))
+
+        if player.unit_upgrade_b_button not in BUTTON_LIST:
+            player.unit_upgrade_b_button = Button("upgrade_b", player.info_requested.towerType["upgrades"]["upgrade_b"]["display_name"], (x+10, y+60))
+        info_box.blit(player.unit_upgrade_b_button.surface, (10, 60))
+
+    else: # before first select: display controls
+        tutorial_info = [
+            "Click and drop towers",
+            "Right click to unselect",
+            "Hold Lshift to keep selected",
+            "Upgrade and sell buttons"
+        ]
+
+        headline = MAIN_FONT.render("Controls", 1, COLORS["white"])
+        info_box.blit(headline, (10, 10))
+
+        for line in tutorial_info:
+            text = MEDIUM_FONT.render(line, 1, COLORS["white"])
+            info_box.blit(text, (10, 30 + tutorial_info.index(line) * text.get_height()))
+
+    return info_box
+
+
 def draw_window(tile_list, player, round):
     # Function that draws everything on screen (every frame)
 
@@ -112,9 +154,7 @@ def draw_window(tile_list, player, round):
         WIN.blit(e.surface, e.rect)
         e.tick()
 
-    if player.info_requested != None: # displays info about towers
-        info, x_y = player.display_info()
-        WIN.blit(info, x_y)
+    WIN.blit(info_box(player), (WIDTH, HEIGHT-200))
 
     for b in BUTTON_LIST: # display all buttons on screen
         b.check_hover()
