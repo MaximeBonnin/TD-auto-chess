@@ -94,12 +94,13 @@ def info_box(player):
     x, y = WIDTH, HEIGHT-200
 
     if player.info_requested != None: # displays info about towers
-
+        
+        # Buttons for selling and upgrades
         info_box.fill(COLORS[player.info_requested.towerType["color"]])
 
         info = MAIN_FONT.render(f"{player.info_requested.towerType['display_name']}", 1, COLORS["black"])
 
-        info_box.blit(info, (0, 0))
+        info_box.blit(info, (10, 0))
 
         if player.unit_sell_button not in BUTTON_LIST:
             player.unit_sell_button = Button("sell", "Sell", (x+10, y+20))
@@ -112,6 +113,17 @@ def info_box(player):
         if player.unit_upgrade_b_button not in BUTTON_LIST:
             player.unit_upgrade_b_button = Button("upgrade_b", player.info_requested.towerType["upgrades"]["upgrade_b"]["display_name"], (x+10, y+60))
         info_box.blit(player.unit_upgrade_b_button.surface, (10, 60))
+
+        # Stats
+        title_render = MAIN_FONT.render(f"Stats", 1, COLORS["black"])
+        info_box.blit(title_render, (10, 100))
+
+        index = 0
+        for stat in player.info_requested.stats:
+            stat_txt = SMALL_FONT.render(f"{stat}: {player.info_requested.stats[stat]}", 1, COLORS["black"])
+            info_box.blit(stat_txt, (10, 100 + title_render.get_height() + index * stat_txt.get_height()))
+            index += 1
+
 
     else: # before first select: display controls
         tutorial_info = [
@@ -216,7 +228,7 @@ def menu_loop():
 
         WIN.blit(menu_img, (0, 0))
         pygame.display.update()
-        
+
     pygame.quit()
 
 # ------------------- Save for multiple files being executed -------------------

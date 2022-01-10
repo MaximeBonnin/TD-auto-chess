@@ -114,7 +114,14 @@ class Tower:
         self.tile = tile
         self.last_shot = pygame.time.get_ticks()
         self.player = player
-        self.kills = 0      # Zählen von kills für stats oder lvl system?
+        self.stats = {
+            "Attack Speed": self.towerType["atk_speed"],
+            "Crit Chance": self.towerType["crit_chance"],
+            "Range": self.towerType["range"],
+            "Projectile": self.towerType["proj_type"],
+            "Proj. Damage": PROJ_TYPES[self.towerType["proj_type"]]["dmg"],
+            "Kills": 0
+        }
         self.rect = self.tile.rect
         self.surface = pygame.Surface(TOWER_SIZE)
         self.surface.fill(COLORS["green_dark"])
@@ -225,7 +232,7 @@ class Unit:
         self.next_node = self.current_node.next_val
         self.player = player
         self.lvl = round["number"]
-        self.max_hp = self.unitType["hp"] * 1.1 ** self.lvl # 10% mehr hp pro runde? zu viel?
+        self.max_hp = self.unitType["hp"] * 1.05 ** self.lvl # 5% mehr hp pro runde? zu viel?
         self.hp = self.unitType["hp"] * 1.1 ** self.lvl
         self.moved = 0
 
@@ -246,7 +253,7 @@ class Unit:
         UNIT_LIST.append(self)
     
     def die(self, origin):
-        origin.kills += 1
+        origin.stats["kills"] += 1
         origin.player.money += self.unitType["gold_value"]
         explosion.play()
         UNIT_LIST.remove(self)
@@ -390,7 +397,7 @@ class Button:
     def __init__(self, text, text_to_render, coords):
         self.text = text
         self.text_to_render = text_to_render  
-        self.rendered_text = MAIN_FONT.render(self.text_to_render, 1, COLORS["black"])
+        self.rendered_text = MEDIUM_FONT.render(self.text_to_render, 1, COLORS["black"])
         self.coords = coords
         self.pressed_down = False
         self.size = (MENU_W - 20, self.rendered_text.get_height()) # ?
@@ -406,7 +413,7 @@ class Button:
 
     def update_text(self, text_to_render):
         self.text_to_render = text_to_render
-        self.rendered_text = MAIN_FONT.render(self.text_to_render, 1, COLORS["black"])
+        self.rendered_text = MEDIUM_FONT.render(self.text_to_render, 1, COLORS["black"])
         self.surface.fill(self.color)
         self.surface.blit(self.rendered_text, self.coords)
 

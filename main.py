@@ -67,7 +67,7 @@ def main():
                 elif event.button == 3:     # rechtcklick spawn turm 
                     player.select()
 
-            elif event.type == USEREVENTS["round_start"]: # triggers after every coolddown or when button is pressed
+            elif event.type == USEREVENTS["round_start"]: # triggers after every coolddown or when button is pressed #TODO make this not be shitty when lagging
                 handle_rounds(round)
                 units_to_spawn = round["number"]
 
