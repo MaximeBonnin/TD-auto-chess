@@ -10,6 +10,7 @@ WIN = pygame.display.set_mode((WIDTH+MENU_W, HEIGHT))
 FPS = 60
 
 MAIN_FONT = pygame.font.SysFont("Arial", 20)
+MEDIUM_FONT = pygame.font.SysFont("Arial", 15)
 SMALL_FONT = pygame.font.SysFont("Arial", 10)
 ROUND_COOLDOWN = 25*1000 # in milliseconds
 

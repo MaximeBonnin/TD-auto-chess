@@ -357,33 +357,6 @@ class Player:
     def select(self, towerType = None): # select given tower type, if no type is given -> set to None
         self.selected = towerType
 
-
-    def display_info(self): #TODO this is making the game slow somehow? idk
-        x, y = WIDTH, HEIGHT-200
-
-        info_box = pygame.Surface((MENU_W, 200))
-        info_box.fill(COLORS[self.info_requested.towerType["color"]])
-
-        info = MAIN_FONT.render(f"{self.info_requested.towerType['display_name']}", 1, COLORS["black"])
-    
-        info_box.blit(info, (0, 0))
-
-        # sell button, upgrade button, stats
-        if self.unit_sell_button not in BUTTON_LIST:
-            self.unit_sell_button = Button("sell", "Sell", (x, y+20))
-        info_box.blit(self.unit_sell_button.surface, (0, 20))
-
-        if self.unit_upgrade_a_button not in BUTTON_LIST:
-            self.unit_upgrade_a_button = Button("upgrade_a", self.info_requested.towerType["upgrades"]["upgrade_a"]["display_name"], (x, y+40))
-        info_box.blit(self.unit_upgrade_a_button.surface, (0, 40))
-
-        if self.unit_upgrade_b_button not in BUTTON_LIST:
-            self.unit_upgrade_b_button = Button("upgrade_b", self.info_requested.towerType["upgrades"]["upgrade_b"]["display_name"], (x, y+60))
-        info_box.blit(self.unit_upgrade_b_button.surface, (0, 60))
-        
-
-        return (info_box, (x, y))
-
     def request_info(self, tower = None):
         self.info_requested = tower
 
