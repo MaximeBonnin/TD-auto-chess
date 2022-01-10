@@ -63,7 +63,7 @@ TOWER_TYPES = {
                 "range": 300,
                 "proj_type": "basic",
                 "crit_chance": 0.1,
-                "display_name": "Ranged Basic Tower",
+                "display_name": "Ranged Tower",
                 "skin": tower_base_img,
                 "upgrades": {}
             },
@@ -74,7 +74,7 @@ TOWER_TYPES = {
                 "range": 150,
                 "proj_type": "basic",
                 "crit_chance": 0.1,
-                "display_name": "Fast Basic Tower",
+                "display_name": "Fast Tower",
                 "skin": tower_base_img,
                 "upgrades": {}
             }
@@ -87,7 +87,7 @@ TOWER_TYPES = {
         "range": 300,
         "proj_type": "seeking",
         "crit_chance": 0.5,
-        "display_name": "Single Target Tower",
+        "display_name": "Sniper Tower",
         "skin": tower_base_img,
         "upgrades": {
             "upgrade_a": {
@@ -97,7 +97,7 @@ TOWER_TYPES = {
                 "range": 600,
                 "proj_type": "seeking",
                 "crit_chance": 0.5,
-                "display_name": "Ranged Single Target Tower",
+                "display_name": "Long Range Tower",
                 "skin": tower_base_img,
                 "upgrades": {}
             },
@@ -108,7 +108,7 @@ TOWER_TYPES = {
                 "range": 300,
                 "proj_type": "seeking",
                 "crit_chance": 0.5,
-                "display_name": "Fast Single Target Tower",
+                "display_name": "Fast Sniper Tower",
                 "skin": tower_base_img,
                 "upgrades": {}
             }
@@ -131,7 +131,7 @@ TOWER_TYPES = {
                 "range": 300,
                 "proj_type": "AoE",
                 "crit_chance": 0.1,
-                "display_name": "Ranged Explosion Tower",
+                "display_name": "Mortar Tower",
                 "skin": tower_base_img,
                 "upgrades": {}
             },
@@ -142,7 +142,7 @@ TOWER_TYPES = {
                 "range": 100,
                 "proj_type": "AoE",
                 "crit_chance": 0.75,
-                "display_name": "Crit Explosion Tower",
+                "display_name": "Nuke Tower",
                 "skin": tower_base_img,
                 "upgrades": {}
             }
@@ -155,7 +155,7 @@ TOWER_TYPES = {
         "range": 100,
         "proj_type": "weak",
         "crit_chance": 0.2,
-        "display_name": "Fast Tower",
+        "display_name": "PewPew Tower",
         "skin": tower_base_img,
         "upgrades": {
             "upgrade_a": {
@@ -165,7 +165,7 @@ TOWER_TYPES = {
                 "range": 100,
                 "proj_type": "weak",
                 "crit_chance": 0.2,
-                "display_name": "Mega Fast Tower",
+                "display_name": "PewPewPew Tower",
                 "skin": tower_base_img,
                 "upgrades": {}
             },
@@ -176,7 +176,7 @@ TOWER_TYPES = {
                 "range": 100,
                 "proj_type": "weak",
                 "crit_chance": 1,
-                "display_name": "Fast Crit Tower",
+                "display_name": "PewPewBang Tower",
                 "skin": tower_base_img,
                 "upgrades": {}
             }

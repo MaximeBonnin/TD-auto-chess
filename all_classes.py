@@ -200,6 +200,7 @@ class Tower:
         explosion.play()
         self.player.money += self.towerType["cost"] * 0.75
         TOWER_LIST.remove(self)
+        self.player.request_info()
         self.tile.has_tower = False
 
     def upgrade(self, direction):
@@ -216,6 +217,7 @@ class Tower:
             self.surface.blit(tower_turret_img, (0,0))
 
             self.player.money -= self.towerType['cost']
+            self.player.request_info()
         elif direction in self.towerType["upgrades"].keys() and self.player.money < self.towerType['upgrades'][direction]['cost']:
             print(f"Not enough money: {self.towerType['upgrades'][direction]['cost']} needed.")
             error_sound.play()
@@ -376,7 +378,15 @@ class Player:
     def request_info(self, tower = None):
         self.info_requested = tower
 
-        if "upgrade_a" in self.info_requested.towerType["upgrades"].keys():
+        if self.info_requested == None:
+            if self.unit_upgrade_a_button in BUTTON_LIST:
+                BUTTON_LIST.remove(self.unit_upgrade_a_button)
+            if self.unit_upgrade_b_button in BUTTON_LIST:
+                BUTTON_LIST.remove(self.unit_upgrade_b_button)
+            if self.unit_sell_button in BUTTON_LIST:
+                BUTTON_LIST.remove(self.unit_sell_button)
+
+        elif "upgrade_a" in self.info_requested.towerType["upgrades"].keys():
             if self.unit_upgrade_a_button != None:
                 self.unit_upgrade_a_button.update_text(self.info_requested.towerType["upgrades"]["upgrade_a"]["display_name"])
 
@@ -426,13 +436,12 @@ class Button:
         elif self.text == "sell":
             if player.info_requested:
                 player.info_requested.sell()
-            player.request_info()
         elif self.text == "upgrade_a":
-            print("works a")
-            player.info_requested.upgrade("upgrade_a")
+            if player.info_requested:
+                player.info_requested.upgrade("upgrade_a")
         elif self.text == "upgrade_b":
-            print("works b")
-            player.info_requested.upgrade("upgrade_b")
+            if player.info_requested:
+                player.info_requested.upgrade("upgrade_b")
         else:
             for t in TOWER_TYPES.keys():
                 if self.text == t:

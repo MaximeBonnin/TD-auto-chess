@@ -86,14 +86,14 @@ def make_buttons():
 
     for t in TOWER_TYPES.keys():
         y_pos = BUTTON_LIST[-1].rect.bottomleft[1] + 10
-        Button(t, TOWER_TYPES[t]["display_name"], (WIDTH + 10, y_pos))
+        Button(t, f"{TOWER_TYPES[t]['cost']}: {TOWER_TYPES[t]['display_name']}", (WIDTH + 10, y_pos))
 
 
 def info_box(player):
     info_box = pygame.Surface((MENU_W, 200))
     x, y = WIDTH, HEIGHT-200
 
-    if player.info_requested != None: # displays info about towers
+    if player.info_requested: # displays info about towers
         
         # Buttons for selling and upgrades
         info_box.fill(COLORS[player.info_requested.towerType["color"]])
@@ -103,15 +103,15 @@ def info_box(player):
         info_box.blit(info, (10, 0))
 
         if player.unit_sell_button not in BUTTON_LIST:
-            player.unit_sell_button = Button("sell", "Sell", (x+10, y+20))
+            player.unit_sell_button = Button("sell", f"Sell (75%): {player.info_requested.towerType['cost'] * 0.75}", (x+10, y+20))
         info_box.blit(player.unit_sell_button.surface, (10, 20))
 
-        if player.unit_upgrade_a_button not in BUTTON_LIST:
-            player.unit_upgrade_a_button = Button("upgrade_a", player.info_requested.towerType["upgrades"]["upgrade_a"]["display_name"], (x+10, y+40))
+        if player.unit_upgrade_a_button not in BUTTON_LIST and "upgrade_a" in player.info_requested.towerType["upgrades"].keys():
+            player.unit_upgrade_a_button = Button("upgrade_a", f'{player.info_requested.towerType["upgrades"]["upgrade_a"]["cost"]}: {player.info_requested.towerType["upgrades"]["upgrade_a"]["display_name"]}', (x+10, y+40))
         info_box.blit(player.unit_upgrade_a_button.surface, (10, 40))
 
-        if player.unit_upgrade_b_button not in BUTTON_LIST:
-            player.unit_upgrade_b_button = Button("upgrade_b", player.info_requested.towerType["upgrades"]["upgrade_b"]["display_name"], (x+10, y+60))
+        if player.unit_upgrade_b_button not in BUTTON_LIST and "upgrade_a" in player.info_requested.towerType["upgrades"].keys():
+            player.unit_upgrade_b_button = Button("upgrade_b", f'{player.info_requested.towerType["upgrades"]["upgrade_a"]["cost"]}: {player.info_requested.towerType["upgrades"]["upgrade_b"]["display_name"]}', (x+10, y+60))
         info_box.blit(player.unit_upgrade_b_button.surface, (10, 60))
 
         # Stats
