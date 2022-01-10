@@ -248,7 +248,7 @@ PROJ_TYPES = {
         "color": "blue_light"
     },
     "AoE": {
-        "dmg": 1,
+        "dmg": 2,
         "speed": 10,
         "spread": 1, # ???
         "AoE": True,
