@@ -196,19 +196,25 @@ class Tower:
         self.tile.has_tower = False
 
     def upgrade(self, direction):
-        if direction in self.towerType["upgrades"].keys():
+        if direction in self.towerType["upgrades"].keys() and self.player.money >= self.towerType['upgrades'][direction]['cost']:
             print(f"Upgrading {self.towerType['display_name']} to {self.towerType['upgrades'][direction]['display_name']}")
             self.towerType = self.towerType["upgrades"][direction]
 
             self.surface.fill(COLORS["green_dark"])
-            self.inner_surface = pygame.Surface((TOWER_SIZE[0]-8, TOWER_SIZE[1]-8)) #TODO der Tower hat nach dem platzieren immer noch einen dunkelgrünen rand, den würde ich gerne durch das img ersetzen, aber ich habe keine Ahnung wie das geh
+            self.inner_surface = pygame.Surface((TOWER_SIZE[0]-8, TOWER_SIZE[1]-8))
             self.color = COLORS[self.towerType["color"]]
             self.inner_surface.fill(self.color)
             self.surface.blit(self.inner_surface, (4, 4))
             self.surface.blit(tower_base_img, (0,0))
             self.surface.blit(tower_turret_img, (0,0))
+
+            self.player.money -= self.towerType['cost']
+        elif direction in self.towerType["upgrades"].keys() and self.player.money < self.towerType['upgrades'][direction]['cost']:
+            print("Not enough money to upgrade")
+            error_sound.play()
         else:
             print("No upgrade here")
+            error_sound.play()
 
 
 class Unit:

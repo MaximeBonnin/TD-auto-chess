@@ -12,7 +12,7 @@ FPS = 60
 MAIN_FONT = pygame.font.SysFont("Arial", 20)
 MEDIUM_FONT = pygame.font.SysFont("Arial", 15)
 SMALL_FONT = pygame.font.SysFont("Arial", 10)
-ROUND_COOLDOWN = 25*1000 # in milliseconds
+ROUND_COOLDOWN = 15*1000 # in milliseconds
 
 TILE_SIZE = (32, 32)
 PROJ_SIZE = (4, 4)
@@ -58,7 +58,7 @@ TOWER_TYPES = {
         "upgrades": {
             "upgrade_a": {
                 "atk_speed": 1,    
-                "cost": 10,
+                "cost": 100,
                 "color": "gray",
                 "range": 300,
                 "proj_type": "basic",
@@ -69,7 +69,7 @@ TOWER_TYPES = {
             },
             "upgrade_b": {
                 "atk_speed": 0.5,    
-                "cost": 10,
+                "cost": 100,
                 "color": "gray",
                 "range": 150,
                 "proj_type": "basic",
@@ -92,7 +92,7 @@ TOWER_TYPES = {
         "upgrades": {
             "upgrade_a": {
                 "atk_speed": 5,     
-                "cost": 25,
+                "cost": 250,
                 "color": "orange",
                 "range": 600,
                 "proj_type": "seeking",
@@ -103,7 +103,7 @@ TOWER_TYPES = {
             },
             "upgrade_b": {
                 "atk_speed": 2.5,     
-                "cost": 25,
+                "cost": 250,
                 "color": "orange",
                 "range": 300,
                 "proj_type": "seeking",
@@ -126,7 +126,7 @@ TOWER_TYPES = {
         "upgrades": {
             "upgrade_a": {
                 "atk_speed": 3,     
-                "cost": 50,
+                "cost": 500,
                 "color": "red",
                 "range": 200,
                 "proj_type": "AoE",
@@ -137,7 +137,7 @@ TOWER_TYPES = {
             },
             "upgrade_b": {
                 "atk_speed": 3,     
-                "cost": 50,
+                "cost": 500,
                 "color": "red",
                 "range": 100,
                 "proj_type": "AoE",
@@ -160,7 +160,7 @@ TOWER_TYPES = {
         "upgrades": {
             "upgrade_a": {
                 "atk_speed": 0.1,     
-                "cost": 50,
+                "cost": 500,
                 "color": "blue",
                 "range": 100,
                 "proj_type": "weak",
@@ -171,7 +171,7 @@ TOWER_TYPES = {
             },
             "upgrade_b": {
                 "atk_speed": 0.2,     
-                "cost": 50,
+                "cost": 500,
                 "color": "blue",
                 "range": 100,
                 "proj_type": "weak",
