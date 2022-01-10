@@ -238,6 +238,10 @@ class Unit:
         self.surface.blit(self.unitType["skin"], (0,0))
         self.surface.set_colorkey((0,0,0))
 
+        self.hp_bar = pygame.Surface((self.surface.get_width(), 3))
+        self.hp_bar.fill(COLORS["green"])
+        self.surface.blit(self.hp_bar, (0,0))
+
         global TOWER_LIST   # eig schlechte Lösung aber erstmal so: Globale variable mit allen Units
         UNIT_LIST.append(self)
     
@@ -252,14 +256,13 @@ class Unit:
     def take_dmg(self, amount, origin):
         self.hp -= amount
 
-        # color from green -> red based on health
-        health_percent = self.hp/self.max_hp
-        if health_percent < 0:
-            health_percent = 0
-        # self.color = (int(255 * (1-health_percent)), int(255 * health_percent), 0)
-        self.surface = pygame.Surface(self.unitType["size"]) # @MJ sehr nice das du das auch gefunden hast! dann müssen wir mit hp-bar nochmal gucken
-        self.surface.blit(self.unitType["skin"], (0,0))
-        self.surface.set_colorkey((0,0,0))
+        hp_left = self.hp/self.max_hp
+        if hp_left > 0:
+            hp_bar_green = pygame.Surface((self.surface.get_width() * hp_left, 3))
+            self.hp_bar.fill(COLORS["red"])
+            hp_bar_green.fill(COLORS["green"])
+            self.hp_bar.blit(hp_bar_green, (0,0))
+            self.surface.blit(self.hp_bar, (0,0))
 
         hit.play()
         if self.hp <= 0:
