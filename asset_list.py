@@ -7,6 +7,7 @@ pygame.mixer.init()
 MASTER_VOLUME = 0.1
 
 # ------------------- Images -------------------
+
 tower_base_img = pygame.image.load(os.path.join("Assets","Images","tower_base.png"))
 tower_turret_img = pygame.image.load(os.path.join("Assets","Images","tower_turret.png"))
 unit_basic_img = pygame.image.load(os.path.join("Assets","Images","unit_basic.png"))

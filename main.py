@@ -33,10 +33,11 @@ def main():
         "time": 0,
         "number": 1
     }
+
+    menu_loop()
     
     while run:
         clock.tick(FPS)
-        # vlt ersttmal nen Menü? aber kann später kommen
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

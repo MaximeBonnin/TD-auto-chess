@@ -197,6 +197,28 @@ def handle_rounds(round):
     unit_event = pygame.event.Event(USEREVENTS["unit_spawn"])
     pygame.time.set_timer(unit_event, unit_spawn_spacing)
 
+
+def menu_loop():
+    clock = pygame.time.Clock()
+    
+    #menu_surface = pygame.Surface(WIDTH+MENU_W, HEIGHT)
+    menu_img = pygame.image.load(os.path.join("Assets","Images","menu_bg.png"))
+
+    run = True
+    while run:
+        clock.tick(FPS)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    return
+
+        WIN.blit(menu_img, (0, 0))
+        pygame.display.update()
+        
+    pygame.quit()
+
 # ------------------- Save for multiple files being executed -------------------
 
 if __name__ == "__main__":
