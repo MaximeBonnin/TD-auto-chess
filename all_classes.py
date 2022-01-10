@@ -360,6 +360,12 @@ class Player:
     def request_info(self, tower = None):
         self.info_requested = tower
 
+        if self.unit_upgrade_a_button != None:
+            self.unit_upgrade_a_button.update_text(self.info_requested.towerType["upgrades"]["upgrade_a"]["display_name"])
+
+        if self.unit_upgrade_b_button != None:
+            self.unit_upgrade_b_button.update_text(self.info_requested.towerType["upgrades"]["upgrade_b"]["display_name"])
+        
 
 class MapNode:
     def __init__(self, position, prev_val, next_val=None):
@@ -386,6 +392,12 @@ class Button:
         
         BUTTON_LIST.append(self)
 
+    def update_text(self, text_to_render):
+        self.text_to_render = text_to_render
+        self.rendered_text = MAIN_FONT.render(self.text_to_render, 1, COLORS["black"])
+        self.surface.fill(self.color)
+        self.surface.blit(self.rendered_text, self.coords)
+
     def pressed(self, player):
         click.play()
         if self.text == "start round" and self.last_round_start_press + ROUND_COOLDOWN//4 <= pygame.time.get_ticks(): # Button to start the next round early, can't be spammed
@@ -408,7 +420,6 @@ class Button:
                     print(f"Selecting {t} tower")
                     player.select(t)
                     break
-
 
         self.surface.fill(self.color)
         self.surface.blit(self.rendered_text, self.coords)
