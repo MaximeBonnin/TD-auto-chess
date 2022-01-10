@@ -12,7 +12,7 @@ FPS = 60
 MAIN_FONT = pygame.font.SysFont("Arial", 20)
 MEDIUM_FONT = pygame.font.SysFont("Arial", 15)
 SMALL_FONT = pygame.font.SysFont("Arial", 10)
-ROUND_COOLDOWN = 15*1000 # in milliseconds
+ROUND_COOLDOWN = 25*1000 # in milliseconds
 
 TILE_SIZE = (32, 32)
 PROJ_SIZE = (4, 4)
@@ -248,7 +248,7 @@ PROJ_TYPES = {
         "color": "blue_light"
     },
     "AoE": {
-        "dmg": 2,
+        "dmg": 1,
         "speed": 10,
         "spread": 1, # ???
         "AoE": True,

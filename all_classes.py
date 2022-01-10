@@ -219,14 +219,14 @@ class Tower:
 
 class Unit:
     # Class that describes units
-    def __init__(self, unitType, mapNodeHead, player):
+    def __init__(self, unitType, mapNodeHead, player, round):
         self.unitType = UNIT_TYPES[unitType]
         self.current_node = mapNodeHead
         self.next_node = self.current_node.next_val
         self.player = player
-        self.lvl = 1
-        self.max_hp = self.unitType["hp"]
-        self.hp = self.unitType["hp"]
+        self.lvl = round["number"]
+        self.max_hp = self.unitType["hp"] * 1.1 ** self.lvl # 10% mehr hp pro runde? zu viel?
+        self.hp = self.unitType["hp"] * 1.1 ** self.lvl
         self.moved = 0
 
         self.random_move_modifier = random.randint(1, 10)/100
@@ -366,11 +366,14 @@ class Player:
     def request_info(self, tower = None):
         self.info_requested = tower
 
-        if self.unit_upgrade_a_button != None:
-            self.unit_upgrade_a_button.update_text(self.info_requested.towerType["upgrades"]["upgrade_a"]["display_name"])
+        if "upgrade_a" in self.info_requested.towerType["upgrades"].keys():
+            if self.unit_upgrade_a_button != None:
+                self.unit_upgrade_a_button.update_text(self.info_requested.towerType["upgrades"]["upgrade_a"]["display_name"])
 
-        if self.unit_upgrade_b_button != None:
-            self.unit_upgrade_b_button.update_text(self.info_requested.towerType["upgrades"]["upgrade_b"]["display_name"])
+            if self.unit_upgrade_b_button != None:
+                self.unit_upgrade_b_button.update_text(self.info_requested.towerType["upgrades"]["upgrade_b"]["display_name"])
+        else:
+            print("No more upgrades here")
         
 
 class MapNode:

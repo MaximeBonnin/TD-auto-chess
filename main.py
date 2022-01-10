@@ -80,7 +80,7 @@ def main():
             elif event.type == USEREVENTS["unit_spawn"]: # triggers on the start of the round and spawns units until number of units in the round is reached
                 if units_to_spawn > 0:
                     unit = random.choice(list(UNIT_TYPES.keys()))
-                    Unit(unit, mapNodeHead, player)
+                    Unit(unit, mapNodeHead, player, round)
                     units_to_spawn -= 1
                 else:
                     unit_event = pygame.event.Event(USEREVENTS["unit_spawn"])
