@@ -255,7 +255,7 @@ class Unit:
         UNIT_LIST.append(self)
     
     def die(self, origin):
-        origin.stats["kills"] += 1
+        origin.stats["Kills"] += 1
         origin.player.money += self.unitType["gold_value"]
         explosion.play()
         UNIT_LIST.remove(self)
@@ -386,7 +386,7 @@ class Player:
             if self.unit_sell_button in BUTTON_LIST:
                 BUTTON_LIST.remove(self.unit_sell_button)
 
-        elif "upgrade_a" in self.info_requested.towerType["upgrades"].keys():
+        elif "upgrade_a" in self.info_requested.towerType["upgrades"].keys(): #TODO add the price here as well
             if self.unit_upgrade_a_button != None:
                 self.unit_upgrade_a_button.update_text(self.info_requested.towerType["upgrades"]["upgrade_a"]["display_name"])
 

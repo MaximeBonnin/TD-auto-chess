@@ -62,13 +62,13 @@ TOWER_TYPES = {
                 "color": "gray",
                 "range": 300,
                 "proj_type": "basic",
-                "crit_chance": 0.1,
+                "crit_chance": 0.25,
                 "display_name": "Ranged Tower",
                 "skin": tower_base_img,
                 "upgrades": {}
             },
             "upgrade_b": {
-                "atk_speed": 0.5,    
+                "atk_speed": 0.25,    
                 "cost": 25,
                 "color": "gray",
                 "range": 150,
@@ -96,7 +96,7 @@ TOWER_TYPES = {
                 "color": "orange",
                 "range": 600,
                 "proj_type": "seeking",
-                "crit_chance": 0.5,
+                "crit_chance": 1,
                 "display_name": "Long Range Tower",
                 "skin": tower_base_img,
                 "upgrades": {}
@@ -125,8 +125,8 @@ TOWER_TYPES = {
         "skin": tower_base_img,
         "upgrades": {
             "upgrade_a": {
-                "atk_speed": 3,     
-                "cost": 500,
+                "atk_speed": 2,     
+                "cost": 300,
                 "color": "red",
                 "range": 300,
                 "proj_type": "AoE",
@@ -136,12 +136,12 @@ TOWER_TYPES = {
                 "upgrades": {}
             },
             "upgrade_b": {
-                "atk_speed": 3,     
+                "atk_speed": 4,     
                 "cost": 500,
                 "color": "red",
                 "range": 100,
                 "proj_type": "AoE",
-                "crit_chance": 0.75,
+                "crit_chance": 1,
                 "display_name": "Nuke Tower",
                 "skin": tower_base_img,
                 "upgrades": {}
@@ -160,7 +160,7 @@ TOWER_TYPES = {
         "upgrades": {
             "upgrade_a": {
                 "atk_speed": 0.04,     
-                "cost": 500,
+                "cost": 300,
                 "color": "blue",
                 "range": 100,
                 "proj_type": "weak",
@@ -170,11 +170,11 @@ TOWER_TYPES = {
                 "upgrades": {}
             },
             "upgrade_b": {
-                "atk_speed": 0.2,     
-                "cost": 500,
+                "atk_speed": 0.3,     
+                "cost": 300,
                 "color": "blue",
                 "range": 100,
-                "proj_type": "weak",
+                "proj_type": "seeking",
                 "crit_chance": 1,
                 "display_name": "PewPewBang Tower",
                 "skin": tower_base_img,
@@ -221,7 +221,7 @@ UNIT_TYPES = {
 
 PROJ_TYPES = {
     "basic": {
-        "dmg": 3,
+        "dmg": 4,
         "speed": 20,
         "spread": 1, # ???
         "AoE": False,
@@ -239,7 +239,7 @@ PROJ_TYPES = {
         "color": "blue"
     },
     "weak": {
-        "dmg": 1,
+        "dmg": 1.5,
         "speed": 50,
         "spread": 1, # ???
         "AoE": False,
@@ -248,7 +248,7 @@ PROJ_TYPES = {
         "color": "blue_light"
     },
     "AoE": {
-        "dmg": 2,
+        "dmg": 5,
         "speed": 10,
         "spread": 1, # ???
         "AoE": True,

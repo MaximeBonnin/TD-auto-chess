@@ -114,7 +114,7 @@ def info_box(player):
             player.unit_upgrade_b_button = Button("upgrade_b", f'{player.info_requested.towerType["upgrades"]["upgrade_a"]["cost"]}: {player.info_requested.towerType["upgrades"]["upgrade_b"]["display_name"]}', (x+10, y+60))
         info_box.blit(player.unit_upgrade_b_button.surface, (10, 60))
 
-        # Stats
+        # Stats #TODO make this update after upgrade
         title_render = MAIN_FONT.render(f"Stats", 1, COLORS["black"])
         info_box.blit(title_render, (10, 100))
 
