@@ -237,8 +237,11 @@ class Unit:
         self.player = player
         self.lvl = round["number"]
         self.max_hp = self.unitType["hp"] * 1.05 ** self.lvl # 5% mehr hp pro runde? zu viel?
-        self.hp = self.unitType["hp"] * 1.1 ** self.lvl
+        self.hp = self.unitType["hp"] * 1.05 ** self.lvl
         self.special = self.unitType["special"]
+        self.effects = []
+        self.last_stim = 10000
+        self.speed = self.unitType["move_speed"]
         self.moved = 0
 
         self.random_move_modifier = random.randint(1, 10)/100
@@ -277,6 +280,7 @@ class Unit:
     def take_dmg(self, amount, origin):
         self.hp -= amount
 
+        self.check_special()
         self.update_hp_bar()
 
         hit.play()
@@ -284,25 +288,41 @@ class Unit:
             self.die(origin)
 
     def check_special(self):
-        if self.special == "regen":
-            hp_per_sec = self.max_hp * 0.05   # heal 5% of hp per sec 
+        if self.special == "regen":      # heal 5% of hp per sec 
+            hp_per_sec = self.max_hp * 0.05   
             if self.hp < self.max_hp:
                 self.hp += hp_per_sec / FPS
                 self.update_hp_bar()
+
+        elif self.special == "stim":     # speed up after getting hit
+            if self.hp < self.max_hp:
+                stim_cooldown = 8 * 1000
+                now = pygame.time.get_ticks()
+                since_last_stim = now - self.last_stim
+                if since_last_stim > stim_cooldown:
+                    print("Use stimpack!")
+                    self.effects.append("stim")
+                    self.speed = self.speed * 2
+                    self.last_stim = now
+                elif since_last_stim > stim_cooldown/3 and "stim" in self.effects:
+                    print("End stimpack!")
+                    self.effects.remove("stim")
+                    self.speed = self.speed / 2
+
     
     def move(self): # move to next node in path
         if self.current_node.position[0] > self.next_node.position[0]:      # move left
-            self.x -= self.unitType["move_speed"]*(1 + self.random_move_modifier)
+            self.x -= self.speed*(1 + self.random_move_modifier)
         elif self.current_node.position[0] < self.next_node.position[0]:    # move right
-            self.x += self.unitType["move_speed"]*(1 + self.random_move_modifier)
+            self.x += self.speed*(1 + self.random_move_modifier)
         elif self.current_node.position[1] < self.next_node.position[1]:    # move down
-            self.y += self.unitType["move_speed"]*(1 + self.random_move_modifier)
+            self.y += self.speed*(1 + self.random_move_modifier)
         else:                                                               # move up
-            self.y -= self.unitType["move_speed"]*(1 + self.random_move_modifier)
+            self.y -= self.speed*(1 + self.random_move_modifier)
         self.rect.x = self.x
         self.rect.y = self.y
 
-        self.moved += self.unitType["move_speed"]
+        self.moved += self.speed
 
         self.check_special()
         

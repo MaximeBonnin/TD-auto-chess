@@ -202,11 +202,11 @@ UNIT_TYPES = {
         "skin": unit_basic_img
     },
     "fast": {
-        "move_speed": 5,
+        "move_speed": 4,
         "hp": 5,
         "size": (20, 20),          
         "gold_value": 4,
-        "special": False,    
+        "special": "stim",    
         "skin": unit_fast_img
     },
     "tank": {
