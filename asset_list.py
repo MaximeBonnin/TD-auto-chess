@@ -15,6 +15,8 @@ unit_fast_img = pygame.image.load(os.path.join("Assets","Images","unit_fast.png"
 unit_tank_img = pygame.image.load(os.path.join("Assets","Images","unit_tank.png"))
 tile_gras_img = pygame.image.load(os.path.join("Assets","Images","tile_gras.png"))
 tile_path_img = pygame.image.load(os.path.join("Assets","Images","tile_path.png"))
+player_dmg_effect_img = pygame.image.load(os.path.join("Assets","Images","player_dmg_effect.png"))
+explosion_effect_img = pygame.image.load(os.path.join("Assets","Images","explosion.png"))
 
 # ------------------- Sounds -------------------
 pew = pygame.mixer.Sound(os.path.join("Assets","Sound","pew.wav"))

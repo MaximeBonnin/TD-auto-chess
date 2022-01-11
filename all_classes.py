@@ -14,16 +14,18 @@ class Effect:
         self.frame = 1
         self.maxframe = 30
         self.rect = rect
-        self.color = COLORS["red"]
         self.surface = pygame.Surface((self.rect.width, self.rect.height))
-        self.surface.fill(self.color)
+        if self.type == "explosion":
+            self.surface.set_colorkey(COLORS["black"])
+            pygame.draw.circle(self.surface, COLORS["red"], (self.rect.width/2, self.rect.height/2), self.rect.width/2)
+        elif self.type == "player_dmg":
+            self.surface.blit(player_dmg_effect_img, (0, 0))
 
         EFFECT_LIST.append(self)
 
     def tick(self):
         self.frame += 1
         self.surface.set_alpha(255 - 255 * self.frame/self.maxframe)
-        self.surface.fill(self.color)
 
         if self.frame > self.maxframe:
             EFFECT_LIST.remove(self)
@@ -360,6 +362,7 @@ class Player:
 
     def lose_life(self, amount):
         self.hp -= amount
+        Effect("player_dmg", pygame.Rect((0, 0), (WIDTH, HEIGHT)))
 
         if self.hp <= 0:
             print("Player lost the game.")
