@@ -238,6 +238,7 @@ class Unit:
         self.lvl = round["number"]
         self.max_hp = self.unitType["hp"] * 1.05 ** self.lvl # 5% mehr hp pro runde? zu viel?
         self.hp = self.unitType["hp"] * 1.1 ** self.lvl
+        self.special = self.unitType["special"]
         self.moved = 0
 
         self.random_move_modifier = random.randint(1, 10)/100
@@ -264,9 +265,7 @@ class Unit:
 
         #TODO animation
     
-    def take_dmg(self, amount, origin):
-        self.hp -= amount
-
+    def update_hp_bar(self):
         hp_left = self.hp/self.max_hp
         if hp_left > 0:
             hp_bar_green = pygame.Surface((self.surface.get_width() * hp_left, 3))
@@ -275,9 +274,21 @@ class Unit:
             self.hp_bar.blit(hp_bar_green, (0,0))
             self.surface.blit(self.hp_bar, (0,0))
 
+    def take_dmg(self, amount, origin):
+        self.hp -= amount
+
+        self.update_hp_bar()
+
         hit.play()
         if self.hp <= 0:
             self.die(origin)
+
+    def check_special(self):
+        if self.special == "regen":
+            hp_per_sec = self.max_hp * 0.05   # heal 5% of hp per sec 
+            if self.hp < self.max_hp:
+                self.hp += hp_per_sec / FPS
+                self.update_hp_bar()
     
     def move(self): # move to next node in path
         if self.current_node.position[0] > self.next_node.position[0]:      # move left
@@ -292,6 +303,8 @@ class Unit:
         self.rect.y = self.y
 
         self.moved += self.unitType["move_speed"]
+
+        self.check_special()
         
         next_node_coords = (self.next_node.position[0]*TILE_SIZE[0] + TILE_SIZE[0]/2, self.next_node.position[1]*TILE_SIZE[1] + TILE_SIZE[1]/2)
 

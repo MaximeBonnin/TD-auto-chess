@@ -214,7 +214,7 @@ UNIT_TYPES = {
         "hp": 25,
         "size": (20, 20),          
         "gold_value": 10,
-        "special": False,    
+        "special": "regen",    
         "skin": unit_tank_img
     }
 }
