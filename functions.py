@@ -1,4 +1,7 @@
 import pygame
+import json
+
+from pygame.constants import K_l
 
 from all_classes import *
 from Variables import *
@@ -204,10 +207,53 @@ def update_objects():
 
 
 def handle_rounds(round):
-    
     unit_spawn_spacing = int(ROUND_COOLDOWN*0.25/round["number"])
     unit_event = pygame.event.Event(USEREVENTS["unit_spawn"])
     pygame.time.set_timer(unit_event, unit_spawn_spacing)
+
+
+def save_game(round):
+    print("Saving...")
+    data = {
+        "meta": {
+            "round": round,
+            "name": "None for now"
+        }
+    }
+
+    index = 0
+    for tower in TOWER_LIST:
+        data[index] = {
+            "towerType": tower.towerTypeName,
+            "tile": tower.tile.position,
+            "player_money": tower.player.money,
+            "Kills": tower.stats["Kills"]
+        }
+        index += 1
+
+    with open("save.json", "w") as f:
+        json.dump(data , f, indent=4)
+
+    print("Game saved!")
+
+
+def load_game(player, mapTileList):
+    with open("save.json") as f:
+        data = json.load(f)
+
+    for entry in data:
+        if entry == "meta":
+            round = data[entry]["round"]
+        else:
+            for line in mapTileList:
+                for tile in line:
+                    if tile.rect.collidepoint(data[entry]["tile"]):
+                        player.money = 1000000000
+                        tile.spawn_tower(data[entry]["towerType"], player)
+
+            player.money = data[entry]["player_money"]
+
+    return round
 
 
 def menu_loop():
@@ -224,7 +270,14 @@ def menu_loop():
                 run = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    return
+                    print("Leftclick: loading saved game.")
+                    return False
+                if event.button == 3:
+                    print("Rightclick: not loading saved game")
+                    return False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == K_l:
+                    return True
 
         WIN.blit(menu_img, (0, 0))
         pygame.display.update()

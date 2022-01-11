@@ -34,8 +34,11 @@ def main():
         "number": 1
     }
 
-    menu_loop()
+
+    if menu_loop():
+        round = load_game(player, mapTileList)
     
+
     while run:
         clock.tick(FPS)
 
@@ -88,6 +91,8 @@ def main():
 
         update_objects()
         draw_window(mapTileList, player, round)    
+
+    save_game(round)
     pygame.quit()
     shutil.rmtree("__pycache__", ignore_errors=False, onerror=None)
 

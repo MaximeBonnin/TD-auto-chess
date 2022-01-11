@@ -112,6 +112,7 @@ class Tower:
     # Class that describes towers
     # TODO eventuell einen kreis um den zu platzierenden Turm zeichnen, für die Schussreichweite?
     def __init__(self, towerType, tile, player):
+        self.towerTypeName = towerType
         self.towerType = TOWER_TYPES[towerType]
         self.tile = tile
         self.last_shot = pygame.time.get_ticks()
@@ -208,7 +209,17 @@ class Tower:
     def upgrade(self, direction):
         if direction in self.towerType["upgrades"].keys() and self.player.money >= self.towerType['upgrades'][direction]['cost']:
             print(f"Upgrading {self.towerType['display_name']} to {self.towerType['upgrades'][direction]['display_name']}")
+
             self.towerType = self.towerType["upgrades"][direction]
+            temp_kills = self.stats["Kills"]
+            self.stats = {
+                "Attack Speed": self.towerType["atk_speed"],
+                "Crit Chance": self.towerType["crit_chance"],
+                "Range": self.towerType["range"],
+                "Projectile": self.towerType["proj_type"],
+                "Proj. Damage": PROJ_TYPES[self.towerType["proj_type"]]["dmg"],
+                "Kills": temp_kills
+            }
 
             self.surface.fill(COLORS["green_dark"])
             self.inner_surface = pygame.Surface((TOWER_SIZE[0]-8, TOWER_SIZE[1]-8))
@@ -300,12 +311,10 @@ class Unit:
                 now = pygame.time.get_ticks()
                 since_last_stim = now - self.last_stim
                 if since_last_stim > stim_cooldown:
-                    print("Use stimpack!")
                     self.effects.append("stim")
                     self.speed = self.speed * 2
                     self.last_stim = now
                 elif since_last_stim > stim_cooldown/3 and "stim" in self.effects:
-                    print("End stimpack!")
                     self.effects.remove("stim")
                     self.speed = self.speed / 2
 
@@ -401,7 +410,7 @@ class Player:
             print("Player lost the game.")
 
     def display_selected(self):
-        to_display = TOWER_TYPES[self.selected]["skin"]
+        to_display = tower_base_img  #TODO make this work again: TOWER_TYPES[self.selected]["skin"]
         img_w, img_h = to_display.get_width(), to_display.get_height()
         m_x, m_y = pygame.mouse.get_pos()
         x, y = m_x - img_w//2, m_y - img_h//2
@@ -422,12 +431,12 @@ class Player:
             if self.unit_sell_button in BUTTON_LIST:
                 BUTTON_LIST.remove(self.unit_sell_button)
 
-        elif "upgrade_a" in self.info_requested.towerType["upgrades"].keys(): #TODO add the price here as well
+        elif "upgrade_a" in self.info_requested.towerType["upgrades"].keys(): #TODO add the price here as well 
             if self.unit_upgrade_a_button != None:
-                self.unit_upgrade_a_button.update_text(self.info_requested.towerType["upgrades"]["upgrade_a"]["display_name"])
+                self.unit_upgrade_a_button.update_text(f'{self.info_requested.towerType["upgrades"]["upgrade_a"]["cost"]}: {self.info_requested.towerType["upgrades"]["upgrade_a"]["display_name"]}')
 
             if self.unit_upgrade_b_button != None:
-                self.unit_upgrade_b_button.update_text(self.info_requested.towerType["upgrades"]["upgrade_b"]["display_name"])
+                self.unit_upgrade_b_button.update_text(f'{self.info_requested.towerType["upgrades"]["upgrade_b"]["cost"]}: {self.info_requested.towerType["upgrades"]["upgrade_b"]["display_name"]}')
         else:
             print("No more upgrades here")
         
