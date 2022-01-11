@@ -410,12 +410,17 @@ class Player:
             print("Player lost the game.")
 
     def display_selected(self):
+        display_surface = pygame.Surface((TOWER_TYPES[self.selected]["range"]*2, TOWER_TYPES[self.selected]["range"]*2))
+        display_surface.set_colorkey(COLORS["black"])
+        pygame.draw.circle(display_surface, COLORS["red"], display_surface.get_rect().center, TOWER_TYPES[self.selected]["range"], width=2)
         to_display = tower_base_img  #TODO make this work again: TOWER_TYPES[self.selected]["skin"]
-        img_w, img_h = to_display.get_width(), to_display.get_height()
+        display_surface.blit(to_display, (display_surface.get_width()/2 - to_display.get_width()/2, display_surface.get_height()/2 - to_display.get_height()/2))
+
+        img_w, img_h = display_surface.get_width(), display_surface.get_height()
         m_x, m_y = pygame.mouse.get_pos()
         x, y = m_x - img_w//2, m_y - img_h//2
 
-        return (to_display, (x, y))
+        return (display_surface, (x, y))
 
     def select(self, towerType = None): # select given tower type, if no type is given -> set to None
         self.selected = towerType
