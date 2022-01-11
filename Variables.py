@@ -102,7 +102,30 @@ TOWER_TYPES = {
                 "crit_chance": 1,
                 "display_name": "Long Range Tower",
                 "skin": "tower_base_img",
-                "upgrades": {}
+                "upgrades": {
+                    "upgrade_a": {
+                        "atk_speed": 5,     
+                        "cost": 1500,
+                        "color": "green",
+                        "range": 1000,
+                        "proj_type": "sniper",
+                        "crit_chance": 1,
+                        "display_name": "Assassin Tower",
+                        "skin": "tower_base_img",
+                        "upgrades": {}
+                    },
+                    "upgrade_b": {
+                        "atk_speed": 1,     
+                        "cost": 1500,
+                        "color": "green",
+                        "range": 1000,
+                        "proj_type": "seeking",
+                        "crit_chance": 1,
+                        "display_name": "Fast Sniper",
+                        "skin": "tower_base_img",
+                        "upgrades": {}
+                    }
+                }
             },
             "upgrade_b": {
                 "atk_speed": 2,     
@@ -147,7 +170,30 @@ TOWER_TYPES = {
                 "crit_chance": 1,
                 "display_name": "Nuke Tower",
                 "skin": "tower_base_img",
-                "upgrades": {}
+                "upgrades": {
+                    "upgrade_a": {
+                        "atk_speed": 0.8,     
+                        "cost": 2500,
+                        "color": "hotpink",
+                        "range": 300,
+                        "proj_type": "Nuke",
+                        "crit_chance": 0.1,
+                        "display_name": "Fast Nuke Tower",
+                        "skin": "tower_base_img",
+                        "upgrades": {}
+                    },
+                    "upgrade_b": {
+                        "atk_speed": 4,     
+                        "cost": 2500,
+                        "color": "hotpink",
+                        "range": 500,
+                        "proj_type": "Nuke",
+                        "crit_chance": 1,
+                        "display_name": "Long Nuke Tower",
+                        "skin": "tower_base_img",
+                        "upgrades": {}
+                    }
+                }
             }
         }
     },
@@ -170,14 +216,37 @@ TOWER_TYPES = {
                 "crit_chance": 0.2,
                 "display_name": "PewPewPew Tower",
                 "skin": "tower_base_img",
-                "upgrades": {}
+                "upgrades": {
+                    "upgrade_a": {
+                        "atk_speed": 0.001,     
+                        "cost": 1800,
+                        "color": "blue",
+                        "range": 100,
+                        "proj_type": "weak",
+                        "crit_chance": 0.2,
+                        "display_name": "PEWPEWPEWPEW",
+                        "skin": "tower_base_img",
+                        "upgrades": {}
+                    },
+                    "upgrade_b": {
+                        "atk_speed": 0.04,     
+                        "cost": 1000,
+                        "color": "green",
+                        "range": 300,
+                        "proj_type": "weak",
+                        "crit_chance": 1,
+                        "display_name": "Stream Tower",
+                        "skin": "tower_base_img",
+                        "upgrades": {}
+                    }
+                }
             },
             "upgrade_b": {
                 "atk_speed": 0.3,     
                 "cost": 300,
                 "color": "green",
                 "range": 100,
-                "proj_type": "seeking",
+                "proj_type": "basic",
                 "crit_chance": 1,
                 "display_name": "PewPewBang Tower",
                 "skin": "tower_base_img",
@@ -240,6 +309,15 @@ PROJ_TYPES = {
         "AoE_area": 0,
         "seeking": True,
         "color": "blue"
+    },
+    "sniper": {
+        "dmg": 1000,
+        "speed": 30,
+        "spread": 1, # ???
+        "AoE": False,
+        "AoE_area": 0,
+        "seeking": True,
+        "color": "hotpink"
     },
     "weak": {
         "dmg": 1.5,
