@@ -259,7 +259,6 @@ def load_game(player, mapTileList):
 def menu_loop():
     clock = pygame.time.Clock()
     
-    #menu_surface = pygame.Surface(WIDTH+MENU_W, HEIGHT)
     menu_img = pygame.image.load(os.path.join("Assets","Images","menu_bg.png"))
 
     run = True
