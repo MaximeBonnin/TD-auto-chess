@@ -18,6 +18,9 @@ class Effect:
         if self.type == "explosion":
             self.surface.set_colorkey(COLORS["black"])
             pygame.draw.circle(self.surface, COLORS["red"], (self.rect.width/2, self.rect.height/2), self.rect.width/2)
+        elif self.type == "iceplosion":
+            self.surface.set_colorkey(COLORS["black"])
+            pygame.draw.circle(self.surface, COLORS["blue_light"], (self.rect.width/2, self.rect.height/2), self.rect.width/2)
         elif self.type == "player_dmg":
             self.surface.blit(player_dmg_effect_img, (0, 0))
 
@@ -63,16 +66,32 @@ class Projectile:
     def check_hit(self):
         for unit in UNIT_LIST:
             if unit.rect.colliderect(self.rect):
-                #TODO add Aoe image / animation
                 if self.AoE:
                     self.AoE_rect = pygame.Rect((self.rect.x - self.AoE_area//2, self.rect.y - self.AoE_area//2), (self.AoE_area, self.AoE_area))
-                    Effect("explosion", self.AoE_rect)
+                    if self.projType["effect"]:
+                        Effect(self.projType["effect"], self.AoE_rect)
                     for unit2 in UNIT_LIST:
                         if unit2.rect.colliderect(self.AoE_rect):
+                            if self.projType["condition"] == "slow":
+                                unit2.conditions[self.projType["condition"]] = {
+                                    "effect_start": pygame.time.get_ticks(),
+                                    "effect_duration": 2 * 1000,
+                                    "effect_cooldown": 2 * 1000,
+                                    "effect_strength": 1
+                                }
                             unit2.take_dmg(self.dmg, self.origin)
             
                 else:
                     unit.take_dmg(self.dmg, self.origin)
+
+                    if self.projType["condition"] == "poison":
+                        unit.conditions[self.projType["condition"]] = {
+                            "effect_start": pygame.time.get_ticks(),
+                            "effect_duration": 5 * 1000,
+                            "effect_cooldown": 5 * 1000,
+                            "effect_strength": 1
+                        }
+
                 PROJ_LIST.remove(self)
                 return
             elif self.x < 0 or self.x > WIDTH:
@@ -250,7 +269,14 @@ class Unit:
         self.max_hp = self.unitType["hp"] * 1.05 ** self.lvl # 5% mehr hp pro runde? zu viel?
         self.hp = self.unitType["hp"] * 1.05 ** self.lvl
         self.special = self.unitType["special"]
-        self.effects = []
+        self.conditions = {
+            "sample_effect": {
+                "effect_start": 0,
+                "effect_duration": 1000,
+                "effect_cooldown": 1000,
+                "effect_strength": 1
+            }
+        }
         self.last_stim = 10000
         self.speed = self.unitType["move_speed"]
         self.moved = 0
@@ -292,32 +318,71 @@ class Unit:
         self.hp -= amount
 
         self.check_special()
+        self.check_conditions()
         self.update_hp_bar()
 
         hit.play()
         if self.hp <= 0:
             self.die(origin)
 
-    def check_special(self):
-        if self.special == "regen":      # heal 5% of hp per sec 
-            hp_per_sec = self.max_hp * 0.05   
+
+    def check_conditions(self):
+        # remove conditions that have ended
+        to_remove = []
+        for cond in self.conditions.keys():
+            if self.conditions[cond]["effect_start"] + self.conditions[cond]["effect_cooldown"] <= pygame.time.get_ticks():
+                to_remove.append(cond)
+        for i in to_remove:
+            self.conditions.pop(i, None)
+        
+        # Movement conditions
+        if "slow" in self.conditions.keys():
+            if self.conditions["slow"]["effect_start"] + self.conditions["slow"]["effect_duration"] >= pygame.time.get_ticks():
+                self.speed = self.unitType["move_speed"] / (2 * self.conditions["slow"]["effect_strength"])
+            else:
+                self.speed = self.unitType["move_speed"]
+
+        if "stim" in self.conditions.keys():
+            if self.conditions["stim"]["effect_start"] + self.conditions["stim"]["effect_duration"] >= pygame.time.get_ticks():
+                self.speed = self.unitType["move_speed"] * (2 * self.conditions["stim"]["effect_strength"])
+            else:
+                self.speed = self.unitType["move_speed"]
+
+        # Health conditions
+        if "regen" in self.conditions.keys():
+            hp_per_sec = self.max_hp * (0.05 * self.conditions["regen"]["effect_strength"])
             if self.hp < self.max_hp:
                 self.hp += hp_per_sec / FPS
                 self.update_hp_bar()
-
-        elif self.special == "stim":     # speed up after getting hit
+        
+        if "poison" in self.conditions.keys():
+            hp_per_sec = self.max_hp * (0.1 * self.conditions["poison"]["effect_strength"]) # poison does 10% per sec? THIS IS NOT COUNTED AS A HIT -> DOESNT KILL (good?)
             if self.hp < self.max_hp:
-                stim_cooldown = 8 * 1000
-                now = pygame.time.get_ticks()
-                since_last_stim = now - self.last_stim
-                if since_last_stim > stim_cooldown:
-                    self.effects.append("stim")
-                    self.speed = self.speed * 2
-                    self.last_stim = now
-                elif since_last_stim > stim_cooldown/3 and "stim" in self.effects:
-                    self.effects.remove("stim")
-                    self.speed = self.speed / 2
+                self.hp -= hp_per_sec / FPS
+                self.update_hp_bar()
 
+
+    def check_special(self):
+
+        if self.special == "stim" and "stim" not in self.conditions.keys():     # speed up after getting hit
+            if self.hp < self.max_hp:
+                self.conditions["stim"] = {
+                    "effect_start": pygame.time.get_ticks(),
+                    "effect_duration": 2 * 1000,
+                    "effect_cooldown": 6 * 1000,
+                    "effect_strength": 1
+                }
+
+        if self.special == "regen" and "regen" not in self.conditions.keys():     # regenerate health 
+            if self.hp < self.max_hp:
+                self.conditions["regen"] = {
+                    "effect_start": pygame.time.get_ticks(),
+                    "effect_duration": 800 * 1000,
+                    "effect_cooldown": 800 * 1000,
+                    "effect_strength": 1
+                }
+
+     
     
     def move(self): # move to next node in path
         if self.current_node.position[0] > self.next_node.position[0]:      # move left
@@ -333,7 +398,8 @@ class Unit:
 
         self.moved += self.speed
 
-        self.check_special()
+        
+        self.check_conditions()
         
         next_node_coords = (self.next_node.position[0]*TILE_SIZE[0] + TILE_SIZE[0]/2, self.next_node.position[1]*TILE_SIZE[1] + TILE_SIZE[1]/2)
 

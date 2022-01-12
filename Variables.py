@@ -132,9 +132,9 @@ TOWER_TYPES = {
                 "cost": 150,
                 "color": "olive",
                 "range": 300,
-                "proj_type": "seeking",
+                "proj_type": "poison",
                 "crit_chance": 0.5,
-                "display_name": "Fast Sniper Tower",
+                "display_name": "Poison Tower",
                 "skin": "tower_base_img",
                 "upgrades": {}
             }
@@ -151,13 +151,13 @@ TOWER_TYPES = {
         "skin": "tower_base_img",
         "upgrades": {
             "upgrade_a": {
-                "atk_speed": 2,     
-                "cost": 300,
-                "color": "hotpink",
+                "atk_speed": 3,     
+                "cost": 150,
+                "color": "blue",
                 "range": 300,
-                "proj_type": "AoE",
-                "crit_chance": 0.1,
-                "display_name": "Mortar Tower",
+                "proj_type": "Iceplosion",
+                "crit_chance": 0,
+                "display_name": "Iceplosion Tower",
                 "skin": "tower_base_img",
                 "upgrades": {}
             },
@@ -299,6 +299,8 @@ PROJ_TYPES = {
         "AoE": False,
         "AoE_area": 0,
         "seeking": False,
+        "condition": False,
+        "effect": False,
         "color": "white"
     },
     "seeking": {
@@ -308,7 +310,20 @@ PROJ_TYPES = {
         "AoE": False,
         "AoE_area": 0,
         "seeking": True,
+        "condition": False,
+        "effect": False,
         "color": "blue"
+    },
+    "poison": {
+        "dmg": 10,
+        "speed": 6,
+        "spread": 1, # ???
+        "AoE": False,
+        "AoE_area": 0,
+        "seeking": True,
+        "condition": "poison",
+        "effect": False,
+        "color": "green"
     },
     "sniper": {
         "dmg": 1000,
@@ -317,6 +332,8 @@ PROJ_TYPES = {
         "AoE": False,
         "AoE_area": 0,
         "seeking": True,
+        "condition": False,
+        "effect": False,
         "color": "hotpink"
     },
     "weak": {
@@ -326,6 +343,8 @@ PROJ_TYPES = {
         "AoE": False,
         "AoE_area": 0,
         "seeking": True,
+        "condition": False,
+        "effect": False,
         "color": "blue_light"
     },
     "AoE": {
@@ -335,7 +354,20 @@ PROJ_TYPES = {
         "AoE": True,
         "AoE_area": 50,
         "seeking": True,
+        "condition": False,
+        "effect": "explosion",
         "color": "red"
+    },
+    "Iceplosion": {
+        "dmg": 1,
+        "speed": 5,
+        "spread": 1, # ???
+        "AoE": True,
+        "AoE_area": 100,
+        "seeking": True,
+        "condition": "slow",
+        "effect": "iceplosion",
+        "color": "blue"
     },
     "Nuke": {
         "dmg": 20,
@@ -344,6 +376,8 @@ PROJ_TYPES = {
         "AoE": True,
         "AoE_area": 150,
         "seeking": True,
+        "condition": False,
+        "effect": False,
         "color": "white"
     }
 }

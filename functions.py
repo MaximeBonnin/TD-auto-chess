@@ -270,10 +270,8 @@ def menu_loop():
                 run = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    print("Leftclick: loading saved game.")
                     return False
                 if event.button == 3:
-                    print("Rightclick: not loading saved game")
                     return False
             elif event.type == pygame.KEYDOWN:
                 if event.key == K_l:
