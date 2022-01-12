@@ -377,7 +377,7 @@ PROJ_TYPES = {
         "AoE_area": 150,
         "seeking": True,
         "condition": False,
-        "effect": False,
+        "effect": "nuke",
         "color": "white"
     }
 }

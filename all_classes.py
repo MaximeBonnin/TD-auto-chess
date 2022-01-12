@@ -21,6 +21,9 @@ class Effect:
         elif self.type == "iceplosion":
             self.surface.set_colorkey(COLORS["black"])
             pygame.draw.circle(self.surface, COLORS["blue_light"], (self.rect.width/2, self.rect.height/2), self.rect.width/2)
+        elif self.type == "nuke":
+            self.surface.set_colorkey(COLORS["black"])
+            pygame.draw.circle(self.surface, COLORS["greenyellow"], (self.rect.width/2, self.rect.height/2), self.rect.width/2)
         elif self.type == "player_dmg":
             self.surface.blit(player_dmg_effect_img, (0, 0))
 
@@ -325,7 +328,6 @@ class Unit:
         if self.hp <= 0:
             self.die(origin)
 
-
     def check_conditions(self):
         # remove conditions that have ended
         to_remove = []
@@ -361,7 +363,6 @@ class Unit:
                 self.hp -= hp_per_sec / FPS
                 self.update_hp_bar()
 
-
     def check_special(self):
 
         if self.special == "stim" and "stim" not in self.conditions.keys():     # speed up after getting hit
@@ -381,8 +382,6 @@ class Unit:
                     "effect_cooldown": 800 * 1000,
                     "effect_strength": 1
                 }
-
-     
     
     def move(self): # move to next node in path
         if self.current_node.position[0] > self.next_node.position[0]:      # move left
