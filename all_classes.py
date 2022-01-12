@@ -228,12 +228,13 @@ class Tower:
         self.player.request_info()
         self.tile.has_tower = False
 
-    def upgrade(self, direction):
-        if direction in self.towerType["upgrades"].keys() and self.player.money >= self.towerType['upgrades'][direction]['cost']:
-            print(f"Upgrading {self.towerType['display_name']} to {self.towerType['upgrades'][direction]['display_name']}")
+    def upgrade(self, new_tower):
+        print(f"Attempting to upgrade: {self.towerType['display_name']} -> {TOWER_TYPES[new_tower]['display_name']}")
+        if self.player.money >= TOWER_TYPES[new_tower]["cost"]:
+            print(f"Upgraded: {self.towerType['display_name']} -> {TOWER_TYPES[new_tower]['display_name']}")
 
-            self.towerType = self.towerType["upgrades"][direction]
             temp_kills = self.stats["Kills"]
+            self.towerType = TOWER_TYPES[new_tower]
             self.stats = {
                 "Attack Speed": self.towerType["atk_speed"],
                 "Crit Chance": self.towerType["crit_chance"],
@@ -252,10 +253,13 @@ class Tower:
             self.surface.blit(tower_turret_img, (0,0))
 
             self.player.money -= self.towerType['cost']
-            self.player.request_info()
-        elif direction in self.towerType["upgrades"].keys() and self.player.money < self.towerType['upgrades'][direction]['cost']:
-            print(f"Not enough money: {self.towerType['upgrades'][direction]['cost']} needed.")
+            self.player.request_info(self)
+
+        elif self.player.money < TOWER_TYPES[new_tower]["cost"]:
+            print(f"Not enough money: {TOWER_TYPES[new_tower]['cost']} needed.")
             error_sound.play()
+            self.player.request_info(self)
+
         else:
             print("No upgrade here")
             error_sound.play()
@@ -472,13 +476,13 @@ class Player:
         Effect("player_dmg", pygame.Rect((0, 0), (WIDTH, HEIGHT)))
 
         if self.hp <= 0:
-            print("Player lost the game.")
+            print("Player lost the game.") #TODO this should trigger an event 
 
     def display_selected(self):
         display_surface = pygame.Surface((TOWER_TYPES[self.selected]["range"]*2, TOWER_TYPES[self.selected]["range"]*2))
         display_surface.set_colorkey(COLORS["black"])
         pygame.draw.circle(display_surface, COLORS["red"], display_surface.get_rect().center, TOWER_TYPES[self.selected]["range"], width=2)
-        to_display = tower_base_img  #TODO make this work again: TOWER_TYPES[self.selected]["skin"]
+        to_display = tower_base_img 
         display_surface.blit(to_display, (display_surface.get_width()/2 - to_display.get_width()/2, display_surface.get_height()/2 - to_display.get_height()/2))
 
         img_w, img_h = display_surface.get_width(), display_surface.get_height()
@@ -490,7 +494,10 @@ class Player:
     def select(self, towerType = None): # select given tower type, if no type is given -> set to None
         self.selected = towerType
 
+
+
     def request_info(self, tower = None):
+        x, y = WIDTH, HEIGHT-200
         self.info_requested = tower
 
         if self.info_requested == None:
@@ -501,12 +508,19 @@ class Player:
             if self.unit_sell_button in BUTTON_LIST:
                 BUTTON_LIST.remove(self.unit_sell_button)
 
-        elif "upgrade_a" in self.info_requested.towerType["upgrades"].keys(): #TODO add the price here as well 
-            if self.unit_upgrade_a_button != None:
-                self.unit_upgrade_a_button.update_text(f'{self.info_requested.towerType["upgrades"]["upgrade_a"]["cost"]}: {self.info_requested.towerType["upgrades"]["upgrade_a"]["display_name"]}')
+        elif self.info_requested.towerType["upgrades"]: #TODO add the price here as well 
+            if self.unit_upgrade_a_button in BUTTON_LIST:
+                BUTTON_LIST.remove(self.unit_upgrade_a_button)
+            twr = TOWER_TYPES[self.info_requested.towerType["upgrades"][0]]
+            text = f'{twr["cost"]}: {twr["display_name"]}'
+            self.unit_upgrade_a_button = Button("upgrade:" + self.info_requested.towerType["upgrades"][0], text, (x+10, y+40))
 
-            if self.unit_upgrade_b_button != None:
-                self.unit_upgrade_b_button.update_text(f'{self.info_requested.towerType["upgrades"]["upgrade_b"]["cost"]}: {self.info_requested.towerType["upgrades"]["upgrade_b"]["display_name"]}')
+            if self.unit_upgrade_b_button in BUTTON_LIST:
+                BUTTON_LIST.remove(self.unit_upgrade_b_button)
+            twr = TOWER_TYPES[self.info_requested.towerType["upgrades"][1]]
+            text = f'{twr["cost"]}: {twr["display_name"]}'
+            self.unit_upgrade_b_button = Button("upgrade:" + self.info_requested.towerType["upgrades"][1], text, (x+10, y+60))
+
         else:
             print("No more upgrades here")
         
@@ -548,21 +562,20 @@ class Button:
             round_event = pygame.event.Event(USEREVENTS["round_start"])
             pygame.event.post(round_event)
             self.last_round_start_press = pygame.time.get_ticks()
+
         elif self.text == "sell":
             if player.info_requested:
                 player.info_requested.sell()
-        elif self.text == "upgrade_a":
-            if player.info_requested:
-                player.info_requested.upgrade("upgrade_a")
-        elif self.text == "upgrade_b":
-            if player.info_requested:
-                player.info_requested.upgrade("upgrade_b")
+
+        elif self.text in TOWER_TYPES.keys(): #TODO THIS IS SHITTY AND STUPID
+            print(f"Selecting {self.text} tower")
+            player.select(self.text)
+
+        elif "upgrade:" in self.text:
+            player.info_requested.upgrade(self.text.replace("upgrade:", ""))
+
         else:
-            for t in TOWER_TYPES.keys():
-                if self.text == t:
-                    print(f"Selecting {t} tower")
-                    player.select(t)
-                    break
+            print("Error: unexpected else in Button class")
 
         self.surface.fill(self.color)
         self.surface.blit(self.rendered_text, self.coords)

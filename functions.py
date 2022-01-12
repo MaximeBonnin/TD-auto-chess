@@ -87,9 +87,10 @@ def make_map():
 def make_buttons():
     Button("start round", "Start Round", (WIDTH + 10, 100))
 
-    for t in TOWER_TYPES.keys():
-        y_pos = BUTTON_LIST[-1].rect.bottomleft[1] + 10
-        Button(t, f"{TOWER_TYPES[t]['cost']}: {TOWER_TYPES[t]['display_name']}", (WIDTH + 10, y_pos))
+    for t in TOWER_TYPES:
+        if TOWER_TYPES[t]["upgrade_lvl"] == 1:
+            y_pos = BUTTON_LIST[-1].rect.bottomleft[1] + 10
+            Button(t, f"{TOWER_TYPES[t]['cost']}: {TOWER_TYPES[t]['display_name']}", (WIDTH + 10, y_pos))
 
 
 def info_box(player):
@@ -109,12 +110,17 @@ def info_box(player):
             player.unit_sell_button = Button("sell", f"Sell (75%): {player.info_requested.towerType['cost'] * 0.75}", (x+10, y+20))
         info_box.blit(player.unit_sell_button.surface, (10, 20))
 
-        if player.unit_upgrade_a_button not in BUTTON_LIST and "upgrade_a" in player.info_requested.towerType["upgrades"].keys():
-            player.unit_upgrade_a_button = Button("upgrade_a", f'{player.info_requested.towerType["upgrades"]["upgrade_a"]["cost"]}: {player.info_requested.towerType["upgrades"]["upgrade_a"]["display_name"]}', (x+10, y+40))
+
+        if player.unit_upgrade_a_button not in BUTTON_LIST and player.info_requested.towerType["upgrades"]:
+            twr = TOWER_TYPES[player.info_requested.towerType["upgrades"][0]]
+            text = f'{twr["cost"]}: {twr["display_name"]}'
+            player.unit_upgrade_a_button = Button("upgrade:" + player.info_requested.towerType["upgrades"][0], text, (x+10, y+40))
         info_box.blit(player.unit_upgrade_a_button.surface, (10, 40))
 
-        if player.unit_upgrade_b_button not in BUTTON_LIST and "upgrade_a" in player.info_requested.towerType["upgrades"].keys():
-            player.unit_upgrade_b_button = Button("upgrade_b", f'{player.info_requested.towerType["upgrades"]["upgrade_a"]["cost"]}: {player.info_requested.towerType["upgrades"]["upgrade_b"]["display_name"]}', (x+10, y+60))
+        if player.unit_upgrade_b_button not in BUTTON_LIST and player.info_requested.towerType["upgrades"]:
+            twr = TOWER_TYPES[player.info_requested.towerType["upgrades"][1]]
+            text = f'{twr["cost"]}: {twr["display_name"]}'
+            player.unit_upgrade_b_button = Button("upgrade:" + player.info_requested.towerType["upgrades"][1], text, (x+10, y+60))
         info_box.blit(player.unit_upgrade_b_button.surface, (10, 60))
 
         # Stats #TODO make this update after upgrade

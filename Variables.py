@@ -58,30 +58,32 @@ TOWER_TYPES = {
         "crit_chance": 0.1,
         "display_name": "Basic Tower",
         "skin": "tower_base_img",
-        "upgrades": {
-            "upgrade_a": {
-                "atk_speed": 1,    
-                "cost": 25,
-                "color": "brown",
-                "range": 300,
-                "proj_type": "basic",
-                "crit_chance": 0.25,
-                "display_name": "Ranged Tower",
-                "skin": "tower_base_img",
-                "upgrades": {}
-            },
-            "upgrade_b": {
-                "atk_speed": 0.25,    
-                "cost": 25,
-                "color": "gray",
-                "range": 150,
-                "proj_type": "basic",
-                "crit_chance": 0.1,
-                "display_name": "Fast Tower",
-                "skin": "tower_base_img",
-                "upgrades": {}
-            }
-        }
+        "upgrade_lvl": 1,
+        "upgrades": ["basic_ranged", "basic_fast"]
+    },
+    "basic_ranged": {
+        "atk_speed": 1,    
+        "cost": 25,
+        "color": "brown",
+        "range": 300,
+        "proj_type": "basic",
+        "crit_chance": 0.25,
+        "display_name": "Ranged Tower",
+        "skin": "tower_base_img",
+        "upgrade_lvl": 2,
+        "upgrades": []
+    },
+    "basic_fast": {
+        "atk_speed": 0.25,    
+        "cost": 25,
+        "color": "gray",
+        "range": 150,
+        "proj_type": "basic",
+        "crit_chance": 0.1,
+        "display_name": "Fast Tower",
+        "skin": "tower_base_img",
+        "upgrade_lvl": 2,
+        "upgrades": []
     },
     "singleTarget": {
         "atk_speed": 5,     
@@ -92,53 +94,56 @@ TOWER_TYPES = {
         "crit_chance": 0.5,
         "display_name": "Sniper Tower",
         "skin": "tower_base_img",
-        "upgrades": {
-            "upgrade_a": {
-                "atk_speed": 5,     
-                "cost": 150,
-                "color": "green_dark",
-                "range": 600,
-                "proj_type": "seeking",
-                "crit_chance": 1,
-                "display_name": "Long Range Tower",
-                "skin": "tower_base_img",
-                "upgrades": {
-                    "upgrade_a": {
-                        "atk_speed": 5,     
-                        "cost": 1500,
-                        "color": "green",
-                        "range": 1000,
-                        "proj_type": "sniper",
-                        "crit_chance": 1,
-                        "display_name": "Assassin Tower",
-                        "skin": "tower_base_img",
-                        "upgrades": {}
-                    },
-                    "upgrade_b": {
-                        "atk_speed": 1,     
-                        "cost": 1500,
-                        "color": "green",
-                        "range": 1000,
-                        "proj_type": "seeking",
-                        "crit_chance": 1,
-                        "display_name": "Fast Sniper",
-                        "skin": "tower_base_img",
-                        "upgrades": {}
-                    }
-                }
-            },
-            "upgrade_b": {
-                "atk_speed": 2,     
-                "cost": 150,
-                "color": "olive",
-                "range": 300,
-                "proj_type": "poison",
-                "crit_chance": 0.5,
-                "display_name": "Poison Tower",
-                "skin": "tower_base_img",
-                "upgrades": {}
-            }
-        }
+        "upgrade_lvl": 1,
+        "upgrades": ["singleTarget_ranged", "poison"]
+    },
+    "singleTarget_ranged": {
+        "atk_speed": 5,     
+        "cost": 150,
+        "color": "green_dark",
+        "range": 600,
+        "proj_type": "seeking",
+        "crit_chance": 1,
+        "display_name": "Long Range Tower",
+        "skin": "tower_base_img",
+        "upgrade_lvl": 2,
+        "upgrades": ["assassin", "singleTarget_fast"]
+    },
+    "assassin": {
+        "atk_speed": 5,     
+        "cost": 1500,
+        "color": "green",
+        "range": 1000,
+        "proj_type": "sniper",
+        "crit_chance": 1,
+        "display_name": "Assassin Tower",
+        "skin": "tower_base_img",
+        "upgrade_lvl": 3,
+        "upgrades": []
+    },
+    "singleTarget_fast": {
+        "atk_speed": 1,     
+        "cost": 1500,
+        "color": "green",
+        "range": 1000,
+        "proj_type": "seeking",
+        "crit_chance": 1,
+        "display_name": "Fast Sniper",
+        "skin": "tower_base_img",
+        "upgrade_lvl": 3,
+        "upgrades": []
+    },
+    "poison": {
+        "atk_speed": 2,     
+        "cost": 150,
+        "color": "olive",
+        "range": 300,
+        "proj_type": "poison",
+        "crit_chance": 0.5,
+        "display_name": "Poison Tower",
+        "skin": "tower_base_img",
+        "upgrade_lvl": 2,
+        "upgrades": []
     },
     "AoE": {
         "atk_speed": 3,     
@@ -149,53 +154,56 @@ TOWER_TYPES = {
         "crit_chance": 0.1,
         "display_name": "Explosion Tower",
         "skin": "tower_base_img",
-        "upgrades": {
-            "upgrade_a": {
-                "atk_speed": 3,     
-                "cost": 150,
-                "color": "blue",
-                "range": 300,
-                "proj_type": "Iceplosion",
-                "crit_chance": 0,
-                "display_name": "Iceplosion Tower",
-                "skin": "tower_base_img",
-                "upgrades": {}
-            },
-            "upgrade_b": {
-                "atk_speed": 4,     
-                "cost": 500,
-                "color": "orange",
-                "range": 100,
-                "proj_type": "Nuke",
-                "crit_chance": 1,
-                "display_name": "Nuke Tower",
-                "skin": "tower_base_img",
-                "upgrades": {
-                    "upgrade_a": {
-                        "atk_speed": 0.8,     
-                        "cost": 2500,
-                        "color": "hotpink",
-                        "range": 300,
-                        "proj_type": "Nuke",
-                        "crit_chance": 0.1,
-                        "display_name": "Fast Nuke Tower",
-                        "skin": "tower_base_img",
-                        "upgrades": {}
-                    },
-                    "upgrade_b": {
-                        "atk_speed": 4,     
-                        "cost": 2500,
-                        "color": "hotpink",
-                        "range": 500,
-                        "proj_type": "Nuke",
-                        "crit_chance": 1,
-                        "display_name": "Long Nuke Tower",
-                        "skin": "tower_base_img",
-                        "upgrades": {}
-                    }
-                }
-            }
-        }
+        "upgrade_lvl": 1,
+        "upgrades": ["iceplosion", "nuke"]
+    },
+    "iceplosion": {
+        "atk_speed": 3,     
+        "cost": 150,
+        "color": "blue",
+        "range": 300,
+        "proj_type": "Iceplosion",
+        "crit_chance": 0,
+        "display_name": "Iceplosion Tower",
+        "skin": "tower_base_img",
+        "upgrade_lvl": 2,
+        "upgrades": []
+    },
+    "nuke": {
+        "atk_speed": 4,     
+        "cost": 500,
+        "color": "orange",
+        "range": 100,
+        "proj_type": "Nuke",
+        "crit_chance": 1,
+        "display_name": "Nuke Tower",
+        "skin": "tower_base_img",
+        "upgrade_lvl": 2,
+        "upgrades": ["nuke_fast", "nuke_ranged"]
+    },
+    "nuke_fast": {
+        "atk_speed": 0.8,     
+        "cost": 2500,
+        "color": "hotpink",
+        "range": 300,
+        "proj_type": "Nuke",
+        "crit_chance": 0.1,
+        "display_name": "Fast Nuke Tower",
+        "skin": "tower_base_img",
+        "upgrade_lvl": 3,
+        "upgrades": []
+    },
+    "nuke_ranged": {
+        "atk_speed": 4,     
+        "cost": 2500,
+        "color": "hotpink",
+        "range": 500,
+        "proj_type": "Nuke",
+        "crit_chance": 1,
+        "display_name": "Long Nuke Tower",
+        "skin": "tower_base_img",
+        "upgrade_lvl": 3,
+        "upgrades": []
     },
     "superFast": {
         "atk_speed": 0.2,     
@@ -206,54 +214,57 @@ TOWER_TYPES = {
         "crit_chance": 0.2,
         "display_name": "PewPew Tower",
         "skin": "tower_base_img",
-        "upgrades": {
-            "upgrade_a": {
-                "atk_speed": 0.04,     
-                "cost": 300,
-                "color": "blue",
-                "range": 100,
-                "proj_type": "weak",
-                "crit_chance": 0.2,
-                "display_name": "PewPewPew Tower",
-                "skin": "tower_base_img",
-                "upgrades": {
-                    "upgrade_a": {
-                        "atk_speed": 0.001,     
-                        "cost": 1800,
-                        "color": "blue",
-                        "range": 100,
-                        "proj_type": "weak",
-                        "crit_chance": 0.2,
-                        "display_name": "PEWPEWPEWPEW",
-                        "skin": "tower_base_img",
-                        "upgrades": {}
-                    },
-                    "upgrade_b": {
-                        "atk_speed": 0.04,     
-                        "cost": 1000,
-                        "color": "green",
-                        "range": 300,
-                        "proj_type": "weak",
-                        "crit_chance": 1,
-                        "display_name": "Stream Tower",
-                        "skin": "tower_base_img",
-                        "upgrades": {}
-                    }
-                }
-            },
-            "upgrade_b": {
-                "atk_speed": 0.3,     
-                "cost": 300,
-                "color": "green",
-                "range": 100,
-                "proj_type": "basic",
-                "crit_chance": 1,
-                "display_name": "PewPewBang Tower",
-                "skin": "tower_base_img",
-                "upgrades": {}
-            }
-        }
+        "upgrade_lvl": 1,
+        "upgrades": ["pewpewpew", "pewpewbang"]
     },
+    "pewpewpew": {
+        "atk_speed": 0.04,     
+        "cost": 300,
+        "color": "blue",
+        "range": 100,
+        "proj_type": "weak",
+        "crit_chance": 0.2,
+        "display_name": "PewPewPew Tower",
+        "skin": "tower_base_img",
+        "upgrade_lvl": 2,
+        "upgrades": ["pewpewpewpew", "stream"]
+    },
+    "pewpewpewpew": {
+        "atk_speed": 0.001,     
+        "cost": 1800,
+        "color": "blue",
+        "range": 100,
+        "proj_type": "weak",
+        "crit_chance": 0.2,
+        "display_name": "PEWPEWPEWPEW",
+        "skin": "tower_base_img",
+        "upgrade_lvl": 3,
+        "upgrades": []
+    },
+    "stream": {
+        "atk_speed": 0.04,     
+        "cost": 1000,
+        "color": "green",
+        "range": 300,
+        "proj_type": "weak",
+        "crit_chance": 1,
+        "display_name": "Stream Tower",
+        "skin": "tower_base_img",
+        "upgrade_lvl": 3,
+        "upgrades": []
+    },
+    "pewpewbang": {
+        "atk_speed": 0.3,     
+        "cost": 300,
+        "color": "green",
+        "range": 100,
+        "proj_type": "basic",
+        "crit_chance": 1,
+        "display_name": "PewPewBang Tower",
+        "skin": "tower_base_img",
+        "upgrade_lvl": 2,
+        "upgrades": []
+    }
     # "lightning": {
     #     "atk_speed": 0.2,     
     #     "cost": 25,
