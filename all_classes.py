@@ -290,8 +290,8 @@ class Unit:
         self.player = player
         self.lvl = round["number"]
         self.power_multi = power_multi
-        self.max_hp = self.unitType["hp"] * self.power_multi * 1.01 ** self.lvl # 1% mehr hp pro runde? zu viel?
-        self.hp = self.unitType["hp"] * self.power_multi * 1.01 ** self.lvl
+        self.max_hp = self.unitType["hp"] * self.power_multi * 1.05 ** self.lvl # 5% mehr hp pro runde? zu viel?
+        self.hp = self.unitType["hp"] * self.power_multi * 1.05 ** self.lvl
         self.special = self.unitType["special"]
         self.conditions = {
             "sample_effect": {
