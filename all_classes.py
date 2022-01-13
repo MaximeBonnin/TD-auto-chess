@@ -24,6 +24,10 @@ class Effect:
         elif self.type == "nuke":
             self.surface.set_colorkey(COLORS["black"])
             pygame.draw.circle(self.surface, COLORS["greenyellow"], (self.rect.width/2, self.rect.height/2), self.rect.width/2)
+        elif self.type == "support":
+            self.surface.set_colorkey(COLORS["black"])
+            pygame.draw.circle(self.surface, COLORS["hotpink"], (self.rect.width/2, self.rect.height/2), self.rect.width/2)
+
         elif self.type == "player_dmg":
             self.surface.blit(player_dmg_effect_img, (0, 0))
 
@@ -31,7 +35,8 @@ class Effect:
 
     def tick(self):
         self.frame += 1
-        self.surface.set_alpha(255 - 255 * self.frame/self.maxframe)
+        if self.type in ["explosion", "iceplosion", "nuke", "support", "player_dmg"]:
+            self.surface.set_alpha(255 - 255 * self.frame/self.maxframe)
 
         if self.frame > self.maxframe:
             EFFECT_LIST.remove(self)
@@ -139,13 +144,22 @@ class Tower:
         self.tile = tile
         self.last_shot = pygame.time.get_ticks()
         self.player = player
+        self.attack_speed = self.towerType["atk_speed"]
         self.stats = {
-            "Attack Speed": self.towerType["atk_speed"],
+            "Attack Speed": self.attack_speed,
             "Crit Chance": self.towerType["crit_chance"],
             "Range": self.towerType["range"],
             "Projectile": self.towerType["proj_type"],
             "Proj. Damage": PROJ_TYPES[self.towerType["proj_type"]]["dmg"],
             "Kills": 0
+        }
+        self.conditions = {
+            "sample_effect": {
+                "effect_start": 0,
+                "effect_duration": 1000,
+                "effect_cooldown": 1000,
+                "effect_strength": 1
+            }
         }
         self.rect = self.tile.rect
         self.surface = pygame.Surface(TOWER_SIZE)
@@ -180,7 +194,7 @@ class Tower:
                 m_u = u.rect.center
                 distance = ((m[0]-m_u[0])**2 + (m[1]-m_u[1])**2)**(1/2) # a^2+b^2 = c^2
                 distance_list.append(distance)
-            target = UNIT_LIST[distance_list.index(min(distance_list))]
+            target = unitList[distance_list.index(min(distance_list))]
             distance = min(distance_list)
 
         elif self.targeting == "first": #TODO this doesnt work at all, fix it! maybe try/except?
@@ -213,22 +227,51 @@ class Tower:
 
         return target, distance
 
+    def check_conditions(self):
+        if "frenzy" in self.conditions:
+            self.stats["Attack Speed"] = self.towerType["atk_speed"] / (2 * self.conditions["frenzy"]["effect_strength"])
+            self.attack_speed = self.towerType["atk_speed"] / (2 * self.conditions["frenzy"]["effect_strength"])
+        else:
+            self.stats["Attack Speed"] = self.towerType["atk_speed"] 
+            self.attack_speed = self.towerType["atk_speed"]  
+
+    def find_towers_in_range(self):
+        m = self.tile.rect.center
+        self.towers_in_range = []
+        for t in TOWER_LIST:
+            m_u = t.rect.center
+            distance = ((m[0]-m_u[0])**2 + (m[1]-m_u[1])**2)**(1/2)
+            if distance <= self.towerType["range"]:
+                self.towers_in_range.append(t)
+        return self.towers_in_range
+
     def shoot(self, unitList):
+        self.check_conditions()
         if unitList:
-            target, distance = self.aim(unitList)
-            cooldown = self.towerType["atk_speed"]*1000
-            now = pygame.time.get_ticks()
+            if self.towerTypeName in ["support"]:
+                #print("Support doesn't shoot.")
+                for t in self.find_towers_in_range():
+                    t.conditions[PROJ_TYPES[self.towerType["proj_type"]]["condition"]] = {
+                                    "effect_start": pygame.time.get_ticks(),
+                                    "effect_duration": 2 * 1000,
+                                    "effect_cooldown": 0,
+                                    "effect_strength": 1
+                                }
+            else:
+                target, distance = self.aim(unitList)
+                cooldown = self.attack_speed*1000
+                now = pygame.time.get_ticks()
 
-            if distance <= self.towerType["range"] and (now - self.last_shot) >= cooldown:
-                
-                if random.random() <= self.towerType["crit_chance"]:
-                    is_crit = True
-                else:
-                    is_crit = False
+                if distance <= self.towerType["range"] and (now - self.last_shot) >= cooldown:
+                    
+                    if random.random() <= self.towerType["crit_chance"]:
+                        is_crit = True
+                    else:
+                        is_crit = False
 
-                pew.play()
-                Projectile(self.towerType["proj_type"], self, target, self.player, is_crit)
-                self.last_shot = pygame.time.get_ticks()
+                    pew.play()
+                    Projectile(self.towerType["proj_type"], self, target, self.player, is_crit)
+                    self.last_shot = pygame.time.get_ticks()
         
     def sell(self):
         explosion.play()
@@ -245,7 +288,7 @@ class Tower:
             temp_kills = self.stats["Kills"]
             self.towerType = TOWER_TYPES[new_tower]
             self.stats = {
-                "Attack Speed": self.towerType["atk_speed"],
+                "Attack Speed": self.attack_speed,
                 "Crit Chance": self.towerType["crit_chance"],
                 "Range": self.towerType["range"],
                 "Projectile": self.towerType["proj_type"],

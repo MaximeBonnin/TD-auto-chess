@@ -264,6 +264,42 @@ TOWER_TYPES = {
         "skin": "tower_base_img",
         "upgrade_lvl": 2,
         "upgrades": []
+    },
+    "support": {
+        "atk_speed": 1,     
+        "cost": 500,
+        "color": "hotpink",
+        "range": 75,
+        "proj_type": "support",
+        "crit_chance": 0,
+        "display_name": "Support Tower",
+        "skin": "tower_base_img",
+        "upgrade_lvl": 1,
+        "upgrades": ["support2", "support3"]
+    },
+    "support2": {
+        "atk_speed": 1,     
+        "cost": 50,
+        "color": "hotpink",
+        "range": 100,
+        "proj_type": "weak",
+        "crit_chance": 0,
+        "display_name": "No Tower",
+        "skin": "tower_base_img",
+        "upgrade_lvl": 2,
+        "upgrades": []
+    },
+    "support3": {
+        "atk_speed": 1,     
+        "cost": 50,
+        "color": "hotpink",
+        "range": 100,
+        "proj_type": "weak",
+        "crit_chance": 0,
+        "display_name": "No Tower",
+        "skin": "tower_base_img",
+        "upgrade_lvl": 2,
+        "upgrades": []
     }
     # "lightning": {
     #     "atk_speed": 0.2,     
@@ -390,6 +426,17 @@ PROJ_TYPES = {
         "condition": False,
         "effect": "nuke",
         "color": "white"
+    },
+    "support": {
+        "dmg": 1,
+        "speed": 10,
+        "spread": 1, # ???
+        "AoE": True,
+        "AoE_area": 150,
+        "seeking": True,
+        "condition": "frenzy",
+        "effect": "supportplosion",
+        "color": "hotpink"
     }
 }
 
