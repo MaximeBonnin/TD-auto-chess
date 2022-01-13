@@ -163,7 +163,10 @@ def draw_window(tile_list, player, round):
             WIN.blit(r.surface, r.rect)
     
     for t in TOWER_LIST: # display all towers on screen
-        WIN.blit(t.surface, t.rect)
+        if t == player.info_requested:
+            WIN.blit(t.range_surface, t.range_rect)
+        else:
+            WIN.blit(t.surface, t.rect)
 
     for u in UNIT_LIST: # display all units on screen
         WIN.blit(u.surface, u.rect)

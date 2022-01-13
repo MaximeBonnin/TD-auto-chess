@@ -149,7 +149,7 @@ class Tower:
         }
         self.rect = self.tile.rect
         self.surface = pygame.Surface(TOWER_SIZE)
-        self.surface.fill(COLORS["green_dark"])
+        #self.surface.fill(COLORS["green_dark"])
         self.inner_surface = pygame.Surface((TOWER_SIZE[0]-8, TOWER_SIZE[1]-8)) #TODO der Tower hat nach dem platzieren immer noch einen dunkelgrünen rand, den würde ich gerne durch das img ersetzen, aber ich habe keine Ahnung wie das geh
         self.color = COLORS[self.towerType["color"]]
         self.inner_surface.fill(self.color)
@@ -157,6 +157,13 @@ class Tower:
         self.surface.blit(tower_base_img, (0,0))
         self.surface.blit(tower_turret_img, (0,0))
         self.targeting = "close"
+
+        self.range_rect = pygame.Rect((self.rect.centerx - self.towerType["range"], self.rect.centery - self.towerType["range"]), (self.towerType["range"], self.towerType["range"]))
+        self.range_surface = pygame.Surface((self.towerType["range"]*2, self.towerType["range"]*2))
+        self.range_surface.fill((50, 50, 50))
+        self.range_surface.set_colorkey((50, 50, 50))
+        pygame.draw.circle(self.range_surface, COLORS["red"], self.range_surface.get_rect().center, self.towerType["range"], width=2)
+        self.range_surface.blit(self.surface, (self.towerType["range"]-TOWER_SIZE[0]/2, self.towerType["range"]-TOWER_SIZE[1]/2))
 
         click_plop.play()
         global TOWER_LIST   # eig schlechte Lösung aber erstmal so: Globale variable mit allen Türmen
@@ -201,6 +208,8 @@ class Tower:
         self.surface.blit(self.inner_surface, (4, 4))
         self.surface.blit(tower_base_img, (0,0))
         self.surface.blit(rotated_image, new_rect.topleft)
+
+        self.range_surface.blit(self.surface, (self.towerType["range"]-TOWER_SIZE[0]/2, self.towerType["range"]-TOWER_SIZE[1]/2))
 
         return target, distance
 
@@ -251,6 +260,13 @@ class Tower:
             self.surface.blit(self.inner_surface, (4, 4))
             self.surface.blit(tower_base_img, (0,0))
             self.surface.blit(tower_turret_img, (0,0))
+
+            self.range_rect = pygame.Rect((self.rect.centerx - self.towerType["range"], self.rect.centery - self.towerType["range"]), (self.towerType["range"], self.towerType["range"]))
+            self.range_surface = pygame.Surface((self.towerType["range"]*2, self.towerType["range"]*2))
+            self.range_surface.fill((50, 50, 50))
+            self.range_surface.set_colorkey((50, 50, 50))
+            pygame.draw.circle(self.range_surface, COLORS["red"], self.range_surface.get_rect().center, self.towerType["range"], width=2)
+            self.range_surface.blit(self.surface, (self.towerType["range"]-TOWER_SIZE[0]/2, self.towerType["range"]-TOWER_SIZE[1]/2))
 
             self.player.money -= self.towerType['cost']
             self.player.request_info(self)

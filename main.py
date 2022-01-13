@@ -33,12 +33,10 @@ def main():
         "time": 0,
         "number": 1
     }
-
-
+    # Menu on start - this needs more work
     if menu_loop():
         round = load_game(player, mapTileList)
     
-
     while run:
         clock.tick(FPS)
 
@@ -67,8 +65,9 @@ def main():
                             player.request_info(t)
                             break
 
-                elif event.button == 3:     # rechtcklick spawn turm 
+                elif event.button == 3:     # right click unselect tower
                     player.select()
+                    player.request_info()
 
             elif event.type == USEREVENTS["round_start"]: # triggers after every coolddown or when button is pressed #TODO make this not be shitty when lagging -> frames not seconds
                 handle_rounds(round)
