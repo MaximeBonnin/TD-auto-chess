@@ -523,6 +523,10 @@ class Player:
 
         else:
             print("No more upgrades here")
+            if self.unit_upgrade_a_button in BUTTON_LIST:
+                BUTTON_LIST.remove(self.unit_upgrade_a_button)
+            if self.unit_upgrade_b_button in BUTTON_LIST:
+                BUTTON_LIST.remove(self.unit_upgrade_b_button)
         
 
 class MapNode:
