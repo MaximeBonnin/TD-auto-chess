@@ -283,14 +283,15 @@ class Tower:
 
 class Unit:
     # Class that describes units
-    def __init__(self, unitType, mapNodeHead, player, round):
+    def __init__(self, unitType, mapNodeHead, player, round, power_multi):
         self.unitType = UNIT_TYPES[unitType]
         self.current_node = mapNodeHead
         self.next_node = self.current_node.next_val
         self.player = player
         self.lvl = round["number"]
-        self.max_hp = self.unitType["hp"] * 1.05 ** self.lvl # 5% mehr hp pro runde? zu viel?
-        self.hp = self.unitType["hp"] * 1.05 ** self.lvl
+        self.power_multi = power_multi
+        self.max_hp = self.unitType["hp"] * self.power_multi * 1.01 ** self.lvl # 1% mehr hp pro runde? zu viel?
+        self.hp = self.unitType["hp"] * self.power_multi * 1.01 ** self.lvl
         self.special = self.unitType["special"]
         self.conditions = {
             "sample_effect": {
@@ -322,7 +323,7 @@ class Unit:
     
     def die(self, origin):
         origin.stats["Kills"] += 1
-        origin.player.money += self.unitType["gold_value"]
+        origin.player.money += self.unitType["gold_value"] * self.power_multi
         explosion.play()
         UNIT_LIST.remove(self)
 

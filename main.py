@@ -71,7 +71,8 @@ def main():
 
             elif event.type == USEREVENTS["round_start"]: # triggers after every coolddown or when button is pressed #TODO make this not be shitty when lagging -> frames not seconds
                 handle_rounds(round)
-                units_to_spawn = round["number"]
+                units_to_spawn = random.randint(1, round["number"])
+                unit_power_multi = round["number"] / units_to_spawn
 
                 round["number"] += 1
                 round["time"] = pygame.time.get_ticks()
@@ -82,7 +83,7 @@ def main():
             elif event.type == USEREVENTS["unit_spawn"]: # triggers on the start of the round and spawns units until number of units in the round is reached
                 if units_to_spawn > 0:
                     unit = random.choice(list(UNIT_TYPES.keys()))
-                    Unit(unit, mapNodeHead, player, round)
+                    Unit(unit, mapNodeHead, player, round, unit_power_multi)
                     units_to_spawn -= 1
                 else:
                     unit_event = pygame.event.Event(USEREVENTS["unit_spawn"])
