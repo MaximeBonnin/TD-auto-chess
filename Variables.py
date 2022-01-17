@@ -265,26 +265,26 @@ TOWER_TYPES = {
         "upgrade_lvl": 2,
         "upgrades": []
     },
-    "support": {
-        "atk_speed": 1,     
-        "cost": 500,
-        "color": "hotpink",
-        "range": 75,
-        "proj_type": "support",
-        "crit_chance": 0,
-        "display_name": "Support Tower",
-        "skin": "tower_base_img",
-        "upgrade_lvl": 1,
-        "upgrades": ["support2", "support3"]
-    },
-    "support2": {
+    "spyglass": {
         "atk_speed": 1,     
         "cost": 50,
         "color": "hotpink",
-        "range": 100,
-        "proj_type": "weak",
+        "range": 75,
+        "proj_type": "spyglass",
         "crit_chance": 0,
-        "display_name": "No Tower",
+        "display_name": "Spyglass Support",
+        "skin": "tower_base_img",
+        "upgrade_lvl": 1,
+        "upgrades": ["frenzy", "support3"]
+    },
+    "frenzy": {
+        "atk_speed": 1,     
+        "cost": 500,
+        "color": "hotpink",
+        "range": 100,
+        "proj_type": "frenzy",
+        "crit_chance": 0,
+        "display_name": "Frenzy Support",
         "skin": "tower_base_img",
         "upgrade_lvl": 2,
         "upgrades": []
@@ -427,7 +427,7 @@ PROJ_TYPES = {
         "effect": "nuke",
         "color": "white"
     },
-    "support": {
+    "frenzy": {
         "dmg": 1,
         "speed": 10,
         "spread": 1, # ???
@@ -435,6 +435,17 @@ PROJ_TYPES = {
         "AoE_area": 150,
         "seeking": True,
         "condition": "frenzy",
+        "effect": "supportplosion",
+        "color": "hotpink"
+    },
+    "spyglass": {
+        "dmg": 1,
+        "speed": 10,
+        "spread": 1, # ???
+        "AoE": True,
+        "AoE_area": 150,
+        "seeking": True,
+        "condition": "spyglass",
         "effect": "supportplosion",
         "color": "hotpink"
     }

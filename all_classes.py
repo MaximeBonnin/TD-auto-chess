@@ -145,6 +145,7 @@ class Tower:
         self.last_shot = pygame.time.get_ticks()
         self.player = player
         self.attack_speed = self.towerType["atk_speed"]
+        self.range = self.towerType["range"]
         self.stats = {
             "Attack Speed": self.attack_speed,
             "Crit Chance": self.towerType["crit_chance"],
@@ -172,12 +173,12 @@ class Tower:
         self.surface.blit(tower_turret_img, (0,0))
         self.targeting = "close"
 
-        self.range_rect = pygame.Rect((self.rect.centerx - self.towerType["range"], self.rect.centery - self.towerType["range"]), (self.towerType["range"], self.towerType["range"]))
-        self.range_surface = pygame.Surface((self.towerType["range"]*2, self.towerType["range"]*2))
+        self.range_rect = pygame.Rect((self.rect.centerx - self.range, self.rect.centery - self.range), (self.range, self.range))
+        self.range_surface = pygame.Surface((self.range*2, self.range*2))
         self.range_surface.fill((50, 50, 50))
         self.range_surface.set_colorkey((50, 50, 50))
-        pygame.draw.circle(self.range_surface, COLORS["red"], self.range_surface.get_rect().center, self.towerType["range"], width=2)
-        self.range_surface.blit(self.surface, (self.towerType["range"]-TOWER_SIZE[0]/2, self.towerType["range"]-TOWER_SIZE[1]/2))
+        pygame.draw.circle(self.range_surface, COLORS["red"], self.range_surface.get_rect().center, self.range, width=2)
+        self.range_surface.blit(self.surface, (self.range-TOWER_SIZE[0]/2, self.range-TOWER_SIZE[1]/2))
 
         click_plop.play()
         global TOWER_LIST   # eig schlechte Lösung aber erstmal so: Globale variable mit allen Türmen
@@ -223,7 +224,7 @@ class Tower:
         self.surface.blit(tower_base_img, (0,0))
         self.surface.blit(rotated_image, new_rect.topleft)
 
-        self.range_surface.blit(self.surface, (self.towerType["range"]-TOWER_SIZE[0]/2, self.towerType["range"]-TOWER_SIZE[1]/2))
+        self.range_surface.blit(self.surface, (self.range-TOWER_SIZE[0]/2, self.range-TOWER_SIZE[1]/2))
 
         return target, distance
 
@@ -234,6 +235,13 @@ class Tower:
         else:
             self.stats["Attack Speed"] = self.towerType["atk_speed"] 
             self.attack_speed = self.towerType["atk_speed"]  
+        
+        if "spyglass" in self.conditions:
+            self.stats["Range"] = self.towerType["range"] * (2 * self.conditions["spyglass"]["effect_strength"])
+            self.range = self.towerType["range"] * (2 * self.conditions["spyglass"]["effect_strength"])
+        else:
+            self.stats["Range"] = self.towerType["range"] 
+            self.range = self.towerType["range"] 
 
     def find_towers_in_range(self):
         m = self.tile.rect.center
@@ -241,14 +249,14 @@ class Tower:
         for t in TOWER_LIST:
             m_u = t.rect.center
             distance = ((m[0]-m_u[0])**2 + (m[1]-m_u[1])**2)**(1/2)
-            if distance <= self.towerType["range"]:
+            if distance <= self.range and t != self:
                 self.towers_in_range.append(t)
         return self.towers_in_range
 
     def shoot(self, unitList):
         self.check_conditions()
         if unitList:
-            if self.towerTypeName in ["support"]:
+            if self.towerTypeName in ["spyglass", "frenzy"]:
                 #print("Support doesn't shoot.")
                 for t in self.find_towers_in_range():
                     t.conditions[PROJ_TYPES[self.towerType["proj_type"]]["condition"]] = {
@@ -262,7 +270,7 @@ class Tower:
                 cooldown = self.attack_speed*1000
                 now = pygame.time.get_ticks()
 
-                if distance <= self.towerType["range"] and (now - self.last_shot) >= cooldown:
+                if distance <= self.range and (now - self.last_shot) >= cooldown:
                     
                     if random.random() <= self.towerType["crit_chance"]:
                         is_crit = True
@@ -290,7 +298,7 @@ class Tower:
             self.stats = {
                 "Attack Speed": self.attack_speed,
                 "Crit Chance": self.towerType["crit_chance"],
-                "Range": self.towerType["range"],
+                "Range": self.range,
                 "Projectile": self.towerType["proj_type"],
                 "Proj. Damage": PROJ_TYPES[self.towerType["proj_type"]]["dmg"],
                 "Kills": temp_kills
@@ -304,12 +312,12 @@ class Tower:
             self.surface.blit(tower_base_img, (0,0))
             self.surface.blit(tower_turret_img, (0,0))
 
-            self.range_rect = pygame.Rect((self.rect.centerx - self.towerType["range"], self.rect.centery - self.towerType["range"]), (self.towerType["range"], self.towerType["range"]))
-            self.range_surface = pygame.Surface((self.towerType["range"]*2, self.towerType["range"]*2))
+            self.range_rect = pygame.Rect((self.rect.centerx - self.range, self.rect.centery - self.range), (self.range, self.range))
+            self.range_surface = pygame.Surface((self.range*2, self.range*2))
             self.range_surface.fill((50, 50, 50))
             self.range_surface.set_colorkey((50, 50, 50))
-            pygame.draw.circle(self.range_surface, COLORS["red"], self.range_surface.get_rect().center, self.towerType["range"], width=2)
-            self.range_surface.blit(self.surface, (self.towerType["range"]-TOWER_SIZE[0]/2, self.towerType["range"]-TOWER_SIZE[1]/2))
+            pygame.draw.circle(self.range_surface, COLORS["red"], self.range_surface.get_rect().center, self.range, width=2)
+            self.range_surface.blit(self.surface, (self.range-TOWER_SIZE[0]/2, self.range-TOWER_SIZE[1]/2))
 
             self.player.money -= self.towerType['cost']
             self.player.request_info(self)
